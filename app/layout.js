@@ -3,6 +3,7 @@ import './globals.css';
 import './phase2b.css';
 import './responsive-layout.css';
 import './languages.css';
+import './blush-front.css';
 
 const bengali = localFont({ src: './fonts/noto-serif-bengali.ttf', variable: '--font-bengali', display: 'swap', preload: false });
 const devanagari = localFont({ src: './fonts/noto-serif-devanagari.ttf', variable: '--font-devanagari', display: 'swap', preload: false });
