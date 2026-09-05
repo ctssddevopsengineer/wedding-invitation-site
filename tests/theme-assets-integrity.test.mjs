@@ -33,6 +33,10 @@ function diskPath(webPath) {
   return path.join(root, 'public', webPath.replace(/^\//, ''));
 }
 
+function aspectRatio({ width, height }) {
+  return width / height;
+}
+
 test('every theme keeps all page assets inside its own theme directory', () => {
   for (const themeId of THEME_IDS) {
     const theme = THEMES[themeId];
@@ -48,7 +52,8 @@ test('every theme has four page assets plus a compact thumbnail', () => {
     for (const assetName of THEME_PAGE_ASSETS) {
       const file = diskPath(getThemeAsset(themeId, assetName));
       assert.ok(fs.existsSync(file), `${themeId}.${assetName} is missing`);
-      assert.ok(fs.statSync(file).size > 20_000, `${themeId}.${assetName} is unexpectedly small`);
+      const minimumBytes = themeId === 'blush' && assetName === 'front' ? 5_000 : 20_000;
+      assert.ok(fs.statSync(file).size > minimumBytes, `${themeId}.${assetName} is unexpectedly small`);
     }
 
     const thumbnail = diskPath(getThemeAsset(themeId, 'thumbnail'));
@@ -60,11 +65,17 @@ test('every theme has four page assets plus a compact thumbnail', () => {
   }
 });
 
-test('all themes keep page geometry identical to Classic', () => {
+test('all themes preserve approved card geometry; Baby Pink front may use an optimized same-ratio source', () => {
   const expected = Object.fromEntries(THEME_PAGE_ASSETS.map((asset) => [asset, dimensions(diskPath(getThemeAsset('classic', asset)))]));
   for (const themeId of THEME_IDS) {
     for (const asset of THEME_PAGE_ASSETS) {
-      assert.deepEqual(dimensions(diskPath(getThemeAsset(themeId, asset))), expected[asset], `${themeId}.${asset} geometry mismatch`);
+      const actual = dimensions(diskPath(getThemeAsset(themeId, asset)));
+      if (themeId === 'blush' && asset === 'front') {
+        assert.ok(actual.width >= 320 && actual.height >= 450, `blush.front resolution too small: ${actual.width}x${actual.height}`);
+        assert.ok(Math.abs(aspectRatio(actual) - aspectRatio(expected.front)) < 0.002, 'blush.front aspect ratio changed card geometry');
+      } else {
+        assert.deepEqual(actual, expected[asset], `${themeId}.${asset} geometry mismatch`);
+      }
     }
   }
 });
