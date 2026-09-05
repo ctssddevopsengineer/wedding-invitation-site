@@ -1,9 +1,12 @@
 'use client';
 
+import { useLanguage } from '@/components/LanguageProvider';
+
 import { useRef } from 'react';
 import { getThemeAsset, THEMES, THEME_IDS } from '@/lib/theme.mjs';
 
-export default function ThemeSwitcher({ themeId, onThemeChange, onThemeWarm }) {
+export default function ThemeSwitcher({ themeId, pendingTheme, onThemeChange, onThemeWarm }) {
+  const { language, t, event: EVENT } = useLanguage();
   const optionRefs = useRef([]);
 
   function focusTheme(index) {
@@ -27,13 +30,13 @@ export default function ThemeSwitcher({ themeId, onThemeChange, onThemeWarm }) {
   }
 
   return (
-    <section className="themeSwitcher" aria-label="Choose invitation colour theme">
+    <section className="themeSwitcher" aria-label={t("Choose invitation colour theme")}>
       <div className="themeSwitcherHeading">
-        <span className="themeSwitcherLabel">Colour Theme</span>
-        <span className="themeSwitcherHint">Choose a preview — your selection is shareable</span>
+        <span className="themeSwitcherLabel">{t("Colour Theme")}</span>
+        <span className="themeSwitcherHint">{t("Choose a preview — your selection is shareable")}</span>
       </div>
 
-      <div className="themeOptions" role="radiogroup" aria-label="Invitation colour theme">
+      <div className="themeOptions" role="radiogroup" aria-label={t("Invitation colour theme")}>
         {THEME_IDS.map((id, index) => {
           const theme = THEMES[id];
           const active = id === themeId;
@@ -45,12 +48,14 @@ export default function ThemeSwitcher({ themeId, onThemeChange, onThemeWarm }) {
               className={active ? 'themeOption active' : 'themeOption'}
               onClick={() => onThemeChange(id)}
               onPointerEnter={() => onThemeWarm?.(id)}
+              onPointerDown={() => onThemeWarm?.(id)}
               onFocus={() => onThemeWarm?.(id)}
               onKeyDown={(event) => handleKeyDown(event, index)}
               role="radio"
               aria-checked={active}
-              aria-label={`Use ${theme.label} theme`}
-              title={theme.label}
+              aria-busy={pendingTheme === id}
+              aria-label={t('Use {theme} theme', { theme: t(theme.shortLabel) })}
+              title={language === 'en' ? theme.label : t(theme.shortLabel)}
               tabIndex={active ? 0 : -1}
             >
               <span className="themeThumbnailFrame" style={{ '--swatch': theme.swatch }} aria-hidden="true">
@@ -63,7 +68,7 @@ export default function ThemeSwitcher({ themeId, onThemeChange, onThemeWarm }) {
                 />
                 <span className="themeSwatch" style={{ '--swatch': theme.swatch }} />
               </span>
-              <span className="themeOptionName">{theme.shortLabel}</span>
+              <span className="themeOptionName">{t(theme.shortLabel)}</span>
               {active && <span className="themeCheck" aria-hidden="true">✓</span>}
             </button>
           );

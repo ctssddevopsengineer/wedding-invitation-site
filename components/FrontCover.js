@@ -1,25 +1,27 @@
-import { EVENT } from '@/lib/event.mjs';
+import Artwork from '@/components/Artwork';
+import { useLanguage } from '@/components/LanguageProvider';
 import { getTheme, getThemeAsset } from '@/lib/theme.mjs';
 
 export default function FrontCover({ onOpen, themeId }) {
+  const { language, t, event: EVENT } = useLanguage();
   const theme = getTheme(themeId);
   const frontMonogram = getThemeAsset(themeId, 'insideLeftMonogram');
 
   return (
-    <article className="invitePage frontCover" aria-label="Front cover">
-      <img
+    <article className="invitePage frontCover" aria-label={t("Front cover")}>
+      <Artwork
         className="coverArtwork"
         src={getThemeAsset(themeId, 'front')}
-        alt={`${EVENT.couple} reception invitation artwork`}
+        alt={t('{couple} reception invitation artwork', { couple: EVENT.couple })}
       />
 
-      {theme.dynamicFront && (
-        <section className="dynamicFrontCopy" aria-label="Reception invitation cover text">
-          {frontMonogram && (
-            <img
+      {(theme.dynamicFront || language !== 'en') && (
+        <section className={`dynamicFrontCopy ${!theme.dynamicFront ? 'localizedPrintedFront' : ''}`} aria-label={t("Reception invitation cover text")}>
+          {frontMonogram && theme.dynamicFront && (
+            <Artwork
               className="dynamicFrontMonogram"
               src={frontMonogram}
-              alt={`${EVENT.couple} monogram`}
+              alt={t('{couple} monogram', { couple: EVENT.couple })}
             />
           )}
           <h1 className="dynamicFrontHeading">
@@ -46,7 +48,7 @@ export default function FrontCover({ onOpen, themeId }) {
       <div className="coverShade" />
       <div className="coverAction">
         <button className="openButton" type="button" onClick={onOpen}>
-          <span>Open Invitation</span>
+          <span>{t("Open Invitation")}</span>
           <span aria-hidden="true">↓</span>
         </button>
       </div>

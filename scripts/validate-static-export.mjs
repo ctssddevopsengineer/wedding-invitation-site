@@ -64,6 +64,12 @@ const requiredPublicAssets = [
   'themes/navy/front.png',
   'themes/plum/front.png',
   'themes/saffron/front.png',
+  'themes/classic/front.webp',
+  'themes/blush/front.webp',
+  'themes/magenta/front.webp',
+  'themes/navy/front.webp',
+  'themes/plum/front.webp',
+  'themes/saffron/front.webp',
   'images/location-qr.png'
 ];
 

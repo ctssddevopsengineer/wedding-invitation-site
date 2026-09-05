@@ -1,0 +1,171 @@
+/* Additive language controls; approved English theme geometry stays intact. */
+.languageSwitcher {
+  width: min(100%, 1120px);
+  margin: 0 auto .65rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: .65rem;
+  color: #f7ead0;
+  font-size: .85rem;
+}
+.languageSwitcher label { display: flex; align-items: center; gap: .35rem; }
+.languageSwitcher select {
+  min-height: 44px;
+  padding: .45rem 2rem .45rem .8rem;
+  border: 1px solid var(--theme-gold);
+  border-radius: 999px;
+  background: var(--theme-soft);
+  color: var(--theme-accent-dark);
+  font: inherit;
+  cursor: pointer;
+  box-shadow: 0 3px 12px #00000008;
+}
+.languageSwitcher select:focus-visible { outline: 3px solid var(--theme-accent); outline-offset: 3px; }
+.themeOption[aria-busy="true"] { outline: 2px solid var(--theme-gold); outline-offset: 2px; }
+.bookApp[lang="bn"] { --language-font: var(--font-bengali), 'Bangla Sangam MN', 'Nirmala UI', serif; }
+.bookApp[lang="ne"] { --language-font: var(--font-devanagari), 'Devanagari Sangam MN', 'Nirmala UI', serif; }
+.bookApp:is([lang="bn"], [lang="ne"]) :is(h1,h2,h3,p,button,select,label,span,strong,em,a) {
+  font-family: var(--language-font);
+  letter-spacing: normal;
+}
+.bookApp:is([lang="bn"], [lang="ne"]) :is(.dynamicFrontHeading,.insideRightDynamicTitle,.familyBlessingsIntro h2,.familyBlock h3,.heritageBackIntro h2) {
+  line-height: 1.35;
+  white-space: normal;
+}
+.bookApp:is([lang="bn"], [lang="ne"]) .insideRightDynamicTitle { font-size: clamp(1rem, 4cqw, 2.25rem); }
+.bookApp:is([lang="bn"], [lang="ne"]) :is(.dynamicFrontTagline,.dynamicFrontClosing,.familyBlessingsIntro p,.familyBlock p,.familyBlessingsClosing) { line-height: 1.5; }
+.bookApp:is([lang="bn"], [lang="ne"]) .heritageBackMessage { line-height: 1.45; }
+.bookApp:is([lang="bn"], [lang="ne"]) .heritageBackIntro h2 { font-size: clamp(10px, 2.2cqw, 32px); }
+.bookApp:is([lang="bn"], [lang="ne"]) .heritageJourneyMessage { line-height: 1.5; }
+.bookApp:is([lang="bn"], [lang="ne"]) .receptionDetailLabel { line-height: 1.35; }
+.bookApp:is([lang="bn"], [lang="ne"]) .receptionCountdownItem .countdownUnit span { font-size: clamp(6px, .85cqw, 10px); }
+
+/* Only printed English text areas receive localized parchment overlays.
+   The surrounding illustrations and original image files are preserved. */
+.localizedPrintedFront {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  text-align: center;
+  color: var(--theme-ink);
+  --paper: #f9e6bc;
+}
+.bookApp[data-invitation-theme="blush"] .localizedPrintedFront { --paper: #fbe8d6; }
+.localizedPrintedFront :is(.dynamicFrontHeading,.dynamicFrontTagline,.dynamicFrontClosing) {
+  position: absolute;
+  left: 29%;
+  width: 48%;
+  margin: 0;
+  background: var(--paper);
+  box-shadow: 0 0 1.3cqw 1cqw var(--paper);
+  border-radius: .5cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.localizedPrintedFront .dynamicFrontHeading { top: 11.6%; height: 11.3%; color: var(--theme-accent); }
+.localizedPrintedFront .dynamicFrontHeading > span { font-size: 6cqw; }
+.localizedPrintedFront .dynamicFrontHeading > em { font-size: 4.5cqw; color: var(--theme-gold); font-style: normal; }
+.localizedPrintedFront .dynamicFrontTagline { top: 25.9%; height: 4.2%; left: 34%; width: 33%; font-size: 2.1cqw; }
+.localizedPrintedFront .dynamicFrontClosing { top: 54%; height: 3.6%; left: 28%; width: 44%; font-size: 1.75cqw; }
+.localizedPrintedFront .dynamicFrontNames,
+.localizedPrintedFront .dynamicFrontRule { display: none; }
+.bookApp[data-invitation-theme="blush"] .localizedPrintedFront .dynamicFrontHeading { top: 24%; height: 11%; left: 29%; width: 46%; }
+.bookApp[data-invitation-theme="blush"] .localizedPrintedFront .dynamicFrontTagline { top: 38.8%; height: 4.6%; left: 33%; width: 40%; }
+.bookApp[data-invitation-theme="blush"] .localizedPrintedFront .dynamicFrontClosing { top: 58%; height: 4.2%; left: 27%; width: 46%; }
+.localizedPrintedDetailsTitle {
+  position: absolute;
+  z-index: 3;
+  top: 13.3%;
+  left: 20%;
+  width: 63%;
+  height: 6.1%;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  color: var(--theme-accent);
+  font-size: 4.5cqw;
+  background: #f9e6bc;
+  box-shadow: 0 0 1cqw .7cqw #f9e6bc;
+  border-radius: .5cqw;
+}
+.localizedDetailsClosing {
+  position: absolute;
+  z-index: 3;
+  top: 68%;
+  left: 33.5%;
+  width: 34.5%;
+  height: 4.7%;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-size: 1.9cqw;
+  line-height: 1.5;
+  color: var(--theme-accent);
+  background: #f9e6bc;
+  box-shadow: 0 0 1cqw .5cqw #f9e6bc;
+  border-radius: .5cqw;
+}
+.bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .insideRightDynamicLocationLabel,
+.bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="blush"] .insideRightDynamicLocationLabel {
+  position: absolute;
+  z-index: 4;
+  left: 43%;
+  top: 84.8%;
+  width: 15%;
+  height: 3.5%;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-size: 1.8cqw;
+  line-height: 1.25;
+  color: var(--theme-accent-dark);
+  background: #f9e6bc;
+  box-shadow: 0 0 .6cqw .25cqw #f9e6bc;
+  pointer-events: none;
+}
+.bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="blush"] .insideRightDynamicLocationLabel {
+  top: 79.8%; left: 44%; width: 13%; height: 3.8%; background: #fbe8d6; box-shadow: 0 0 .6cqw .25cqw #fbe8d6;
+}
+
+/* Match the artwork's object-fit: cover coordinate system, including narrow
+   phones where the existing card min-height crops the left/right edges. */
+.localizedArtworkCoordinates,
+.localizedPrintedFront {
+  position: absolute;
+  inset: auto;
+  top: 0;
+  left: 50%;
+  height: 100%;
+  width: auto;
+  min-width: 100%;
+  max-width: none;
+  aspect-ratio: 1087 / 1536;
+  transform: translateX(-50%);
+  pointer-events: none;
+  container-type: inline-size;
+}
+.localizedArtworkCoordinates { z-index: 3; }
+.dynamicLocationContainer { display: contents; }
+.bookApp:is([lang="bn"], [lang="ne"]) :is(.dynamicFrontNames,.familyCoupleNames,.heritageCoupleNames) {
+  font-family: 'Brush Script MT', 'Segoe Script', 'Snell Roundhand', 'Apple Chancery', cursive;
+}
+.bookApp:is([lang="bn"], [lang="ne"]) :is(.dynamicFrontNames,.familyCoupleNames,.heritageCoupleNames) > span { font-family: inherit; }
+.bookApp:is([lang="bn"], [lang="ne"]) .heritageBackMessage { font-size: clamp(6px, 1.05cqw, 16px); line-height: 1.3; }
+/* Keep the countdown above the printed closing blessing on the Classic card. */
+.bookApp:is([lang="bn"], [lang="ne"]) .receptionDetailsOverlay { justify-content: space-between; }
+.bookApp:is([lang="bn"], [lang="ne"]) .receptionDetailsOverlay > br { display: none; }
+.bookApp:is([lang="bn"], [lang="ne"]) .heritageBackIntro .heritageGoldRule { margin: .45cqw auto .4cqw; }
+@media (max-width: 430px) {
+  .bookApp:is([lang="bn"], [lang="ne"]) .heritageBackIntro { top: 24.5%; }
+}
+/* The Saffron artwork places its crest rule lower than the other themes. */
+.bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="saffron"] .insideRightDynamicTitle {
+  top: 16%;
+  font-size: clamp(.85rem, 3.5cqw, 2rem);
+  line-height: 1.15;
+}

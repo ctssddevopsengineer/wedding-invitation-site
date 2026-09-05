@@ -1,28 +1,30 @@
+import Artwork from '@/components/Artwork';
+import { useLanguage } from '@/components/LanguageProvider';
 import ContactDetails from '@/components/ContactDetails';
-import { EVENT } from '@/lib/event.mjs';
 import { getThemeAsset } from '@/lib/theme.mjs';
 
 export default function BackCover({ themeId }) {
+  const { language, t, event: EVENT } = useLanguage();
   const copy = EVENT.backCover;
   const backMonogram = getThemeAsset(themeId, 'backMonogram');
 
   return (
     <article
       className="invitePage heritageBackCover"
-      aria-label="Back cover — Bengal and Nepal heritage gratitude page"
+      aria-label={t("Back cover — Bengal and Nepal heritage gratitude page")}
     >
-      <img
+      <Artwork
         className="heritageBackArtwork"
         src={getThemeAsset(themeId, 'back')}
-        alt="Bengali riverside temple and boats blending into Himalayan mountains and a Nepali pagoda"
+        alt={t("Bengali riverside temple and boats blending into Himalayan mountains and a Nepali pagoda")}
       />
 
       <div className="heritageBackContent">
         {backMonogram && (
-          <img
+          <Artwork
             className="heritageBackMonogram"
             src={backMonogram}
-            alt={`${EVENT.groomName} and ${EVENT.brideName} monogram`}
+            alt={t('{couple} monogram', { couple: EVENT.couple })}
           />
         )}
 

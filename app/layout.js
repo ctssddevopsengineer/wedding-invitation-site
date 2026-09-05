@@ -1,6 +1,11 @@
+import localFont from 'next/font/local';
 import './globals.css';
 import './phase2b.css';
 import './responsive-layout.css';
+import './languages.css';
+
+const bengali = localFont({ src: './fonts/noto-serif-bengali.ttf', variable: '--font-bengali', display: 'swap', preload: false });
+const devanagari = localFont({ src: './fonts/noto-serif-devanagari.ttf', variable: '--font-devanagari', display: 'swap', preload: false });
 
 export const metadata = {
   title: 'Wedding Reception Invitation',
@@ -16,7 +21,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={`${bengali.variable} ${devanagari.variable}`}>{children}</body>
     </html>
   );
 }
