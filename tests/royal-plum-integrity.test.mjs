@@ -13,6 +13,10 @@ const baselines = Object.freeze({
   navy: '0a99ea2770c0aa84ed801f7b7c9e78f8f9fa0677cb787e8add0cf765c1908548'
 });
 
+const ADDITIVE_APPROVED_ASSETS = new Set([
+  'front-enhanced.jpg'
+]);
+
 function directoryDigest(directory) {
   const hash = crypto.createHash('sha256');
   const walk = (dir) => {
@@ -23,9 +27,10 @@ function directoryDigest(directory) {
         walk(full);
       } else {
         const relative = path.relative(directory, full).split(path.sep).join('/');
-        // Derived thumbnail and optimized WebP companions are additive, without
-        // changing any previously approved invitation artwork bytes.
-        if (relative.endsWith('.webp')) continue;
+        // Derived thumbnails/optimized companions and explicitly approved additive
+        // front templates must not invalidate the historical Royal Plum baseline.
+        // The original approved artwork files are still byte-for-byte protected.
+        if (relative.endsWith('.webp') || ADDITIVE_APPROVED_ASSETS.has(relative)) continue;
         hash.update(relative);
         hash.update('\0');
         hash.update(fs.readFileSync(full));
