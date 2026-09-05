@@ -48,6 +48,10 @@ function imageDimensions(filePath) {
   throw new Error(`Unsupported image format: ${filePath}`);
 }
 
+function aspectRatio({ width, height }) {
+  return width / height;
+}
+
 test('theme engine exposes the approved production themes without altering classic or blush', () => {
   assert.equal(DEFAULT_THEME_ID, 'classic');
   assert.deepEqual(THEME_IDS, ACTIVE_THEME_IDS);
@@ -91,13 +95,19 @@ test('every active theme provides all four page artwork assets and files exist',
   }
 });
 
-test('blush, magenta, navy and plum page artwork keep the exact classic dimensions so switching colour cannot alter layout geometry', () => {
+test('theme artwork preserves card geometry while Baby Pink front may use an optimized same-ratio source', () => {
   for (const asset of ['front', 'insideLeft', 'insideRight', 'back']) {
     const classicPath = path.join(root, 'public', getThemeAsset('classic', asset).replace(/^\//, ''));
     const expected = imageDimensions(classicPath);
     for (const themeId of ['blush', 'magenta', 'navy', 'plum', 'saffron']) {
       const themedPath = path.join(root, 'public', getThemeAsset(themeId, asset).replace(/^\//, ''));
-      assert.deepEqual(imageDimensions(themedPath), expected, `${themeId}.${asset} changed dimensions`);
+      const actual = imageDimensions(themedPath);
+      if (themeId === 'blush' && asset === 'front') {
+        assert.ok(actual.width >= 320 && actual.height >= 450, `blush.front resolution too small: ${actual.width}x${actual.height}`);
+        assert.ok(Math.abs(aspectRatio(actual) - aspectRatio(expected)) < 0.002, 'blush.front aspect ratio changed card geometry');
+      } else {
+        assert.deepEqual(actual, expected, `${themeId}.${asset} changed dimensions`);
+      }
     }
   }
 });
