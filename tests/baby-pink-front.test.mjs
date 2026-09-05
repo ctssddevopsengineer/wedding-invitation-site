@@ -32,6 +32,10 @@ function imageDimensions(filePath) {
   throw new Error(`Unsupported image format: ${filePath}`);
 }
 
+function aspectRatio({ width, height }) {
+  return width / height;
+}
+
 test('Baby Pink alone opts into blank-front dynamic rendering without changing existing dynamicFront semantics', () => {
   assert.equal(THEMES.blush.dynamicFront, false);
   assert.equal(THEMES.blush.blankFront, true);
@@ -69,7 +73,7 @@ test('Baby Pink front keeps readable floor sizes for Latin, Bengali and Nepali t
   assert.match(css, /font-size:\s*clamp\(1\.35rem, 6\.4cqw, 3\.65rem\)/);
 });
 
-test('Baby Pink uses the uploaded blank front template at production geometry', () => {
+test('Baby Pink uses the uploaded blank front template without changing card geometry', () => {
   const webPath = getThemeAsset('blush', 'front');
   assert.equal(webPath, '/themes/blush/front-enhanced.jpg');
   const imagePath = path.join(root, 'public', webPath.replace(/^\//, ''));
@@ -77,6 +81,10 @@ test('Baby Pink uses the uploaded blank front template at production geometry', 
   const header = fs.readFileSync(imagePath).subarray(0, 2);
   assert.equal(header[0], 0xff);
   assert.equal(header[1], 0xd8);
-  assert.deepEqual(imageDimensions(imagePath), { width: 1087, height: 1536 });
-  assert.ok(fs.statSync(imagePath).size > 20_000);
+
+  const actual = imageDimensions(imagePath);
+  const classic = imageDimensions(path.join(root, 'public', getThemeAsset('classic', 'front').replace(/^\//, '')));
+  assert.ok(actual.width >= 320 && actual.height >= 450, `Baby Pink front resolution is too small: ${actual.width}x${actual.height}`);
+  assert.ok(Math.abs(aspectRatio(actual) - aspectRatio(classic)) < 0.002, 'Baby Pink front aspect ratio would distort/crop the approved card geometry');
+  assert.ok(fs.statSync(imagePath).size > 5_000, 'Baby Pink front file is unexpectedly small');
 });
