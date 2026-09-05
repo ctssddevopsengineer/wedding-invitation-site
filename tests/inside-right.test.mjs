@@ -35,5 +35,6 @@ test('location medallion supports hover, focus and click interactions', () => {
 test('Rani Magenta can render the blank-template Location / Map label dynamically without affecting other themes', () => {
   assert.match(source, /theme\.dynamicLocationLabel/);
   assert.match(source, /insideRightDynamicLocationLabel/);
-  assert.match(source, /Location \/<br \/>Map/);
+  assert.match(source, /t\("Location \/"\)/);
+  assert.match(source, /t\("Map"\)/);
 });

@@ -1,6 +1,7 @@
 'use client';
 
-import { EVENT } from '@/lib/event.mjs';
+import { useLanguage } from '@/components/LanguageProvider';
+
 import { buildGoogleCalendarUrl, buildIcs } from '@/lib/calendar.mjs';
 
 function toSafeFilePart(value) {
@@ -12,12 +13,13 @@ function toSafeFilePart(value) {
 }
 
 export default function CalendarButtons() {
+  const { language, t, event: EVENT } = useLanguage();
   const hasValidDates = [EVENT.start, EVENT.end].every(
     (value) => value instanceof Date && !Number.isNaN(value.getTime())
   );
 
   if (!hasValidDates) {
-    return <p className="muted">Calendar details will be available soon.</p>;
+    return <p className="muted">{t("Calendar details will be available soon.")}</p>;
   }
 
   const googleUrl = buildGoogleCalendarUrl(EVENT);

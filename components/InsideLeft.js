@@ -1,27 +1,29 @@
-import { EVENT } from '@/lib/event.mjs';
+import Artwork from '@/components/Artwork';
+import { useLanguage } from '@/components/LanguageProvider';
 import { getThemeAsset } from '@/lib/theme.mjs';
 
 export default function InsideLeft({ themeId }) {
+  const { language, t, event: EVENT } = useLanguage();
   const copy = EVENT.insideLeft;
   const insideLeftMonogram = getThemeAsset(themeId, 'insideLeftMonogram');
 
   return (
     <article
       className="invitePage familyBlessingsTemplate"
-      aria-label="Inside left — family blessings"
+      aria-label={t("Inside left — family blessings")}
     >
-      <img
+      <Artwork
         className="familyBlessingsArtwork"
         src={getThemeAsset(themeId, 'insideLeft')}
-        alt="Ornate Bengali and Nepali family blessings invitation background"
+        alt={t("Ornate Bengali and Nepali family blessings invitation background")}
       />
 
       <div className="familyBlessingsContent">
         {insideLeftMonogram && (
-          <img
+          <Artwork
             className="familyMonogramArtwork"
             src={insideLeftMonogram}
-            alt={`${EVENT.couple} monogram`}
+            alt={t('{couple} monogram', { couple: EVENT.couple })}
           />
         )}
 

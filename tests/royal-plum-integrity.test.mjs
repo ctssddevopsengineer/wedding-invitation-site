@@ -23,9 +23,9 @@ function directoryDigest(directory) {
         walk(full);
       } else {
         const relative = path.relative(directory, full).split(path.sep).join('/');
-        // Phase 2A UX hardening adds derived thumbnail.webp files without
+        // Derived thumbnail and optimized WebP companions are additive, without
         // changing any previously approved invitation artwork bytes.
-        if (relative === 'thumbnail.webp') continue;
+        if (relative.endsWith('.webp')) continue;
         hash.update(relative);
         hash.update('\0');
         hash.update(fs.readFileSync(full));
