@@ -1,27 +1,8 @@
 /* ========================================================================== */
-/* BABY PINK FRONT — blank artwork + dynamic multilingual copy                 */
+/* BABY PINK FRONT — blank artwork + direct multilingual copy                  */
 /* Loaded last so this affects only Page 1 of the blush theme.                 */
 /* Pages 2–4 intentionally remain governed by the existing approved styles.   */
 /* ========================================================================== */
-
-/* The current Baby Pink artwork remains untouched in Git history.  This
-   parchment layer hides the legacy printed copy only on Page 1 so the same
-   dynamic multilingual copy can be rendered cleanly above it. */
-.bookApp[data-invitation-theme="blush"] .frontCover::before {
-  content: '';
-  position: absolute;
-  z-index: 2;
-  top: 6.2%;
-  left: 18%;
-  width: 64%;
-  height: 58%;
-  background:
-    radial-gradient(circle at 50% 12%, rgba(255,255,255,.34), transparent 38%),
-    linear-gradient(rgba(251,232,214,.985), rgba(251,232,214,.985));
-  border-radius: 46% 46% 5% 5% / 12% 12% 3% 3%;
-  box-shadow: 0 0 1.5cqw 1.05cqw rgba(251,232,214,.985);
-  pointer-events: none;
-}
 
 .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontCopy:not(.localizedPrintedFront) {
   position: absolute;
@@ -40,6 +21,8 @@
   color: var(--theme-ink);
   pointer-events: none;
   container-type: inline-size;
+  background: transparent;
+  box-shadow: none;
 }
 
 .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontMonogram {
@@ -50,6 +33,7 @@
   object-fit: contain;
   object-position: center;
   transform: none;
+  filter: drop-shadow(0 .08cqw .12cqw rgba(82, 48, 48, .12));
 }
 
 .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontHeading {
@@ -57,6 +41,8 @@
   color: var(--theme-accent-dark);
   line-height: 1.02;
   text-wrap: balance;
+  background: transparent;
+  box-shadow: none;
 }
 
 .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontHeading > span,
@@ -81,6 +67,8 @@
   width: 76%;
   margin: clamp(.32rem, 1.25cqw, .8rem) auto;
   color: var(--theme-gold);
+  background: transparent;
+  box-shadow: none;
 }
 
 .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontTagline {
@@ -91,6 +79,8 @@
   line-height: 1.38;
   font-weight: 500;
   text-wrap: balance;
+  background: transparent;
+  box-shadow: none;
 }
 
 .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNames {
@@ -105,6 +95,8 @@
   font-size: clamp(1.4rem, 5.4cqw, 3.45rem);
   line-height: 1;
   white-space: nowrap;
+  background: transparent;
+  box-shadow: none;
 }
 
 .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNames b {
@@ -120,25 +112,16 @@
   line-height: 1.42;
   font-weight: 500;
   text-wrap: balance;
+  background: transparent;
+  box-shadow: none;
 }
 
 .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontClosing > span {
   display: block;
 }
 
-/* Baby Pink now uses one dynamic copy path for every language. */
-.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontCopy:not(.localizedPrintedFront) :is(
-  .dynamicFrontHeading,
-  .dynamicFrontTagline,
-  .dynamicFrontNames,
-  .dynamicFrontClosing
-) {
-  background: transparent;
-  box-shadow: none;
-}
-
-/* Bengali / Nepali need more vertical breathing room and must not collapse to
-   tiny text. These rules inherit the local fonts already configured globally. */
+/* Bengali / Nepali need slightly more vertical breathing room while remaining
+   fully transparent so the uploaded blank artwork stays visible behind copy. */
 .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="blush"] .frontCover .dynamicFrontCopy:not(.localizedPrintedFront) {
   top: 6.4%;
   width: 62%;
@@ -208,15 +191,12 @@
     margin-block: .28rem;
   }
 
-  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontTagline {
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontTagline,
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontClosing {
     width: 96%;
   }
 
   .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNames {
     gap: .2rem;
-  }
-
-  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontClosing {
-    width: 96%;
   }
 }
