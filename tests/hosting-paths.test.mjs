@@ -23,10 +23,11 @@ test('public assets receive the deployment base path exactly once', () => {
   assert.equal(withBasePath('https://example.com/a.png', '/repo'), 'https://example.com/a.png');
 });
 
-test('theme engine routes artwork through the deployment-aware public path helper', () => {
+test('theme engine routes configurable front artwork through the deployment-aware public path helper', () => {
   const themeSource = fs.readFileSync(new URL('../lib/theme.mjs', import.meta.url), 'utf8');
   assert.match(themeSource, /withBasePath/);
-  assert.match(themeSource, /asset\(`\/themes\/\$\{themeId\}\/front\.png`\)/);
+  assert.match(themeSource, /frontFile\s*=\s*'front\.png'/);
+  assert.match(themeSource, /front:\s*asset\(`\/themes\/\$\{themeId\}\/\$\{frontFile\}`\)/);
 });
 
 test('location QR uses the same public-path helper', () => {
