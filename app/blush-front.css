@@ -1,0 +1,222 @@
+/* ========================================================================== */
+/* BABY PINK FRONT — blank artwork + dynamic multilingual copy                 */
+/* Loaded last so this affects only Page 1 of the blush theme.                 */
+/* Pages 2–4 intentionally remain governed by the existing approved styles.   */
+/* ========================================================================== */
+
+/* The current Baby Pink artwork remains untouched in Git history.  This
+   parchment layer hides the legacy printed copy only on Page 1 so the same
+   dynamic multilingual copy can be rendered cleanly above it. */
+.bookApp[data-invitation-theme="blush"] .frontCover::before {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: 6.2%;
+  left: 18%;
+  width: 64%;
+  height: 58%;
+  background:
+    radial-gradient(circle at 50% 12%, rgba(255,255,255,.34), transparent 38%),
+    linear-gradient(rgba(251,232,214,.985), rgba(251,232,214,.985));
+  border-radius: 46% 46% 5% 5% / 12% 12% 3% 3%;
+  box-shadow: 0 0 1.5cqw 1.05cqw rgba(251,232,214,.985);
+  pointer-events: none;
+}
+
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontCopy:not(.localizedPrintedFront) {
+  position: absolute;
+  z-index: 3;
+  top: 7.2%;
+  left: 50%;
+  width: 58%;
+  max-width: 58%;
+  min-height: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  color: var(--theme-ink);
+  pointer-events: none;
+  container-type: inline-size;
+}
+
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontMonogram {
+  display: block;
+  width: clamp(72px, 18cqw, 142px);
+  height: auto;
+  margin: 0 auto clamp(.35rem, 1.4cqw, .85rem);
+  object-fit: contain;
+  object-position: center;
+  transform: none;
+}
+
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontHeading {
+  margin: 0;
+  color: var(--theme-accent-dark);
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontHeading > span,
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontHeading > em {
+  display: block;
+}
+
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontHeading > span {
+  font-size: clamp(1.55rem, 7.2cqw, 4.15rem);
+  font-weight: 600;
+}
+
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontHeading > em {
+  margin-top: .12em;
+  color: var(--theme-gold);
+  font-size: clamp(1.18rem, 5.2cqw, 3.15rem);
+  font-style: normal;
+  font-weight: 500;
+}
+
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule {
+  width: 76%;
+  margin: clamp(.32rem, 1.25cqw, .8rem) auto;
+  color: var(--theme-gold);
+}
+
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontTagline {
+  width: 92%;
+  margin: 0 auto;
+  color: #51343b;
+  font-size: clamp(.78rem, 2.35cqw, 1.35rem);
+  line-height: 1.38;
+  font-weight: 500;
+  text-wrap: balance;
+}
+
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNames {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: clamp(.22rem, 1.2cqw, .8rem);
+  color: var(--theme-accent-dark);
+  font-size: clamp(1.4rem, 5.4cqw, 3.45rem);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNames b {
+  color: var(--theme-gold);
+  font-weight: 500;
+}
+
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontClosing {
+  width: 92%;
+  margin: 0 auto;
+  color: #5f4146;
+  font-size: clamp(.72rem, 2.05cqw, 1.2rem);
+  line-height: 1.42;
+  font-weight: 500;
+  text-wrap: balance;
+}
+
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontClosing > span {
+  display: block;
+}
+
+/* Baby Pink now uses one dynamic copy path for every language. */
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontCopy:not(.localizedPrintedFront) :is(
+  .dynamicFrontHeading,
+  .dynamicFrontTagline,
+  .dynamicFrontNames,
+  .dynamicFrontClosing
+) {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Bengali / Nepali need more vertical breathing room and must not collapse to
+   tiny text. These rules inherit the local fonts already configured globally. */
+.bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="blush"] .frontCover .dynamicFrontCopy:not(.localizedPrintedFront) {
+  top: 6.4%;
+  width: 62%;
+  max-width: 62%;
+}
+
+.bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="blush"] .frontCover .dynamicFrontHeading > span {
+  font-size: clamp(1.35rem, 6.4cqw, 3.65rem);
+  line-height: 1.2;
+}
+
+.bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="blush"] .frontCover .dynamicFrontHeading > em {
+  font-size: clamp(1.08rem, 4.7cqw, 2.7rem);
+  line-height: 1.22;
+}
+
+.bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="blush"] .frontCover .dynamicFrontTagline {
+  font-size: clamp(.78rem, 2.22cqw, 1.28rem);
+  line-height: 1.48;
+}
+
+.bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="blush"] .frontCover .dynamicFrontClosing {
+  font-size: clamp(.72rem, 1.95cqw, 1.12rem);
+  line-height: 1.5;
+}
+
+@media (max-width: 680px) {
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontCopy:not(.localizedPrintedFront) {
+    top: 6.5%;
+    width: 64%;
+    max-width: 64%;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontMonogram {
+    width: clamp(58px, 16cqw, 104px);
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontHeading > span {
+    font-size: clamp(1.28rem, 6.7cqw, 2.7rem);
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontHeading > em {
+    font-size: clamp(1rem, 4.8cqw, 2.05rem);
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontTagline {
+    font-size: clamp(.72rem, 2.35cqw, 1rem);
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNames {
+    font-size: clamp(1.18rem, 5.1cqw, 2.2rem);
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontClosing {
+    font-size: clamp(.68rem, 2.02cqw, .92rem);
+  }
+}
+
+@media (max-width: 430px) {
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontCopy:not(.localizedPrintedFront) {
+    top: 5.8%;
+    width: 67%;
+    max-width: 67%;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule {
+    margin-block: .28rem;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontTagline {
+    width: 96%;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNames {
+    gap: .2rem;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontClosing {
+    width: 96%;
+  }
+}

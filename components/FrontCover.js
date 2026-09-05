@@ -6,6 +6,7 @@ export default function FrontCover({ onOpen, themeId }) {
   const { language, t, event: EVENT } = useLanguage();
   const theme = getTheme(themeId);
   const frontMonogram = getThemeAsset(themeId, 'insideLeftMonogram');
+  const usesDynamicFrontCopy = theme.dynamicFront || theme.blankFront;
 
   return (
     <article className="invitePage frontCover" aria-label={t("Front cover")}>
@@ -15,9 +16,12 @@ export default function FrontCover({ onOpen, themeId }) {
         alt={t('{couple} reception invitation artwork', { couple: EVENT.couple })}
       />
 
-      {(theme.dynamicFront || language !== 'en') && (
-        <section className={`dynamicFrontCopy ${!theme.dynamicFront ? 'localizedPrintedFront' : ''}`} aria-label={t("Reception invitation cover text")}>
-          {frontMonogram && theme.dynamicFront && (
+      {(usesDynamicFrontCopy || language !== 'en') && (
+        <section
+          className={`dynamicFrontCopy ${!usesDynamicFrontCopy ? 'localizedPrintedFront' : ''}`}
+          aria-label={t("Reception invitation cover text")}
+        >
+          {frontMonogram && usesDynamicFrontCopy && (
             <Artwork
               className="dynamicFrontMonogram"
               src={frontMonogram}
