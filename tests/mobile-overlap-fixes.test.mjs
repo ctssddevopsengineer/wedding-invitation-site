@@ -19,12 +19,12 @@ test('mobile overlap stylesheet loads after typography hardening', () => {
   );
 });
 
-test('Saffron Gold keeps the monogram anchor centred and offsets only the rendered crest on every viewport', () => {
+test('Saffron Gold keeps the monogram anchor centred, offsets only the rendered crest and retints it toward parchment', () => {
   const monogram = blockFor('.bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram');
   assert.match(monogram, /left:\s*50%\s*!important/);
   assert.match(monogram, /right:\s*auto\s*!important/);
   assert.match(monogram, /transform:\s*translateX\(calc\(-50% \+ \.35cqw\)\)\s*!important/);
-  assert.match(monogram, /filter:\s*contrast\(1\.28\) saturate\(1\.12\) drop-shadow\(0 0 \.75px rgba\(69, 38, 7, \.58\)\)/);
+  assert.match(monogram, /filter:\s*brightness\(1\.3\) saturate\(\.34\) sepia\(\.16\) contrast\(1\.14\) drop-shadow\(0 0 \.7px rgba\(74, 48, 20, \.44\)\)/);
 
   for (const property of ['width', 'height', 'top', 'bottom', 'margin', 'padding']) {
     assert.doesNotMatch(monogram, new RegExp(`(^|[;\\s])${property}\\s*:`, 'm'));
