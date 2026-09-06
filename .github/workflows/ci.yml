@@ -87,6 +87,26 @@ jobs:
           GROOM_FAMILY_PHONE_NUMBER: ${{ vars.GROOM_FAMILY_PHONE_NUMBER }}
           BRIDE_FAMILY_CONTACT_NAME: ${{ vars.BRIDE_FAMILY_CONTACT_NAME }}
           BRIDE_FAMILY_PHONE_NUMBER: ${{ vars.BRIDE_FAMILY_PHONE_NUMBER }}
+          GROOM_NAME_BN: ${{ vars.GROOM_NAME_BN }}
+          BRIDE_NAME_BN: ${{ vars.BRIDE_NAME_BN }}
+          VENUE_NAME_BN: ${{ vars.VENUE_NAME_BN }}
+          VENUE_ADDRESS_BN: ${{ vars.VENUE_ADDRESS_BN }}
+          GROOM_FATHER_NAME_BN: ${{ vars.GROOM_FATHER_NAME_BN }}
+          GROOM_MOTHER_NAME_BN: ${{ vars.GROOM_MOTHER_NAME_BN }}
+          BRIDE_FATHER_NAME_BN: ${{ vars.BRIDE_FATHER_NAME_BN }}
+          BRIDE_MOTHER_NAME_BN: ${{ vars.BRIDE_MOTHER_NAME_BN }}
+          GROOM_FAMILY_CONTACT_NAME_BN: ${{ vars.GROOM_FAMILY_CONTACT_NAME_BN }}
+          BRIDE_FAMILY_CONTACT_NAME_BN: ${{ vars.BRIDE_FAMILY_CONTACT_NAME_BN }}
+          GROOM_NAME_NE: ${{ vars.GROOM_NAME_NE }}
+          BRIDE_NAME_NE: ${{ vars.BRIDE_NAME_NE }}
+          VENUE_NAME_NE: ${{ vars.VENUE_NAME_NE }}
+          VENUE_ADDRESS_NE: ${{ vars.VENUE_ADDRESS_NE }}
+          GROOM_FATHER_NAME_NE: ${{ vars.GROOM_FATHER_NAME_NE }}
+          GROOM_MOTHER_NAME_NE: ${{ vars.GROOM_MOTHER_NAME_NE }}
+          BRIDE_FATHER_NAME_NE: ${{ vars.BRIDE_FATHER_NAME_NE }}
+          BRIDE_MOTHER_NAME_NE: ${{ vars.BRIDE_MOTHER_NAME_NE }}
+          GROOM_FAMILY_CONTACT_NAME_NE: ${{ vars.GROOM_FAMILY_CONTACT_NAME_NE }}
+          BRIDE_FAMILY_CONTACT_NAME_NE: ${{ vars.BRIDE_FAMILY_CONTACT_NAME_NE }}
         run: npm run config:render
 
       - name: Build GitHub Pages-compatible static export
