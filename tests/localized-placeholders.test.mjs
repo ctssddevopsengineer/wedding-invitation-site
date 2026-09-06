@@ -17,7 +17,7 @@ const workflowSources = workflowPaths.map((workflowPath) => ({
   source: fs.readFileSync(new URL(workflowPath, import.meta.url), 'utf8')
 }));
 
-test('localized invitation placeholders are optional and fall back to base deployment values', () => {
+test('localized invitation placeholders are optional and remain empty when not configured so runtime transliteration can occur', () => {
   for (const key of [
     'GROOM_NAME_BN', 'BRIDE_NAME_BN', 'VENUE_NAME_BN', 'VENUE_ADDRESS_BN',
     'GROOM_FATHER_NAME_BN', 'GROOM_MOTHER_NAME_BN', 'BRIDE_FATHER_NAME_BN', 'BRIDE_MOTHER_NAME_BN',
@@ -26,9 +26,10 @@ test('localized invitation placeholders are optional and fall back to base deplo
     'GROOM_FATHER_NAME_NE', 'GROOM_MOTHER_NAME_NE', 'BRIDE_FATHER_NAME_NE', 'BRIDE_MOTHER_NAME_NE',
     'GROOM_FAMILY_CONTACT_NAME_NE', 'BRIDE_FAMILY_CONTACT_NAME_NE'
   ]) {
-    assert.match(renderSource, new RegExp(`${key}:`), `${key} fallback missing`);
+    assert.match(renderSource, new RegExp(`'${key}'`), `${key} localized key missing`);
   }
-  assert.match(renderSource, /configured \|\| process\.env\[fallbackKey\]/);
+  assert.doesNotMatch(renderSource, /configured \|\| process\.env\[fallbackKey\]/);
+  assert.match(renderSource, /replaceToken\(localizedKey, String\(process\.env\[localizedKey\] \?\? ''\)\.trim\(\)\)/);
 });
 
 test('all build workflows expose Bengali and Nepali localized variables to config:render', () => {
@@ -103,12 +104,12 @@ test('Bengali and Nepali use explicit localized placeholder values everywhere th
   assert.match(ne.description, /दुलाहा & दुलही/);
 });
 
-test('missing localized values automatically transliterate base English placeholders', () => {
+test('missing localized values automatically transliterate arbitrary names, venue name and venue address', () => {
   const fixture = {
     ...EVENT,
-    groomName: 'Soukarya',
-    brideName: 'Diksha',
-    venueName: 'Royal Palace Banquet',
+    groomName: 'Aakash',
+    brideName: 'Batash',
+    venueName: 'Royal Palace Banquet Hall',
     venueAddress: '12 West Road Kolkata India',
     localized: { bn: {}, ne: {} },
     families: {
@@ -122,20 +123,29 @@ test('missing localized values automatically transliterate base English placehol
   };
 
   const bn = localizeEvent(fixture, 'bn');
-  assert.equal(bn.groomName, 'সৌকর্য');
-  assert.equal(bn.brideName, 'দীক্ষা');
+  assert.doesNotMatch(bn.groomName, /[A-Za-z]/);
+  assert.doesNotMatch(bn.brideName, /[A-Za-z]/);
   assert.doesNotMatch(bn.venueName, /[A-Za-z]/);
   assert.doesNotMatch(bn.venueAddress, /[A-Za-z]/);
   assert.doesNotMatch(bn.families.groom.father, /[A-Za-z]/);
   assert.doesNotMatch(bn.contacts[0].name, /[A-Za-z]/);
 
   const ne = localizeEvent(fixture, 'ne');
-  assert.equal(ne.groomName, 'सौकार्य');
-  assert.equal(ne.brideName, 'दीक्षा');
+  assert.doesNotMatch(ne.groomName, /[A-Za-z]/);
+  assert.doesNotMatch(ne.brideName, /[A-Za-z]/);
   assert.doesNotMatch(ne.venueName, /[A-Za-z]/);
   assert.doesNotMatch(ne.venueAddress, /[A-Za-z]/);
   assert.doesNotMatch(ne.families.bride.mother, /[A-Za-z]/);
   assert.doesNotMatch(ne.contacts[1].name, /[A-Za-z]/);
+});
+
+test('known invitation spellings remain stable while arbitrary Latin names still transliterate', () => {
+  assert.equal(transliterate('Soukarya', 'bn'), 'সৌকর্য');
+  assert.equal(transliterate('Diksha', 'bn'), 'দীক্ষা');
+  assert.doesNotMatch(transliterate('Aakash', 'bn'), /[A-Za-z]/);
+  assert.doesNotMatch(transliterate('Batash', 'bn'), /[A-Za-z]/);
+  assert.doesNotMatch(transliterate('Aakash', 'ne'), /[A-Za-z]/);
+  assert.doesNotMatch(transliterate('Batash', 'ne'), /[A-Za-z]/);
 });
 
 test('explicit localized values always win over automatic transliteration', () => {
@@ -164,7 +174,7 @@ test('transliterator preserves punctuation and converts digits for Bengali and N
   assert.equal(transliterate('Soukarya', 'en'), 'Soukarya');
 });
 
-test('source templates may retain deployment tokens until config:render, while localized placeholders remain mapped to base fallbacks', () => {
+test('source templates may retain deployment tokens until config:render and localized tokens are rendered without base-value substitution', () => {
   assert.equal(EVENT.groomName, '{{GROOM_NAME}}');
   assert.equal(EVENT.brideName, '{{BRIDE_NAME}}');
   assert.equal(EVENT.venueName, '{{VENUE_NAME}}');
@@ -173,7 +183,7 @@ test('source templates may retain deployment tokens until config:render, while l
   assert.match(renderSource, /const unresolved = \[\.\.\.source\.matchAll\(\/\{\{\(\[A-Z0-9_\]\+\)\}\}\/g\)\]/);
   assert.match(renderSource, /Unresolved invitation placeholders:/);
   assert.match(renderSource, /process\.exit\(1\)/);
-  assert.match(renderSource, /configured \|\| process\.env\[fallbackKey\]/);
+  assert.match(renderSource, /replaceToken\(localizedKey, String\(process\.env\[localizedKey\] \?\? ''\)\.trim\(\)\)/);
 });
 
 test('placeholder substitutions are translated when the substituted value is itself a translation key', () => {
