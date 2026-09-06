@@ -75,20 +75,18 @@ test('Royal Plum page-3 location label is centred inside the medallion on mobile
 });
 
 test('Saffron Gold lowers title and all reception detail content together on mobile', () => {
-  const monogram = blockFor('.bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram');
-  const title = blockFor('.bookApp[data-invitation-theme="saffron"] .insideRightDynamicTitle');
-  const details = blockFor('.bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay');
-
-  assert.match(monogram, /top:\s*5\.55%\s*!important/);
-  assert.match(monogram, /left:\s*50%\s*!important/);
-  assert.match(monogram, /transform:\s*translateX\(calc\(-50% \+ \.35cqw\)\)\s*!important/);
-  assert.match(title, /top:\s*14\.65%\s*!important/);
-  assert.match(title, /transform:\s*translate\(-50%, \.9cqw\)\s*!important/);
-  assert.match(title, /font-size:\s*clamp\(\.96rem, 4\.2cqw, 1\.95rem\)/);
-  assert.match(details, /top:\s*23\.55%\s*!important/);
-  assert.match(details, /height:\s*46\.6%\s*!important/);
-  assert.match(details, /justify-content:\s*space-between/);
-  assert.match(details, /transform:\s*translate\(-50%, 1\.4cqw\)\s*!important/);
+  assert.match(
+    css,
+    /@media \(max-width: 680px\)[\s\S]*?\.bookApp\[data-invitation-theme="saffron"\] \.insideRightThemeMonogram\s*\{[\s\S]*?top:\s*5\.55%\s*!important[\s\S]*?left:\s*50%\s*!important[\s\S]*?transform:\s*translateX\(calc\(-50% \+ \.35cqw\)\)\s*!important/
+  );
+  assert.match(
+    css,
+    /@media \(max-width: 680px\)[\s\S]*?\.bookApp\[data-invitation-theme="saffron"\] \.insideRightDynamicTitle\s*\{[\s\S]*?top:\s*14\.65%\s*!important[\s\S]*?transform:\s*translate\(-50%, \.9cqw\)\s*!important[\s\S]*?font-size:\s*clamp\(\.96rem, 4\.2cqw, 1\.95rem\)/
+  );
+  assert.match(
+    css,
+    /@media \(max-width: 680px\)[\s\S]*?\.bookApp\[data-invitation-theme="saffron"\] \.receptionDetailsOverlay\s*\{[\s\S]*?top:\s*23\.55%\s*!important[\s\S]*?height:\s*46\.6%\s*!important[\s\S]*?justify-content:\s*space-between[\s\S]*?transform:\s*translate\(-50%, 1\.4cqw\)\s*!important/
+  );
 });
 
 test('Royal Navy page-3 monogram clears the top flower and stays centred on mobile', () => {
