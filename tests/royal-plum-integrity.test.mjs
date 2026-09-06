@@ -14,7 +14,8 @@ const baselines = Object.freeze({
 });
 
 const ADDITIVE_APPROVED_ASSETS = new Set([
-  'front-enhanced.jpg'
+  'front-enhanced.jpg',
+  'front-blank.jpg'
 ]);
 
 function directoryDigest(directory) {
