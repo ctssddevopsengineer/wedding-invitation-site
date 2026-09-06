@@ -31,6 +31,20 @@ test('Saffron Gold keeps the monogram anchor centred, offsets only the rendered 
   }
 });
 
+test('Saffron reused inside-left crest visually removes its parchment background without moving the page', () => {
+  const reused = blockFor('.bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogramFromInsideLeft');
+  assert.match(reused, /left:\s*0\s*!important/);
+  assert.match(reused, /top:\s*2\.6%\s*!important/);
+  assert.match(reused, /width:\s*100%\s*!important/);
+  assert.match(reused, /height:\s*100%\s*!important/);
+  assert.match(reused, /transform:\s*none\s*!important/);
+  assert.match(reused, /clip-path:\s*inset\(0 38% 82% 38%\)/);
+  assert.match(reused, /filter:\s*none\s*!important/);
+  assert.match(reused, /background:\s*transparent\s*!important/);
+  assert.match(reused, /mix-blend-mode:\s*multiply/);
+  assert.doesNotMatch(reused, /translateX\(/);
+});
+
 test('Saffron Gold lowers the Reception Details heading without changing its horizontal geometry', () => {
   const title = blockFor('.bookApp[data-invitation-theme="saffron"] .insideRightDynamicTitle');
   assert.match(title, /transform:\s*translate\(-50%, \.9cqw\)\s*!important/);
