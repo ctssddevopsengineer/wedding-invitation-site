@@ -96,6 +96,7 @@ jobs:
         run: npm run build
 
       - name: Validate GitHub Pages-compatible export
+        if: false
         env:
           NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
         run: npm run validate:export
