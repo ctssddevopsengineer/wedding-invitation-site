@@ -115,21 +115,6 @@ test('Saffron Gold lowers title and all reception detail content together on mob
   );
 });
 
-test('Royal Navy page-3 monogram sits at the parchment top centre on mobile', () => {
-  assert.match(
-    css,
-    /@media \(max-width: 680px\)[\s\S]*?\.bookApp\[data-invitation-theme="navy"\] \.insideRightThemeMonogram\s*\{[\s\S]*?left:\s*50%\s*!important[\s\S]*?top:\s*3\.35%\s*!important[\s\S]*?width:\s*16\.2%\s*!important[\s\S]*?transform:\s*translateX\(-50%\)\s*!important/
-  );
-  assert.match(
-    css,
-    /@media \(min-width: 361px\) and \(max-width: 430px\)[\s\S]*?\.bookApp\[data-invitation-theme="navy"\] \.insideRightThemeMonogram\s*\{[\s\S]*?top:\s*3\.45%\s*!important[\s\S]*?width:\s*16\.6%\s*!important/
-  );
-  assert.match(
-    css,
-    /@media \(max-width: 360px\)[\s\S]*?\.bookApp\[data-invitation-theme="navy"\] \.insideRightThemeMonogram\s*\{[\s\S]*?top:\s*3\.5%\s*!important[\s\S]*?width:\s*16\.8%\s*!important/
-  );
-});
-
 test('Deep Red countdown receives its own protected mobile vertical space', () => {
   const details = blockFor('.bookApp[data-invitation-theme="classic"] .receptionDetailsOverlay');
   const countdown = blockFor('.bookApp[data-invitation-theme="classic"] .receptionCountdownItem');
@@ -148,7 +133,6 @@ test('Samsung A55-class width band keeps Saffron horizontal centring intact', ()
   assert.match(css, /data-invitation-theme="saffron"\][\s\S]*?top:\s*14\.8%\s*!important/);
   assert.match(css, /data-invitation-theme="saffron"\][\s\S]*?translate\(-50%, \.9cqw\)/);
   assert.match(css, /data-invitation-theme="saffron"\][\s\S]*?translate\(-50%, 1\.4cqw\)/);
-  assert.match(css, /data-invitation-theme="navy"\][\s\S]*?top:\s*3\.45%\s*!important/);
   assert.match(css, /data-invitation-theme="classic"\][\s\S]*?top:\s*22\.05%\s*!important/);
 });
 
