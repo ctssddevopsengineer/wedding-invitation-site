@@ -5,19 +5,36 @@ import { EVENT } from '../lib/event.mjs';
 import { localizeEvent, translate } from '../lib/locale.mjs';
 
 const renderSource = fs.readFileSync(new URL('../scripts/render-event-config.mjs', import.meta.url), 'utf8');
+const ciWorkflow = fs.readFileSync(new URL('../.github/workflows/ci.yml', import.meta.url), 'utf8');
+const cdWorkflow = fs.readFileSync(new URL('../.github/workflows/cd.yml', import.meta.url), 'utf8');
+const cloudflareWorkflow = fs.readFileSync(new URL('../.github/workflows/deploy-cloudflare.yml', import.meta.url), 'utf8');
+
+const LOCALIZED_KEYS = [
+  'GROOM_NAME_BN', 'BRIDE_NAME_BN', 'VENUE_NAME_BN', 'VENUE_ADDRESS_BN',
+  'GROOM_FATHER_NAME_BN', 'GROOM_MOTHER_NAME_BN', 'BRIDE_FATHER_NAME_BN', 'BRIDE_MOTHER_NAME_BN',
+  'GROOM_FAMILY_CONTACT_NAME_BN', 'BRIDE_FAMILY_CONTACT_NAME_BN',
+  'GROOM_NAME_NE', 'BRIDE_NAME_NE', 'VENUE_NAME_NE', 'VENUE_ADDRESS_NE',
+  'GROOM_FATHER_NAME_NE', 'GROOM_MOTHER_NAME_NE', 'BRIDE_FATHER_NAME_NE', 'BRIDE_MOTHER_NAME_NE',
+  'GROOM_FAMILY_CONTACT_NAME_NE', 'BRIDE_FAMILY_CONTACT_NAME_NE'
+];
 
 test('localized invitation placeholders are optional and fall back to base deployment values', () => {
-  for (const key of [
-    'GROOM_NAME_BN', 'BRIDE_NAME_BN', 'VENUE_NAME_BN', 'VENUE_ADDRESS_BN',
-    'GROOM_FATHER_NAME_BN', 'GROOM_MOTHER_NAME_BN', 'BRIDE_FATHER_NAME_BN', 'BRIDE_MOTHER_NAME_BN',
-    'GROOM_FAMILY_CONTACT_NAME_BN', 'BRIDE_FAMILY_CONTACT_NAME_BN',
-    'GROOM_NAME_NE', 'BRIDE_NAME_NE', 'VENUE_NAME_NE', 'VENUE_ADDRESS_NE',
-    'GROOM_FATHER_NAME_NE', 'GROOM_MOTHER_NAME_NE', 'BRIDE_FATHER_NAME_NE', 'BRIDE_MOTHER_NAME_NE',
-    'GROOM_FAMILY_CONTACT_NAME_NE', 'BRIDE_FAMILY_CONTACT_NAME_NE'
-  ]) {
+  for (const key of LOCALIZED_KEYS) {
     assert.match(renderSource, new RegExp(`${key}:`), `${key} fallback missing`);
   }
   assert.match(renderSource, /configured \|\| process\.env\[fallbackKey\]/);
+});
+
+test('all build workflows pass Bengali and Nepali placeholder variables into config:render', () => {
+  for (const [name, workflow] of [
+    ['CI', ciWorkflow],
+    ['GitHub Pages CD', cdWorkflow],
+    ['Cloudflare', cloudflareWorkflow]
+  ]) {
+    for (const key of LOCALIZED_KEYS) {
+      assert.match(workflow, new RegExp(`${key}:\\s*\\$\\{\\{\\s*vars\\.${key}\\s*\\}\\}`), `${name} does not pass ${key}`);
+    }
+  }
 });
 
 test('Bengali and Nepali use localized placeholder values everywhere they are rendered', () => {
@@ -76,10 +93,6 @@ test('Bengali and Nepali use localized placeholder values everywhere they are re
 });
 
 test('source templates may retain deployment tokens until config:render, while localized placeholders remain mapped to base fallbacks', () => {
-  // npm test intentionally runs before config:render in CI, so raw event.mjs still
-  // contains deployment tokens such as {{GROOM_NAME}}. The renderer is responsible
-  // for resolving them before the production build. This test validates that lifecycle
-  // instead of incorrectly requiring raw source placeholders to be absent.
   assert.equal(EVENT.groomName, '{{GROOM_NAME}}');
   assert.equal(EVENT.brideName, '{{BRIDE_NAME}}');
   assert.equal(EVENT.venueName, '{{VENUE_NAME}}');
