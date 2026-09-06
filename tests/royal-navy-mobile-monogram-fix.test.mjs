@@ -3,42 +3,22 @@ import fs from 'node:fs';
 import test from 'node:test';
 
 const css = fs.readFileSync(new URL('../app/royal-navy-mobile-monogram-fix.css', import.meta.url), 'utf8');
-const globals = fs.readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8');
 const layout = fs.readFileSync(new URL('../app/layout.js', import.meta.url), 'utf8');
 
 test('Royal Navy mobile monogram override loads after overlap fixes', () => {
   assert.match(layout, /import '\.\/mobile-overlap-fixes\.css';\s*\nimport '\.\/royal-navy-mobile-monogram-fix\.css';/);
 });
 
-test('Royal Navy desktop monogram uses the approved exact-centre geometry', () => {
-  assert.match(
-    globals,
-    /data-invitation-theme="navy"\] \.insideRightThemeMonogram\s*\{[\s\S]*?top:\s*1\.85%[\s\S]*?left:\s*50%[\s\S]*?width:\s*13\.6%[\s\S]*?transform:\s*translateX\(-50%\)/
-  );
-});
-
-test('Royal Navy mobile copies desktop horizontal geometry and changes only vertical placement', () => {
-  assert.match(
-    css,
-    /@media \(max-width: 680px\)[\s\S]*?data-invitation-theme="navy"\] \.insideRightThemeMonogram\s*\{[\s\S]*?left:\s*50%\s*!important[\s\S]*?right:\s*auto\s*!important[\s\S]*?top:\s*4\.35%\s*!important[\s\S]*?width:\s*13\.6%\s*!important[\s\S]*?transform:\s*translateX\(-50%\)\s*!important/
-  );
-  assert.doesNotMatch(css, /translateX\(calc\(-50%/);
-});
-
-test('Royal Navy Samsung A55-class override changes only top and keeps desktop width', () => {
-  const match = css.match(/@media \(min-width: 361px\) and \(max-width: 430px\)\s*\{([\s\S]*?)\n\}/);
-  assert.ok(match, 'expected Samsung A55-class media query');
-  assert.match(match[1], /top:\s*4\.45%\s*!important/);
-  assert.doesNotMatch(match[1], /width\s*:/);
-  assert.doesNotMatch(match[1], /left\s*:/);
-  assert.doesNotMatch(match[1], /transform\s*:/);
-});
-
-test('Royal Navy narrow-phone override changes only top and keeps desktop width', () => {
-  const match = css.match(/@media \(max-width: 360px\)\s*\{([\s\S]*?)\n\}/);
-  assert.ok(match, 'expected narrow-phone media query');
-  assert.match(match[1], /top:\s*4\.5%\s*!important/);
-  assert.doesNotMatch(match[1], /width\s*:/);
-  assert.doesNotMatch(match[1], /left\s*:/);
-  assert.doesNotMatch(match[1], /transform\s*:/);
+test('Royal Navy mobile crest aligns with the artwork lotus with clearance above it', () => {
+  assert.match(css, /@media \(max-width: 680px\)/);
+  assert.match(css, /left:\s*51\.6%\s*!important/);
+  assert.match(css, /top:\s*1\.5%\s*!important/);
+  assert.match(css, /width:\s*13\.6%\s*!important/);
+  assert.match(css, /height:\s*auto\s*!important/);
+  assert.match(css, /transform:\s*translateX\(-50%\)\s*!important/);
+  // Visible crest ends at y=542 in the 640px square asset. The page artwork
+  // is 1087 x 1536, with the lotus beginning at approximately y=160.
+  const visibleBottom = 0.015 + (0.136 * 1087 / 1536) * (542 / 640);
+  assert.ok(visibleBottom < 160 / 1536 - 0.005, 'leave a proportional gap above the lotus');
+  assert.equal((css.match(/@media/g) || []).length, 1, 'all phone widths share the artwork alignment');
 });
