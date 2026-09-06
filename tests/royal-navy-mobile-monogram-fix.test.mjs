@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
+import sharp from 'sharp';
 
 const css = fs.readFileSync(new URL('../app/royal-navy-mobile-monogram-fix.css', import.meta.url), 'utf8');
 const layout = fs.readFileSync(new URL('../app/layout.js', import.meta.url), 'utf8');
+const monogramPath = new URL('../public/themes/navy/inside-right-monogram.png', import.meta.url);
 
 test('Royal Navy mobile monogram clearance stylesheet loads after overlap fixes', () => {
   assert.match(
@@ -31,4 +33,14 @@ test('Royal Navy narrow-phone monogram remains centred below the flower', () => 
     css,
     /@media \(max-width: 360px\)[\s\S]*?data-invitation-theme="navy"\] \.insideRightThemeMonogram\s*\{[\s\S]*?top:\s*4\.5%\s*!important[\s\S]*?width:\s*15\.8%\s*!important/
   );
+});
+
+test('Royal Navy monogram asset reports its visible trim bounds for optical-centre verification', async () => {
+  const metadata = await sharp(monogramPath).metadata();
+  const { info } = await sharp(monogramPath).trim({ threshold: 10 }).png().toBuffer({ resolveWithObject: true });
+  const imageCenter = metadata.width / 2;
+  const visibleCenter = (info.trimOffsetLeft ?? 0) + info.width / 2;
+  const offset = visibleCenter - imageCenter;
+  console.log(`ROYAL_NAVY_MONOGRAM_BOUNDS width=${metadata.width} trimmedWidth=${info.width} left=${info.trimOffsetLeft} visualCenter=${visibleCenter} imageCenter=${imageCenter} offset=${offset}`);
+  assert.ok(Number.isFinite(offset));
 });
