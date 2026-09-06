@@ -1,0 +1,42 @@
+/* ========================================================================== */
+/* ROYAL NAVY — MOBILE INSIDE-RIGHT MONOGRAM CLEARANCE                        */
+/*                                                                            */
+/* The Royal Navy crest must remain exactly on the parchment's horizontal     */
+/* centre line while sitting below the top flower decoration. These overrides */
+/* intentionally load after mobile-overlap-fixes.css and affect only the      */
+/* mobile crest overlay. Desktop/MacBook, page/card geometry, artwork, and     */
+/* reception text positioning remain unchanged.                               */
+/* ========================================================================== */
+
+@media (max-width: 680px) {
+  .bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
+    left: 50% !important;
+    right: auto !important;
+    top: 4.35% !important;
+    width: 15.4% !important;
+    max-height: 7.0% !important;
+    margin: 0 !important;
+    transform: translateX(-50%) !important;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+  }
+}
+
+/* Samsung A55-class and similar phones get a little more breathing room from
+   the flower while preserving exact horizontal centring. */
+@media (min-width: 361px) and (max-width: 430px) {
+  .bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
+    top: 4.45% !important;
+    width: 15.6% !important;
+  }
+}
+
+/* Very narrow phones need the same flower clearance with a modestly larger
+   crest for legibility, still centred on the parchment. */
+@media (max-width: 360px) {
+  .bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
+    top: 4.5% !important;
+    width: 15.8% !important;
+  }
+}
