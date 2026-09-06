@@ -77,7 +77,7 @@ test('Royal Plum page-3 location label is centred inside the medallion on mobile
 test('Saffron Gold lowers title and all reception detail content together on mobile', () => {
   assert.match(
     css,
-    /@media \(max-width: 680px\)[\s\S]*?\.bookApp\[data-invitation-theme="saffron"\] \.insideRightThemeMonogram\s*\{[\s\S]*?top:\s*5\.55%\s*!important[\s\S]*?left:\s*50%\s*!important[\s\S]*?transform:\s*translateX\(calc\(-50% \+ \.35cqw\)\)\s*!important/
+    /@media \(max-width: 680px\)[\s\S]*?\.bookApp\[data-invitation-theme="saffron"\] \.insideRightThemeMonogram\s*\{[\s\S]*?left:\s*50%\s*!important[\s\S]*?top:\s*5\.55%\s*!important[\s\S]*?transform:\s*translateX\(calc\(-50% \+ \.35cqw\)\)\s*!important/
   );
   assert.match(
     css,
