@@ -1,14 +1,12 @@
 /* ========================================================================== */
-/* ROYAL NAVY — MOBILE INSIDE-RIGHT MONOGRAM CLEARANCE                        */
+/* ROYAL NAVY — MOBILE INSIDE-RIGHT MONOGRAM                                  */
 /*                                                                            */
-/* The Royal Navy crest must remain visually centred on the parchment while   */
-/* sitting below the top flower decoration. The monogram asset itself is      */
-/* centred, but the parchment artwork's visual centre sits slightly right of  */
-/* the page centre. Keep the CSS anchor at 50% and apply only a tiny internal  */
-/* +.35cqw optical correction to the rendered crest. These overrides load     */
-/* after mobile-overlap-fixes.css and affect only the mobile crest overlay.    */
-/* Desktop/MacBook, page/card geometry, artwork, and reception text remain     */
-/* unchanged.                                                                 */
+/* Mobile must use the same horizontal centring model as the approved          */
+/* desktop/MacBook layout: the monogram is anchored at the page/parchment      */
+/* centre with left: 50%, uses the same 13.6% width, and is centred with        */
+/* translateX(-50%). Only the vertical top offset changes on phones so the     */
+/* crest clears the flower. This stylesheet loads after mobile-overlap-fixes   */
+/* and therefore acts as the single final Royal Navy mobile override.          */
 /* ========================================================================== */
 
 @media (max-width: 680px) {
@@ -16,30 +14,28 @@
     left: 50% !important;
     right: auto !important;
     top: 4.35% !important;
-    width: 15.4% !important;
-    max-height: 7.0% !important;
+    width: 13.6% !important;
+    max-height: none !important;
     margin: 0 !important;
-    transform: translateX(calc(-50% + .35cqw)) !important;
+    transform: translateX(-50%) !important;
     object-fit: contain;
     object-position: center;
     display: block;
   }
 }
 
-/* Samsung A55-class and similar phones keep the same optical X correction and
-   get a little more breathing room from the flower. */
+/* Samsung A55-class and similar phones change only the Y position for flower
+   clearance. Horizontal geometry remains identical to desktop. */
 @media (min-width: 361px) and (max-width: 430px) {
   .bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
     top: 4.45% !important;
-    width: 15.6% !important;
   }
 }
 
-/* Very narrow phones keep the same parchment-centre correction with a modestly
-   larger crest for legibility and the same protected flower clearance. */
+/* Very narrow phones likewise keep the exact desktop horizontal centring and
+   change only the Y position. */
 @media (max-width: 360px) {
   .bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
     top: 4.5% !important;
-    width: 15.8% !important;
   }
 }
