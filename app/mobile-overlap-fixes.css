@@ -6,17 +6,20 @@
 /* remains untouched while dynamic overlays stay readable and separated.      */
 /* ========================================================================== */
 
-/* Saffron Gold visual-centering/contrast correction for every viewport.
-   Only the overlay crest is adjusted: no card, parchment, artwork, spacing,
-   dimensions or surrounding UI/UX geometry is changed. The source crest is
-   slightly asymmetric, so 51.1% places the visible '&' on the parchment's
-   optical centreline. The subtle filter separates the existing gold lettering
-   from the similarly coloured artwork without replacing/redesigning the crest. */
+/* Saffron Gold optical-centering/contrast correction for every viewport.
+   Only the dynamic overlays are refined: the card, parchment, artwork,
+   dimensions and surrounding UI/UX geometry remain unchanged. */
 .bookApp[data-invitation-theme="saffron"] :is(.insideRightThemeMonogram) {
-  left: 51.1% !important;
+  left: 51.5% !important;
   right: auto !important;
   transform: translateX(-50%) !important;
-  filter: contrast(1.18) saturate(1.08) drop-shadow(0 0 .55px rgba(82, 48, 12, .42));
+  filter: contrast(1.32) saturate(1.12) drop-shadow(0 0 .9px rgba(63, 34, 8, .68));
+}
+
+/* Lower only the Saffron reception-details overlay slightly on every viewport.
+   Translation preserves its existing dimensions and internal spacing. */
+.bookApp[data-invitation-theme="saffron"] :is(.receptionDetailsOverlay) {
+  transform: translateY(.8cqw);
 }
 
 @media (max-width: 680px) {
@@ -90,13 +93,10 @@
   }
 
   /* ------------------------------------------------------------------------ */
-  /* SAFFRON GOLD — move the crest/title below the top floral artwork. The    */
-  /* artwork itself is not resized or repositioned. The crest asset is        */
-  /* visually asymmetric, so its anchor is nudged right until the '&' aligns  */
-  /* with the centre of the parchment/flower directly beneath it.             */
+  /* SAFFRON GOLD — keep the crest/title below the top floral artwork.        */
   /* ------------------------------------------------------------------------ */
   .bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram {
-    left: 51.1% !important;
+    left: 51.5% !important;
     right: auto !important;
     top: 5.55% !important;
     width: 12.2% !important;
