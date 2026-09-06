@@ -1,0 +1,19 @@
+/* Optical alignment of the ampersand with the lotus below: a small rightward
+   and downward adjustment keeps the crest comfortably inside the arch,
+   while retaining a gap above the flower on every phone.
+   Loaded last to override the earlier mobile crest positioning rules. */
+@media (max-width: 680px) {
+  .bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
+    left: 51.9% !important;
+    right: auto !important;
+    top: 2.2% !important;
+    width: 12.8% !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    transform: translateX(-48.75%) !important;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+  }
+}

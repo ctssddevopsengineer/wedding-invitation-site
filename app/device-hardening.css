@@ -1,0 +1,206 @@
+/* Typography-only cross-device refinement.
+   IMPORTANT: this file must never change card/template geometry, artwork size,
+   viewport size, positioning, spacing, cropping or zoom. Existing UI/UX geometry
+   from development remains the source of truth. */
+
+/* Theme-aware text colours. */
+.dynamicFrontTagline,
+.dynamicFrontClosing,
+.familyBlessingsIntro p,
+.familyBlock p,
+.familyBlessingsClosing,
+.receptionDetailValue,
+.receptionAddressValue,
+.heritageBackMessage,
+.heritageJourneyMessage,
+.locationVenueName,
+.locationVenueAddress,
+.heritageAssistance .contactCard h3,
+.heritageAssistance .contactCard p,
+.heritageAssistance .contactCard a,
+.heritageAssistance .contactCard p.muted {
+  color: var(--theme-ink) !important;
+}
+
+.dynamicFrontHeading,
+.familyBlessingsIntro h2,
+.familyBlock h3,
+.receptionDetailLabel,
+.insideRightDynamicTitle,
+.heritageBackIntro h2,
+.heritageAssistance > h3 {
+  color: var(--theme-accent-dark) !important;
+}
+
+.dynamicFrontHeading > em,
+.dynamicFrontNames b,
+.familyCoupleNames b,
+.heritageCoupleNames b {
+  color: var(--theme-gold) !important;
+}
+
+/* Base readable typography. No size/position changes are made to the template. */
+.dynamicFrontHeading > span {
+  font-size: clamp(1.35rem, 5.5cqw, 4rem) !important;
+}
+
+.dynamicFrontHeading > em {
+  font-size: clamp(1.15rem, 4.65cqw, 3.35rem) !important;
+}
+
+.dynamicFrontTagline {
+  font-size: clamp(.7rem, 1.95cqw, 1.3rem) !important;
+}
+
+.dynamicFrontNames {
+  font-size: clamp(1.08rem, 4.15cqw, 3rem) !important;
+}
+
+.dynamicFrontClosing {
+  font-size: clamp(.66rem, 1.62cqw, 1.04rem) !important;
+}
+
+.familyBlessingsIntro h2 {
+  font-size: clamp(.82rem, 3.2cqw, 2.55rem) !important;
+}
+
+.familyBlessingsIntro p,
+.familyBlock p,
+.familyBlessingsClosing {
+  font-size: clamp(.66rem, 1.72cqw, 1.3rem) !important;
+}
+
+.familyCoupleNames {
+  font-size: clamp(1.05rem, 4.65cqw, 4rem) !important;
+}
+
+.familyBlock h3 {
+  font-size: clamp(.74rem, 2.15cqw, 1.72rem) !important;
+}
+
+.receptionDetailLabel {
+  font-size: clamp(.68rem, 1.95cqw, 1.45rem) !important;
+}
+
+.receptionDetailValue {
+  font-size: clamp(.62rem, 1.58cqw, 1.18rem) !important;
+}
+
+.receptionAddressValue {
+  font-size: clamp(.58rem, 1.36cqw, 1.03rem) !important;
+}
+
+.receptionCalendarItem .btn {
+  font-size: clamp(.56rem, 1cqw, .72rem) !important;
+}
+
+.receptionCountdownItem .countdownUnit strong {
+  font-size: clamp(.56rem, 1.15cqw, .88rem) !important;
+}
+
+.receptionCountdownItem .countdownUnit span {
+  font-size: clamp(.46rem, .64cqw, .52rem) !important;
+}
+
+.heritageBackIntro h2 {
+  font-size: clamp(11px, 2.28cqw, 36px) !important;
+}
+
+.heritageBackMessage,
+.heritageJourneyMessage {
+  font-size: clamp(7px, 1.08cqw, 17px) !important;
+}
+
+.heritageCoupleNames {
+  font-size: clamp(11px, 3.18cqw, 49px) !important;
+}
+
+.heritageAssistance > h3 {
+  font-size: clamp(9px, 1.32cqw, 21px) !important;
+}
+
+.heritageAssistance .contactCard .eyebrow {
+  font-size: clamp(6px, .78cqw, 12px) !important;
+}
+
+.heritageAssistance .contactCard h3,
+.heritageAssistance .contactCard p,
+.heritageAssistance .contactCard a,
+.heritageAssistance .contactCard p.muted {
+  font-size: clamp(7px, .9cqw, 14px) !important;
+}
+
+/* Small screens: typography only. Template/card dimensions remain untouched. */
+@media (max-width: 680px) {
+  .dynamicFrontHeading > span {
+    font-size: clamp(1.22rem, 5.25cqw, 2.8rem) !important;
+  }
+
+  .dynamicFrontHeading > em {
+    font-size: clamp(1.02rem, 4.5cqw, 2.3rem) !important;
+  }
+
+  .dynamicFrontTagline,
+  .dynamicFrontClosing {
+    font-size: clamp(.64rem, 1.9cqw, .94rem) !important;
+  }
+
+  .dynamicFrontNames {
+    font-size: clamp(1rem, 4.35cqw, 2.25rem) !important;
+  }
+
+  .familyBlessingsIntro p,
+  .familyBlock p,
+  .familyBlessingsClosing {
+    font-size: clamp(.62rem, 1.62cqw, .88rem) !important;
+  }
+
+  .familyCoupleNames {
+    font-size: clamp(.95rem, 4.2cqw, 2.2rem) !important;
+  }
+
+  .receptionDetailLabel {
+    font-size: clamp(.62rem, 1.78cqw, .98rem) !important;
+  }
+
+  .receptionDetailValue {
+    font-size: clamp(.58rem, 1.45cqw, .84rem) !important;
+  }
+
+  .receptionAddressValue {
+    font-size: clamp(.54rem, 1.24cqw, .74rem) !important;
+  }
+
+  .heritageBackMessage,
+  .heritageJourneyMessage,
+  .heritageAssistance .contactCard p,
+  .heritageAssistance .contactCard a,
+  .heritageAssistance .contactCard p.muted {
+    font-size: clamp(6.5px, 1cqw, 13px) !important;
+  }
+}
+
+/* Bengali / Nepali glyphs need slightly different readable floors, but the
+   surrounding template geometry is intentionally unchanged. */
+.bookApp:is([lang="bn"],[lang="ne"]) .dynamicFrontHeading > span {
+  font-size: clamp(1.18rem, 5cqw, 3rem) !important;
+}
+
+.bookApp:is([lang="bn"],[lang="ne"]) .dynamicFrontHeading > em {
+  font-size: clamp(1rem, 4.2cqw, 2.5rem) !important;
+}
+
+.bookApp:is([lang="bn"],[lang="ne"]) .dynamicFrontTagline,
+.bookApp:is([lang="bn"],[lang="ne"]) .dynamicFrontClosing,
+.bookApp:is([lang="bn"],[lang="ne"]) .familyBlessingsIntro p,
+.bookApp:is([lang="bn"],[lang="ne"]) .familyBlock p,
+.bookApp:is([lang="bn"],[lang="ne"]) .familyBlessingsClosing,
+.bookApp:is([lang="bn"],[lang="ne"]) .receptionDetailValue,
+.bookApp:is([lang="bn"],[lang="ne"]) .receptionAddressValue {
+  font-size: clamp(.62rem, 1.5cqw, .9rem) !important;
+}
+
+.bookApp:is([lang="bn"],[lang="ne"]) .dynamicFrontNames,
+.bookApp:is([lang="bn"],[lang="ne"]) .familyCoupleNames {
+  font-size: clamp(1rem, 4cqw, 2.4rem) !important;
+}

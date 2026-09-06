@@ -1,0 +1,32 @@
+/* Match the approved Navy crest placement on the shared artwork geometry. */
+@media (max-width: 680px) {
+  .bookApp[data-invitation-theme="plum"] .insideRightThemeMonogram {
+    left: 51.9% !important;
+    right: auto !important;
+    top: 2.2% !important;
+    width: 12.8% !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    transform: translateX(-48.75%) !important;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+  }
+
+  /* The printed medallion is centred at approximately (561, 1293) in the
+     1087 x 1536 artwork. Centre the whole icon/label group on that point,
+     independently of its responsive width or translated text height. */
+  .bookApp[data-invitation-theme="plum"] .insideRightDynamicLocationLabel {
+    left: 51.6% !important;
+    right: auto !important;
+    top: 84.2% !important;
+    width: 18% !important;
+    height: 12.8% !important;
+    margin: 0 !important;
+    transform: translate(-50%, -50%) !important;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+  }
+}

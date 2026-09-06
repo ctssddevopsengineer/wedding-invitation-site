@@ -1,0 +1,30 @@
+{
+  "name": "wedding-invitation-site",
+  "version": "2.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "config:render": "node scripts/render-event-config.mjs",
+    "validate:export": "node scripts/validate-static-export.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:unit": "node --test tests/*.test.mjs",
+    "test:phase2a": "node --test tests/phase2a-ux-hardening.test.mjs tests/theme-assets-integrity.test.mjs tests/long-text-stress.test.mjs tests/responsive-matrix.test.mjs",
+    "test:phase2b": "node --test tests/phase2b-smart-sharing.test.mjs tests/hosting-paths.test.mjs",
+    "assets:optimize": "node scripts/optimize-theme-assets.mjs",
+    "test:browser": "node scripts/test-multilingual-browser.mjs"
+  },
+  "dependencies": {
+    "next": "^16.3.4",
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1",
+    "sharp": "0.35.2"
+  }
+}

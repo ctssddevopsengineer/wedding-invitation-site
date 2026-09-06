@@ -1,0 +1,3572 @@
+:root {
+  --red: #71131b;
+  --red-dark: #3f090e;
+  --gold: #b78a3c;
+  --gold-soft: #d8bd7b;
+  --ivory: #f7eedb;
+  --paper: #f5e8ca;
+  --ink: #34281e;
+  --muted: #746452;
+  --line: rgba(157, 112, 42, .34);
+  --shadow: 0 24px 70px rgba(31, 8, 8, .28);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 15% 10%, rgba(183, 138, 60, .12), transparent 28rem),
+    linear-gradient(145deg, #260407, #5b1018 48%, #2b0508);
+  font-family: Georgia, 'Times New Roman', serif;
+}
+button, a { font: inherit; }
+button { color: inherit; }
+a { color: inherit; }
+
+.bookApp {
+  width: min(100%, 1180px);
+  margin: 0 auto;
+  padding: clamp(12px, 2.8vw, 32px);
+}
+.bookStage { min-height: 0; }
+.pageViewport {
+  position: relative;
+  width: min(100%, 840px);
+  margin: 0 auto;
+  aspect-ratio: 3 / 4.25;
+  perspective: 1800px;
+}
+.invitePage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(217, 182, 112, .7);
+  border-radius: clamp(10px, 1.5vw, 20px);
+  box-shadow: var(--shadow);
+  animation: pageEnter .5s ease both;
+}
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(8px) rotateY(-2deg); }
+  to { opacity: 1; transform: translateY(0) rotateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+}
+
+.frontCover { background: #2d0608; }
+.coverArtwork { width: 100%; height: 100%; object-fit: cover; display: block; }
+.coverShade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 68%, rgba(24, 3, 4, .50));
+  pointer-events: none;
+}
+.coverAction {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 3.3%;
+  display: flex;
+  justify-content: center;
+}
+.openButton {
+  display: inline-flex;
+  gap: .7rem;
+  align-items: center;
+  border: 1px solid rgba(255, 239, 205, .82);
+  border-radius: 999px;
+  padding: .75rem 1.15rem;
+  color: #fff7e6;
+  background: rgba(83, 12, 18, .78);
+  backdrop-filter: blur(7px);
+  cursor: pointer;
+}
+.openButton:hover { background: rgba(111, 17, 25, .93); }
+
+.parchmentPage {
+  background:
+    radial-gradient(circle at 20% 18%, rgba(255,255,255,.48), transparent 15rem),
+    radial-gradient(circle at 82% 82%, rgba(183,138,60,.11), transparent 20rem),
+    repeating-linear-gradient(25deg, rgba(120,80,30,.018) 0 1px, transparent 1px 6px),
+    var(--paper);
+  border: 8px double var(--gold);
+}
+.parchmentPage::before {
+  content: '';
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(111, 19, 27, .35);
+  border-radius: 10px;
+  pointer-events: none;
+}
+.pageContent {
+  position: relative;
+  z-index: 3;
+  height: 100%;
+  padding: clamp(28px, 5.2vw, 64px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.narrowContent { max-width: 720px; margin: 0 auto; text-align: center; }
+.eyebrow, .label {
+  margin: 0;
+  color: var(--red);
+  text-transform: uppercase;
+  letter-spacing: .13em;
+  font-size: clamp(.66rem, 1.3vw, .84rem);
+  font-weight: 700;
+}
+.monogram {
+  width: 108px;
+  height: 108px;
+  margin: 0 auto 1rem;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--red);
+  font-size: 2rem;
+  background: rgba(255,255,255,.35);
+}
+.monogram span { color: var(--gold); }
+.monogram.large { width: 126px; height: 126px; font-size: 2.3rem; }
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(70%, 360px);
+  margin: 1rem auto;
+  color: var(--gold);
+}
+.divider::before, .divider::after { content: ''; height: 1px; flex: 1; background: var(--line); }
+.ceremonyCopy, .blessingQuote, .closingLine { line-height: 1.65; }
+.scriptNames {
+  margin: 1rem 0 1.25rem;
+  color: var(--red);
+  font-size: clamp(2rem, 6vw, 4rem);
+  font-weight: 400;
+  font-style: italic;
+}
+.scriptNames span { color: var(--gold); }
+.familyGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  margin-top: .7rem;
+}
+.familyGrid section { padding: 1rem; border-top: 1px solid var(--line); }
+.familyGrid p { margin: .35rem 0; font-size: clamp(.78rem, 1.7vw, 1rem); }
+.blessingQuote {
+  margin: 1.3rem auto 0;
+  max-width: 620px;
+  color: var(--red);
+  font-style: italic;
+}
+.culturalRail {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  width: clamp(36px, 7vw, 72px);
+  background: var(--red);
+  color: var(--gold-soft);
+  display: flex;
+  justify-content: center;
+  padding-top: 12%;
+  font-size: 1.1rem;
+  opacity: .96;
+}
+.bengalRail { left: 0; border-right: 2px solid var(--gold); }
+.nepalRail { right: 0; border-left: 2px solid var(--gold); background: #4b0e14; }
+.landscapeWatermark {
+  position: absolute;
+  z-index: 0;
+  inset-inline: 8%;
+  bottom: 0;
+  height: 28%;
+  opacity: .09;
+  background: linear-gradient(165deg, transparent 20%, var(--red) 21% 24%, transparent 25%), linear-gradient(15deg, transparent 43%, var(--gold) 44% 47%, transparent 48%);
+}
+
+.detailsContent { justify-content: flex-start; overflow-y: auto; text-align: center; padding-top: clamp(28px, 4.5vw, 52px); }
+.serifTitle { margin: .5rem 0 0; color: var(--red); font-size: clamp(2rem, 5vw, 3.6rem); font-weight: 400; }
+.detailsList { margin: 0 auto .8rem; width: min(100%, 620px); }
+.detailsList div { padding: .55rem 0; border-bottom: 1px solid var(--line); }
+.detailsList dt { color: var(--gold); font-size: .8rem; text-transform: uppercase; letter-spacing: .13em; font-weight: 700; }
+.detailsList dd { margin: .2rem 0 0; font-size: clamp(.9rem, 2vw, 1.12rem); }
+.mapPanel {
+  display: grid;
+  grid-template-columns: 132px 1fr;
+  gap: 1rem;
+  width: min(100%, 620px);
+  margin: .9rem auto;
+  padding: 1rem;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255,255,255,.48);
+}
+.mapPanel img { width: 100%; aspect-ratio: 1; object-fit: contain; background: #fff; border-radius: 10px; }
+.mapPanel p { margin: .25rem 0 .7rem; }
+.actionRow { display: flex; flex-wrap: wrap; justify-content: center; gap: .7rem; margin-top: .7rem; }
+.btn {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: .58rem 1rem;
+  text-decoration: none;
+  border: 1px solid var(--gold);
+  cursor: pointer;
+}
+.btnGold { background: var(--red); color: #fff4da; border-color: var(--red); }
+.btnGhost { background: transparent; color: var(--red); }
+.calendarPanel, .countdownPanel { margin-top: .7rem; }
+.countdown { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .5rem; width: min(100%, 560px); margin: .7rem auto 0; }
+.countdownUnit { padding: .55rem .2rem; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.36); }
+.countdownUnit strong { display: block; color: var(--red); font-size: clamp(1.2rem, 3.3vw, 2rem); font-weight: 400; }
+.countdownUnit span { color: var(--muted); font-size: .68rem; text-transform: uppercase; }
+
+.backContent { text-align: center; }
+.backContent h2 { color: var(--red); font-size: clamp(1.5rem, 4vw, 2.5rem); font-weight: 400; margin: .6rem 0; }
+.scriptLine { margin: .3rem; color: var(--gold); font-style: italic; font-size: 1.25rem; }
+.centered { text-align: center; max-width: 590px; margin: .7rem auto 1rem; }
+.contactGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: min(100%, 650px); margin: 0 auto; }
+.contactCard { padding: 1rem; border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.4); }
+.contactCard h3 { color: var(--red); font-size: 1.15rem; font-weight: 400; margin: .45rem 0; }
+.contactCard a { color: var(--red); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.miniOrnament { color: var(--gold); }
+.techSignature { margin: 1.4rem auto .8rem; padding: 1rem; width: min(100%, 560px); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.techSignature strong { color: var(--red); letter-spacing: .08em; }
+.techSignature p { margin: .35rem 0 0; color: var(--muted); font-size: .85rem; }
+.tapGlyph { display: block; color: var(--gold); font-size: 1.5rem; margin-bottom: .3rem; }
+.closingLine { margin-top: 1rem; color: var(--gold); font-style: italic; }
+.muted { color: var(--muted); }
+
+.bookNav {
+  width: min(100%, 840px);
+  margin: 16px auto 0;
+  position: relative;
+  display: grid;
+  grid-template-columns: 44px 1fr auto 44px;
+  gap: 12px;
+  align-items: center;
+  color: #fff2d3;
+}
+.navArrow {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,238,202,.55);
+  background: rgba(255,255,255,.08);
+  color: #fff2d3;
+  font-size: 1.55rem;
+  cursor: pointer;
+}
+.navArrow:disabled { opacity: .3; cursor: not-allowed; }
+.pageDots { display: flex; justify-content: center; gap: 10px; }
+.pageDot { width: 10px; height: 10px; padding: 0; border: 1px solid var(--gold-soft); border-radius: 50%; background: transparent; cursor: pointer; }
+.pageDot.active { background: var(--gold-soft); transform: scale(1.15); }
+.pageLabel { font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+.swipeHint { text-align: center; color: rgba(255,242,211,.65); font-size: .78rem; margin: 9px 0 0; }
+
+@media (min-width: 681px) {
+  .pageDots { grid-column: 2 / 4; }
+  .pageLabel { position: absolute; right: 56px; }
+}
+
+.srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+@media (max-width: 680px) {
+  .bookApp { padding: 8px; }
+  .pageViewport { width: 100%; aspect-ratio: 3 / 4.65; }
+  .invitePage { border-radius: 10px; }
+  .parchmentPage { border-width: 5px; }
+  .pageContent { padding: 24px 28px; }
+  .familyGrid, .contactGrid { grid-template-columns: 1fr; gap: .5rem; }
+  .familyGrid section { padding: .5rem; }
+  .mapPanel { grid-template-columns: 92px 1fr; gap: .75rem; padding: .75rem; }
+  .mapPanel .btn { font-size: .75rem; padding: .5rem .7rem; }
+  .detailsList div { padding: .4rem 0; }
+  .countdownUnit { padding: .4rem .1rem; }
+  .bookNav { grid-template-columns: 44px 1fr 44px; }
+  .pageDots { grid-column: auto; }
+  .pageLabel { display: none; }
+  .culturalRail { width: 28px; }
+}
+
+@media (max-width: 420px) {
+  .pageViewport { aspect-ratio: 3 / 5.15; }
+  .pageContent { padding: 20px 22px; }
+  .monogram { width: 82px; height: 82px; font-size: 1.55rem; margin-bottom: .7rem; }
+  .scriptNames { margin: .6rem 0; }
+  .ceremonyCopy { font-size: .82rem; }
+  .mapPanel { grid-template-columns: 74px 1fr; }
+  .actionRow { gap: .45rem; }
+  .btn { min-height: 38px; font-size: .74rem; padding: .45rem .72rem; }
+  .contactCard { padding: .65rem; }
+  .techSignature { margin-top: .8rem; padding: .7rem; }
+}
+
+/* Inside-left redesign: ornate ivory / deep-red / antique-gold composition inspired by the physical card. */
+.legacyInsideLeft {
+  background:
+    linear-gradient(90deg, rgba(82,9,13,.98) 0 5.2%, transparent 5.2% 94.8%, rgba(82,9,13,.98) 94.8% 100%),
+    linear-gradient(rgba(82,9,13,.98) 0 4.2%, transparent 4.2% 95.8%, rgba(82,9,13,.98) 95.8% 100%),
+    radial-gradient(circle at 50% 18%, rgba(255,255,255,.55), transparent 23rem),
+    repeating-linear-gradient(33deg, rgba(123,81,32,.019) 0 1px, transparent 1px 6px),
+    #f6ebd2;
+  border: 0;
+  box-shadow: var(--shadow), inset 0 0 0 4px #7d141c, inset 0 0 0 8px #c49743, inset 0 0 0 12px #531015;
+}
+.legacyInsideLeft::before {
+  inset: 18px;
+  border: 2px solid rgba(183,138,60,.92);
+  border-radius: 6px;
+  box-shadow:
+    inset 0 0 0 3px rgba(90,15,20,.78),
+    inset 0 0 0 7px rgba(183,138,60,.55);
+}
+.legacyInsideLeft::after {
+  content: '';
+  position: absolute;
+  inset: 29px;
+  z-index: 1;
+  pointer-events: none;
+  border: 1px solid rgba(183,138,60,.35);
+  border-radius: 18% 18% 4% 4% / 8% 8% 4% 4%;
+}
+.insideLeftContent {
+  z-index: 4;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: center;
+  padding: clamp(38px, 6.2vw, 72px) clamp(42px, 8vw, 92px) clamp(42px, 5vw, 64px);
+}
+.crestMonogram {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  justify-items: center;
+  width: clamp(120px, 20vw, 170px);
+  aspect-ratio: 1;
+  margin-top: .3rem;
+  color: var(--red);
+  border: 2px solid var(--gold);
+  border-radius: 50%;
+  background: rgba(255,255,255,.18);
+  box-shadow: 0 0 0 6px rgba(183,138,60,.13), 0 0 0 9px rgba(183,138,60,.4);
+}
+.crestMonogram::before,
+.crestMonogram::after {
+  content: '✦';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--gold);
+  font-size: 1rem;
+}
+.crestMonogram::before { top: -17px; }
+.crestMonogram::after { bottom: -17px; }
+.crestInitial {
+  font-size: clamp(2.25rem, 6vw, 3.5rem);
+  line-height: 1;
+  font-weight: 400;
+}
+.crestAmp { color: var(--gold); font-size: clamp(.9rem, 2vw, 1.2rem); }
+.ornamentalRule {
+  display: flex;
+  align-items: center;
+  width: min(42%, 250px);
+  gap: .65rem;
+  margin: .95rem auto;
+  color: var(--red);
+}
+.ornamentalRule::before,
+.ornamentalRule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.ornamentalRule span { color: var(--gold); }
+.wideRule { width: min(66%, 390px); margin-block: 1.15rem; }
+.insideLeftHeading {
+  margin: .15rem 0 .75rem;
+  color: var(--red);
+  font-size: clamp(1.75rem, 5vw, 3rem);
+  font-weight: 400;
+  letter-spacing: .03em;
+}
+.contactFeature { width: min(100%, 570px); }
+.insideContactList { display: grid; gap: .6rem; }
+.insideContactRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: .55rem;
+  font-size: clamp(.82rem, 2vw, 1.05rem);
+}
+.insideContactRow a {
+  color: var(--ink);
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(183,138,60,.75);
+}
+.insideContactName { font-weight: 600; }
+.insideContactSeparator { color: var(--gold); }
+.complimentsBlock { max-width: 650px; }
+.complimentsScript {
+  margin: 0;
+  color: var(--red);
+  font-size: clamp(1.35rem, 3.6vw, 2.15rem);
+  font-style: italic;
+}
+.familiesLine {
+  margin: .45rem 0 0;
+  color: var(--ink);
+  font-size: clamp(1.05rem, 2.6vw, 1.55rem);
+  letter-spacing: .025em;
+}
+.insideClosing {
+  position: relative;
+  z-index: 5;
+  margin-top: .2rem;
+  max-width: 620px;
+  line-height: 1.5;
+}
+.insideClosing p { margin: .22rem 0; }
+.signatureNames {
+  margin-top: .5rem !important;
+  color: var(--red);
+  font-size: clamp(1.6rem, 4vw, 2.5rem);
+  font-style: italic;
+}
+.insideLeftOrnament {
+  position: absolute;
+  z-index: 2;
+  top: 3.2%;
+  width: 28%;
+  height: 18%;
+  opacity: .95;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 20% 50%, transparent 0 20%, rgba(183,138,60,.8) 21% 22%, transparent 23%),
+    repeating-radial-gradient(ellipse at 15% 30%, rgba(183,138,60,.8) 0 1px, transparent 2px 9px);
+  mask-image: linear-gradient(to bottom, #000 0 75%, transparent);
+}
+.topLeftOrnament { left: 2.7%; transform: rotate(-8deg); }
+.topRightOrnament { right: 2.7%; transform: scaleX(-1) rotate(-8deg); }
+.insideLeftPaisley {
+  position: absolute;
+  z-index: 2;
+  bottom: 2.5%;
+  width: 27%;
+  height: 23%;
+  border: 5px double rgba(183,138,60,.82);
+  border-radius: 62% 38% 58% 42% / 70% 40% 60% 30%;
+  background:
+    radial-gradient(circle at 55% 48%, rgba(183,138,60,.5) 0 3%, transparent 4% 10%, rgba(183,138,60,.55) 11% 12%, transparent 13%),
+    repeating-radial-gradient(circle at 40% 58%, rgba(113,19,27,.25) 0 2px, transparent 3px 10px),
+    rgba(113,19,27,.08);
+  opacity: .85;
+  pointer-events: none;
+}
+.paisleyLeft { left: 3%; transform: rotate(-20deg); }
+.paisleyRight { right: 3%; transform: scaleX(-1) rotate(-20deg); }
+.insideLeftLotus {
+  position: absolute;
+  z-index: 2;
+  bottom: -1.2%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(150px, 33%, 260px);
+  height: clamp(70px, 13%, 110px);
+  display: grid;
+  place-items: center;
+  color: #f2d494;
+  font-size: clamp(3rem, 9vw, 6rem);
+  border-radius: 50% 50% 0 0;
+  background:
+    radial-gradient(ellipse at center bottom, #71131b 0 28%, #9c2d27 29% 52%, #b78a3c 53% 57%, transparent 58%);
+  opacity: .95;
+}
+.insideLeftScene {
+  position: absolute;
+  z-index: 1;
+  bottom: 10%;
+  width: 34%;
+  height: 34%;
+  opacity: .10;
+  pointer-events: none;
+  filter: sepia(.35);
+}
+.bengalScene {
+  left: 7%;
+  background:
+    linear-gradient(150deg, transparent 45%, var(--red) 46% 48%, transparent 49%),
+    repeating-linear-gradient(0deg, transparent 0 18px, var(--gold) 19px 20px),
+    radial-gradient(ellipse at 50% 85%, var(--red) 0 7%, transparent 8%);
+}
+.nepalScene {
+  right: 7%;
+  background:
+    linear-gradient(145deg, transparent 0 34%, var(--red) 35% 39%, transparent 40%),
+    linear-gradient(35deg, transparent 0 46%, var(--gold) 47% 50%, transparent 51%);
+}
+
+@media (max-width: 680px) {
+  .insideLeftContent { padding: 34px 38px 36px; }
+  .crestMonogram { width: 105px; }
+  .legacyInsideLeft::after { inset: 22px; }
+  .insideLeftPaisley { width: 31%; height: 20%; opacity: .6; }
+  .insideLeftOrnament { width: 33%; }
+}
+
+@media (max-width: 420px) {
+  .insideLeftContent { padding: 30px 28px 32px; }
+  .insideLeftHeading { margin-bottom: .5rem; }
+  .insideContactList { gap: .4rem; }
+  .wideRule { margin-block: .75rem; }
+  .insideClosing { font-size: .82rem; }
+  .complimentsScript { font-size: 1.25rem; }
+  .insideLeftPaisley { opacity: .42; }
+  .insideLeftLotus { opacity: .82; }
+}
+
+
+
+/* --------------------------------------------------------------------------
+   INSIDE LEFT — approved blank family-blessings template + dynamic content
+   -------------------------------------------------------------------------- */
+.familyBlessingsTemplate {
+  position: relative;
+  overflow: hidden;
+  border: 0;
+  background: #f3e6c7;
+  box-shadow: var(--shadow);
+}
+
+.familyBlessingsArtwork {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+}
+
+.familyBlessingsContent {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  color: #3f2b22;
+  font-family: Georgia, 'Times New Roman', serif;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Exact crest artwork is preserved; it is not recreated with a substitute font. */
+.familyMonogramArtwork {
+  position: absolute;
+  top: 3.2%;
+  left: 50%;
+  width: 28.2%;
+  height: auto;
+  transform: translateX(-50%);
+  display: block;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
+.familyBlessingsIntro {
+  position: absolute;
+  top: 28.55%;
+  left: 50%;
+  width: 57%;
+  transform: translateX(-50%);
+}
+
+.familyBlessingsIntro h2 {
+  margin: 0;
+  color: #721b24;
+  font-size: clamp(1.2rem, 3.65vw, 2.55rem);
+  line-height: 1.08;
+  font-weight: 600;
+  letter-spacing: .005em;
+}
+
+.familyBlessingsIntro p {
+  margin: .9rem 0 0;
+  color: #3f2b22;
+  font-size: clamp(.78rem, 2.05vw, 1.36rem);
+  line-height: 1.42;
+}
+
+.familyBlessingsIntro p span,
+.familyBlessingsClosing span {
+  display: block;
+}
+
+.familyGoldDivider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  width: min(34%, 210px);
+  margin: .85rem auto 0;
+  color: #af8132;
+  font-size: clamp(.72rem, 1.6vw, 1rem);
+}
+
+.familyGoldDivider::before,
+.familyGoldDivider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(175, 129, 50, .72);
+}
+
+.familyCoupleNames {
+  position: absolute;
+  top: 43.65%;
+  left: 50%;
+  width: 62%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: clamp(.35rem, 1.2vw, .85rem);
+  white-space: nowrap;
+  color: #721b24;
+  font-family: 'Brush Script MT', 'Segoe Script', 'Snell Roundhand', 'Apple Chancery', cursive;
+  font-size: clamp(1.75rem, 5.55vw, 4rem);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.familyCoupleNames b {
+  color: #b48735;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: .66em;
+  font-weight: 400;
+}
+
+.familyNamesDivider {
+  position: absolute;
+  top: 52.75%;
+  left: 50%;
+  width: 20%;
+  transform: translateX(-50%);
+  margin: 0;
+}
+
+.familyBlock {
+  position: absolute;
+  left: 50%;
+  width: 54%;
+  transform: translateX(-50%);
+}
+
+.familyGroomBlock { top: 56.3%; }
+.familyBrideBlock { top: 68.45%; }
+
+.familyBlock h3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .65rem;
+  margin: 0 0 .55rem;
+  color: #721b24;
+  font-size: clamp(.98rem, 2.6vw, 1.72rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.familyBlock h3 span {
+  color: #b48735;
+  font-size: .72em;
+}
+
+.familyBlock p {
+  margin: .24rem 0;
+  color: #3f2b22;
+  font-size: clamp(.78rem, 2.04vw, 1.3rem);
+  line-height: 1.22;
+}
+
+.familyMiddleDivider {
+  position: absolute;
+  top: 65.4%;
+  left: 50%;
+  width: 20%;
+  transform: translateX(-50%);
+  margin: 0;
+}
+
+.familyClosingDivider {
+  position: absolute;
+  top: 78.8%;
+  left: 50%;
+  width: 20%;
+  transform: translateX(-50%);
+  margin: 0;
+}
+
+.familyBlessingsClosing {
+  position: absolute;
+  top: 82.15%;
+  left: 50%;
+  width: 54%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: #3f2b22;
+  font-size: clamp(.8rem, 2.05vw, 1.3rem);
+  line-height: 1.35;
+}
+
+@media (max-width: 680px) {
+  .familyMonogramArtwork { width: 29%; top: 3.4%; }
+  .familyBlessingsIntro { width: 61%; top: 28.8%; }
+  .familyBlessingsIntro h2 { font-size: clamp(1.05rem, 3.7vw, 2rem); }
+  .familyBlessingsIntro p { margin-top: .62rem; line-height: 1.34; }
+  .familyCoupleNames { width: 66%; top: 43.8%; font-size: clamp(1.45rem, 5.6vw, 3rem); }
+  .familyBlock { width: 58%; }
+  .familyGroomBlock { top: 56.45%; }
+  .familyBrideBlock { top: 68.55%; }
+  .familyBlessingsClosing { width: 60%; top: 82.25%; }
+}
+
+@media (max-width: 420px) {
+  .familyMonogramArtwork { width: 31%; top: 3.6%; }
+  .familyBlessingsIntro { width: 64%; top: 29%; }
+  .familyBlessingsIntro h2 { font-size: clamp(.92rem, 3.8vw, 1.45rem); }
+  .familyBlessingsIntro p { font-size: clamp(.62rem, 2.15vw, .84rem); line-height: 1.28; }
+  .familyGoldDivider { margin-top: .55rem; }
+  .familyCoupleNames { width: 70%; top: 44%; gap: .2rem; font-size: clamp(1.15rem, 5.8vw, 2rem); }
+  .familyNamesDivider { top: 52.9%; }
+  .familyBlock { width: 62%; }
+  .familyBlock h3 { margin-bottom: .35rem; gap: .4rem; font-size: clamp(.78rem, 2.7vw, 1rem); }
+  .familyBlock p { font-size: clamp(.62rem, 2.12vw, .82rem); }
+  .familyGroomBlock { top: 56.65%; }
+  .familyMiddleDivider { top: 65.55%; }
+  .familyBrideBlock { top: 68.7%; }
+  .familyClosingDivider { top: 79%; }
+  .familyBlessingsClosing { width: 64%; top: 82.45%; font-size: clamp(.63rem, 2.12vw, .82rem); }
+}
+
+/* --------------------------------------------------------------------------
+   INSIDE RIGHT — approved Reception Details template
+   --------------------------------------------------------------------------
+   Important implementation notes:
+   1. The template artwork remains untouched as the visual base.
+   2. Dynamic values are rendered by InsideRight.js from EVENT in lib/event.mjs.
+   3. The Location / Map hotspot is centred using left: 50% + translateX(-50%).
+   4. The hotspot itself never paints a square/outline on hover.
+   5. The popover is centred relative to the complete invitation page.
+   -------------------------------------------------------------------------- */
+
+.exactInsideRight {
+  position: relative;
+  border: 0;
+  background: #f3e6c7;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.exactInsideRightArtwork {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  user-select: none;
+  pointer-events: none;
+}
+
+/*
+ * Dynamic content area below the "Reception Details" heading.
+ * Labels stay in the template style while values come from EVENT constants.
+ */
+.receptionDetailsOverlay {
+  position: absolute;
+  z-index: 2;
+  top: 22.8%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 43%;
+  height: 45.5%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  color: #4b3024;
+  font-family: Georgia, 'Times New Roman', serif;
+  pointer-events: auto;
+}
+
+.receptionDetailItem {
+  width: 100%;
+  margin: 0;
+}
+
+.receptionDetailLabel {
+  margin: 0 0 .15rem;
+  color: #a97728;
+  font-size: clamp(.82rem, 2.25vw, 1.45rem);
+  font-weight: 700;
+  line-height: 1.05;
+}
+
+.receptionDetailValue {
+  margin: 0;
+  color: #452d24;
+  font-size: clamp(.72rem, 1.85vw, 1.18rem);
+  line-height: 1.18;
+  text-wrap: balance;
+}
+
+.receptionAddressValue {
+  max-width: 94%;
+  margin-inline: auto;
+  font-size: clamp(.64rem, 1.62vw, 1.03rem);
+}
+
+.receptionDetailDivider {
+  width: 35%;
+  height: clamp(8px, 1.35vw, 16px);
+  margin: .16rem 0;
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  color: #a97728;
+  font-size: clamp(.38rem, .85vw, .62rem);
+}
+
+.receptionDetailDivider::before,
+.receptionDetailDivider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(169, 119, 40, .72);
+}
+
+.receptionCalendarItem .actionRow {
+  justify-content: center;
+  gap: .35rem;
+  margin-top: .18rem;
+  flex-wrap: nowrap;
+}
+
+.receptionCalendarItem .btn {
+  min-height: 0;
+  padding: .34rem .58rem;
+  border-radius: 999px;
+  font-size: clamp(.48rem, 1.18vw, .72rem);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.receptionCountdownItem .countdown {
+  width: min(100%, 380px);
+  margin: .18rem auto 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .28rem;
+}
+
+.receptionCountdownItem .countdownUnit {
+  min-width: 0;
+  padding: .28rem .1rem;
+  border: 1px solid rgba(169, 119, 40, .28);
+  border-radius: .5rem;
+  background: rgba(248, 239, 216, .72);
+}
+
+.receptionCountdownItem .countdownUnit strong {
+  font-size: clamp(.58rem, 1.35vw, .88rem);
+}
+
+.receptionCountdownItem .countdownUnit span {
+  font-size: clamp(.35rem, .76vw, .52rem);
+}
+
+/*
+ * Invisible interaction area placed exactly over the Location / Map medallion.
+ * Do not use left: 38.x% here. left: 50% + translateX(-50%) keeps the hotspot
+ * centred even when the card changes width.
+ */
+.exactLocationHotspot {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: 78.6%;
+  transform: translateX(-50%);
+  width: 24.2%;
+  height: 12.8%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 26%;
+  outline: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* No visible transparent square/ring when hovering the medallion. */
+.exactLocationHotspot:hover,
+.exactLocationHotspot:active {
+  border: 0;
+  outline: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Keep keyboard accessibility without drawing a large square around the artwork. */
+.exactLocationHotspot:focus {
+  outline: 0;
+  box-shadow: none;
+}
+
+.exactLocationHotspot:focus-visible::after {
+  content: '';
+  position: absolute;
+  inset: 12%;
+  border: 1px dashed rgba(117, 25, 35, .72);
+  border-radius: 28%;
+  pointer-events: none;
+}
+
+/*
+ * Location popover. It is centred on the invitation page, directly above the
+ * Location / Map medallion. The X positioning never depends on the hotspot's
+ * left edge, so it cannot drift to the left.
+ */
+.locationDetailsPopover {
+  position: absolute;
+  z-index: 7;
+  left: 50%;
+  bottom: 19.8%;
+  transform: translate(-50%, 8px);
+  width: min(72%, 570px);
+  padding: .85rem;
+  border: 1px solid rgba(169, 119, 40, .70);
+  border-radius: 18px;
+  background: rgba(249, 241, 222, .985);
+  box-shadow: 0 18px 44px rgba(50, 15, 16, .28);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease, visibility .18s ease;
+}
+
+.locationDetailsPopover.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+
+/* A small pointer visually anchors the centred popover to Location / Map. */
+.locationDetailsPopover::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 14px;
+  height: 14px;
+  transform: translateX(-50%) rotate(45deg);
+  border-right: 1px solid rgba(169, 119, 40, .70);
+  border-bottom: 1px solid rgba(169, 119, 40, .70);
+  background: rgba(249, 241, 222, .985);
+}
+
+.locationPopoverHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-bottom: .65rem;
+}
+
+.locationPopoverHeader p {
+  margin: 0;
+  color: #761923;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: .9rem;
+  font-weight: 700;
+}
+
+.utilityCloseButton {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(169, 119, 40, .62);
+  border-radius: 50%;
+  background: rgba(255, 252, 244, .95);
+  color: #761923;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.utilityCloseButton:hover {
+  background: #fff9ec;
+}
+
+.utilityCloseButton:focus-visible {
+  outline: 2px solid rgba(117, 25, 35, .65);
+  outline-offset: 2px;
+}
+
+.locationPopoverBody {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: .8rem;
+  align-items: center;
+}
+
+.locationQr {
+  width: 112px;
+  max-width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.locationPopoverCopy {
+  min-width: 0;
+}
+
+.locationVenueName {
+  margin: 0 0 .2rem;
+  color: #761923;
+  font-weight: 700;
+}
+
+.locationVenueAddress {
+  margin: 0 0 .65rem;
+  color: #5d5147;
+  font-size: .78rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 680px) {
+  .receptionDetailsOverlay {
+    top: 22.5%;
+    width: 48%;
+    height: 46.5%;
+  }
+
+  .receptionDetailLabel {
+    font-size: clamp(.72rem, 3vw, 1.15rem);
+  }
+
+  .receptionDetailValue {
+    font-size: clamp(.64rem, 2.45vw, .95rem);
+  }
+
+  .receptionAddressValue {
+    font-size: clamp(.58rem, 2.1vw, .85rem);
+  }
+
+  .receptionCalendarItem .actionRow {
+    gap: .2rem;
+  }
+
+  .receptionCalendarItem .btn {
+    padding: .3rem .38rem;
+    font-size: clamp(.42rem, 1.75vw, .62rem);
+  }
+
+  .receptionCountdownItem .countdown {
+    gap: .18rem;
+  }
+
+  .receptionCountdownItem .countdownUnit {
+    padding: .2rem .05rem;
+  }
+
+  .exactLocationHotspot {
+    top: 78.2%;
+    width: 25%;
+    height: 13.5%;
+  }
+
+  .locationDetailsPopover {
+    width: 84%;
+    bottom: 20%;
+    padding: .7rem;
+  }
+}
+
+@media (max-width: 430px) {
+  .receptionDetailsOverlay {
+    top: 22.2%;
+    width: 51%;
+  }
+
+  .receptionDetailDivider {
+    margin-block: .08rem;
+  }
+
+  .receptionCalendarItem .actionRow {
+    flex-wrap: wrap;
+  }
+
+  .receptionCalendarItem .btn {
+    padding: .26rem .36rem;
+  }
+
+  .locationDetailsPopover {
+    width: 88%;
+    bottom: 20.4%;
+  }
+
+  .locationPopoverBody {
+    grid-template-columns: 82px minmax(0, 1fr);
+  }
+
+  .locationQr {
+    width: 82px;
+  }
+
+  .locationVenueAddress {
+    font-size: .68rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   BACK COVER — Heritage Landscape blank template + dynamic content
+   --------------------------------------------------------------------------
+   Layout rules for this page deliberately use the artwork's native 1536:1085
+   aspect ratio and container-relative typography. This prevents viewport-width
+   font scaling from making the copy collide when the landscape page is shown
+   alongside the portrait invitation pages.
+   -------------------------------------------------------------------------- */
+
+.page-back .pageViewport {
+  width: min(100%, 1180px);
+  aspect-ratio: 1536 / 1085;
+  container-type: inline-size;
+}
+
+.heritageBackCover {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 0;
+  border-radius: clamp(10px, 1.2vw, 18px);
+  background: #f3e2bd;
+  box-shadow: var(--shadow);
+}
+
+.heritageBackArtwork {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: fill;
+  user-select: none;
+  pointer-events: none;
+}
+
+.heritageBackContent {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  color: #432b20;
+  font-family: Georgia, 'Times New Roman', serif;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Page-4 monogram is a dedicated transparent, high-resolution extraction from the approved artwork. */
+.heritageBackMonogram {
+  position: absolute;
+  top: 2.4%;
+  left: 50%;
+  width: 17.4%;
+  height: auto;
+  transform: translateX(-50%);
+  display: block;
+  object-fit: contain;
+  image-rendering: auto;
+  opacity: 1;
+  filter: contrast(1.08) saturate(1.08) drop-shadow(0 1px 0 rgba(255,255,255,.25));
+}
+
+.heritageBackIntro {
+  position: absolute;
+  top: 27.0%;
+  left: 50%;
+  width: 46%;
+  transform: translateX(-50%);
+}
+
+.heritageBackIntro h2 {
+  margin: 0;
+  color: #741a22;
+  font-size: clamp(14px, 2.55cqw, 38px);
+  line-height: 1.04;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.heritageGoldRule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  width: 47%;
+  margin: 1.15cqw auto 1cqw;
+  color: #ae7e2c;
+  font-size: clamp(5px, .72cqw, 11px);
+}
+
+.heritageGoldRule::before,
+.heritageGoldRule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(174, 126, 44, .76);
+}
+
+.heritageBackMessage {
+  margin: 0;
+  color: #432b20;
+  font-size: clamp(8px, 1.36cqw, 20px);
+  line-height: 1.42;
+}
+
+.heritageBackMessage span,
+.heritageJourneyMessage span {
+  display: block;
+}
+
+.heritageCoupleNames {
+  position: absolute;
+  top: 45.0%;
+  left: 50%;
+  width: 52%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 1cqw;
+  margin: 0;
+  white-space: nowrap;
+  color: #741a22;
+  font-family: 'Brush Script MT', 'Segoe Script', 'Snell Roundhand', 'Apple Chancery', cursive;
+  font-size: clamp(15px, 3.95cqw, 58px);
+  font-weight: 400;
+  line-height: .95;
+}
+
+.heritageCoupleNames b {
+  color: #b78631;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: .58em;
+  font-weight: 400;
+}
+
+.heritageNamesRule {
+  position: absolute;
+  top: 53.2%;
+  left: 50%;
+  width: 15%;
+  transform: translateX(-50%);
+  margin: 0;
+}
+
+.heritageJourneyMessage {
+  position: absolute;
+  top: 57.0%;
+  left: 50%;
+  width: 34%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: #432b20;
+  font-size: clamp(8px, 1.27cqw, 19px);
+  line-height: 1.38;
+}
+
+.heritageLotusMark {
+  position: absolute;
+  top: 64.0%;
+  left: 50%;
+  transform: translateX(-50%) rotate(180deg);
+  color: #b17c25;
+  font-size: clamp(12px, 2.1cqw, 31px);
+  line-height: 1;
+}
+
+.heritageAssistance {
+  position: absolute;
+  top: 69.7%;
+  left: 50%;
+  width: 42%;
+  transform: translateX(-50%);
+  padding: .8cqw 1.1cqw .95cqw;
+  border: 1px solid rgba(174, 126, 44, .62);
+  border-radius: 1.05cqw;
+  background: rgba(249, 239, 216, .90);
+  box-shadow: 0 .45cqw 1.5cqw rgba(71, 30, 20, .14);
+}
+
+.heritageSectionRule {
+  width: 58%;
+  height: 1px;
+  margin: 0 auto .7cqw;
+  background: linear-gradient(90deg, transparent, rgba(174,126,44,.76), transparent);
+}
+
+.heritageAssistance > h3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  margin: 0 0 .72cqw;
+  color: #6f1019;
+  font-size: clamp(10px, 1.55cqw, 23px);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.heritageAssistance > h3 span {
+  color: #b78631;
+  font-size: .68em;
+}
+
+.heritageAssistance .contactGrid {
+  width: 100%;
+  grid-template-columns: 1fr 1fr;
+  gap: .8cqw;
+  margin: 0;
+}
+
+.heritageAssistance .contactCard {
+  min-width: 0;
+  padding: .2cqw .65cqw .25cqw;
+  border: 0;
+  border-radius: .55cqw;
+  background: rgba(255, 251, 240, .46);
+  box-shadow: none;
+}
+
+.heritageAssistance .contactCard + .contactCard {
+  border-left: 1px dotted rgba(174, 126, 44, .7);
+}
+
+.heritageAssistance .miniOrnament {
+  display: none;
+}
+
+.heritageAssistance .contactCard .eyebrow {
+  margin: 0;
+  color: #74131d;
+  font-size: clamp(7px, .92cqw, 14px);
+  line-height: 1.15;
+  letter-spacing: .075em;
+  text-transform: uppercase;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.heritageAssistance .contactCard h3 {
+  display: block;
+  margin: .28cqw 0 .14cqw;
+  color: #4d1718;
+  font-size: clamp(8px, 1.12cqw, 17px);
+  line-height: 1.15;
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgba(255,255,255,.65);
+  white-space: nowrap;
+}
+
+.heritageAssistance .contactCard p {
+  margin: .16cqw 0 0;
+  color: #5c1a1e;
+  font-size: clamp(8px, 1.06cqw, 16px);
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+.heritageAssistance .contactCard a,
+.heritageAssistance .contactCard p.muted {
+  color: #5c1a1e;
+  font-size: clamp(8px, 1.06cqw, 16px);
+  font-weight: 700;
+  text-decoration: none;
+  text-shadow: 0 1px 0 rgba(255,255,255,.7);
+  white-space: nowrap;
+}
+
+/* Phase 1 intentionally excludes QR/NFC from the back cover. */
+.heritageTechnology,
+.heritageTechActions,
+.heritageNfcMark,
+.heritageQrWrap,
+.heritageTechDivider {
+  display: none !important;
+}
+
+@media (max-width: 800px) {
+  .page-back .pageViewport { width: 100%; }
+  .heritageBackIntro { width: 48%; }
+  .heritageCoupleNames { width: 54%; }
+  .heritageJourneyMessage { width: 38%; }
+ .heritageAssistance { width: 43%; }
+}
+
+@media (max-width: 560px) {
+  .heritageBackMonogram { width: 18%; top: 2.2%; }
+  .heritageBackIntro { top: 27.3%; width: 50%; }
+  .heritageCoupleNames { top: 45.4%; width: 57%; }
+  .heritageNamesRule { top: 53.5%; }
+  .heritageJourneyMessage { top: 57.3%; width: 41%; }
+  .heritageLotusMark { top: 64.2%; }
+ .heritageAssistance { top: 69.9%; width: 49%; }
+  .heritageAssistance .contactGrid { gap: .4cqw; }
+  .heritageAssistance .contactCard { padding-inline: .3cqw; }
+}
+
+/* ========================================================================== */
+/* PHASE 2A — MULTI-THEME ENGINE                                              */
+/* ========================================================================== */
+
+.bookApp[data-invitation-theme="classic"] {
+  --theme-accent: #71131b;
+  --theme-accent-dark: #3f090e;
+  --theme-gold: #b78a3c;
+  --theme-soft: #f7eedb;
+}
+
+.bookApp[data-invitation-theme="pink"] {
+  --theme-accent: #b62f5c;
+  --theme-accent-dark: #7d1738;
+  --theme-gold: #ba8c3f;
+  --theme-soft: #fff0f4;
+}
+
+.themeSwitcher {
+  width: min(100%, 840px);
+  margin: 0 auto clamp(12px, 2vw, 20px);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  border: 1px solid rgba(226, 197, 137, .48);
+  border-radius: 16px;
+  background: rgba(42, 6, 10, .66);
+  box-shadow: 0 10px 30px rgba(24, 3, 5, .16);
+  backdrop-filter: blur(10px);
+  color: #fff2d3;
+}
+
+.themeSwitcherLabel {
+  flex: 0 0 auto;
+  font-size: .76rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #f4dfb3;
+}
+
+.themeOptions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.themeOption {
+  position: relative;
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px 6px 7px;
+  border: 1px solid rgba(255, 239, 205, .3);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .06);
+  color: #fff2d3;
+  cursor: pointer;
+  transition: transform .16s ease, background-color .16s ease, border-color .16s ease;
+}
+
+.themeOption:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, .11);
+}
+
+.themeOption.active {
+  border-color: rgba(255, 239, 205, .76);
+  background: rgba(255, 255, 255, .14);
+}
+
+.themeSwatch {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border: 2px solid rgba(255,255,255,.8);
+  border-radius: 50%;
+  background: var(--swatch);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.15);
+}
+
+.themeOption > span:nth-child(2) {
+  font-size: .78rem;
+  font-weight: 600;
+}
+
+.themeCheck {
+  width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff4df;
+  color: var(--theme-accent, #71131b);
+  font-size: .65rem;
+  font-weight: 900;
+}
+
+/* Keep controls and overlaid text visually coordinated with the selected theme. */
+.bookApp[data-invitation-theme="pink"] .openButton,
+.bookApp[data-invitation-theme="pink"] .btnGold {
+  background: rgba(170, 40, 83, .9);
+  border-color: rgba(196, 71, 112, .95);
+}
+
+.bookApp[data-invitation-theme="classic"] .receptionCalendarItem .btn {
+  background: linear-gradient(135deg, var(--red), var(--red-dark));
+  border-color: color-mix(in srgb, var(--gold) 74%, var(--red));
+  color: #fff4da;
+  box-shadow: 0 4px 12px rgba(63, 9, 14, .16);
+}
+
+.bookApp[data-invitation-theme="classic"] .receptionCalendarItem .btn:hover {
+  background: linear-gradient(135deg, #861923, #520b12);
+  transform: translateY(-1px);
+}
+
+.bookApp[data-invitation-theme="classic"] .exactLocationHotspot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 26%, rgba(255, 255, 255, .42), transparent 18%),
+    radial-gradient(circle, rgba(255, 244, 218, .20), rgba(113, 19, 27, .10) 62%, transparent 78%);
+  box-shadow: 0 0 0 rgba(183, 138, 60, 0), inset 0 0 0 rgba(255, 250, 232, 0);
+  opacity: 0;
+  transform: scale(.9);
+  transition: opacity .2s ease, transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+  pointer-events: none;
+}
+
+.bookApp[data-invitation-theme="classic"] .exactLocationHotspot:hover::before,
+.bookApp[data-invitation-theme="classic"] .exactLocationHotspot:focus-visible::before,
+.bookApp[data-invitation-theme="classic"] .exactLocationHotspot[aria-expanded="true"]::before {
+  opacity: 1;
+  transform: scale(1);
+  border-color: rgba(216, 189, 123, .82);
+  box-shadow: 0 0 18px rgba(183, 138, 60, .26), inset 0 0 14px rgba(255, 250, 232, .24);
+}
+
+.bookApp[data-invitation-theme="blush"] .receptionCalendarItem .btn {
+  background: linear-gradient(135deg, #c45a78, #9f2850);
+  border-color: color-mix(in srgb, var(--theme-gold) 74%, var(--theme-accent));
+  color: #fff8e9;
+  box-shadow: 0 4px 12px rgba(159, 40, 80, .16);
+}
+
+.bookApp[data-invitation-theme="blush"] .receptionCalendarItem .btn:hover {
+  background: linear-gradient(135deg, #d16a88, #b23a63);
+  transform: translateY(-1px);
+}
+
+.bookApp[data-invitation-theme="pink"] .familyBlessingsIntro h2,
+.bookApp[data-invitation-theme="pink"] .familyBlock h3,
+.bookApp[data-invitation-theme="pink"] .familyCoupleNames,
+.bookApp[data-invitation-theme="pink"] .receptionDetailLabel,
+.bookApp[data-invitation-theme="pink"] .locationPopoverHeader p,
+.bookApp[data-invitation-theme="pink"] .locationVenueName,
+.bookApp[data-invitation-theme="pink"] .heritageBackIntro h2,
+.bookApp[data-invitation-theme="pink"] .heritageCoupleNames,
+.bookApp[data-invitation-theme="pink"] .heritageAssistance h3,
+.bookApp[data-invitation-theme="pink"] .heritageAssistance .contactCard .eyebrow,
+.bookApp[data-invitation-theme="pink"] .heritageAssistance .contactCard h3,
+.bookApp[data-invitation-theme="pink"] .heritageAssistance .contactCard a,
+.bookApp[data-invitation-theme="pink"] .heritageAssistance .contactCard p.muted {
+  color: #9f2850;
+}
+
+.bookApp[data-invitation-theme="pink"] .familyGoldDivider,
+.bookApp[data-invitation-theme="pink"] .receptionDetailDivider,
+.bookApp[data-invitation-theme="pink"] .heritageGoldRule,
+.bookApp[data-invitation-theme="pink"] .heritageSectionRule {
+  color: #ba8c3f;
+}
+
+.bookApp[data-invitation-theme="pink"] .pageDot.active {
+  background: #ef87a7;
+  border-color: #ffd4e0;
+}
+
+.bookApp[data-invitation-theme="pink"] .navArrow {
+  border-color: rgba(255, 211, 223, .62);
+  color: #ffe8ef;
+}
+
+/* Responsive theme control: it must never reduce the invitation viewport itself. */
+@media (max-width: 680px) {
+  .themeSwitcher {
+    width: calc(100% - 4px);
+    margin-bottom: 10px;
+    padding: 8px 10px;
+    gap: 8px;
+    flex-direction: column;
+  }
+
+  .themeSwitcherLabel { font-size: .68rem; }
+  .themeOptions { width: 100%; gap: 6px; }
+  .themeOption { min-height: 34px; padding: 5px 9px 5px 6px; }
+  .themeSwatch { width: 21px; height: 21px; flex-basis: 21px; }
+  .themeOption > span:nth-child(2) { font-size: .72rem; }
+}
+
+@media (max-width: 380px) {
+  .themeSwitcher { align-items: stretch; }
+  .themeOptions { display: grid; grid-template-columns: 1fr 1fr; }
+  .themeOption { justify-content: center; }
+}
+
+/* ========================================================================== */
+/* PHASE 2A.1 — COMPLETE 9-COLOUR PALETTE                                     */
+/* Generic theme variables keep React overlays coordinated with every artwork. */
+/* ========================================================================== */
+
+.bookApp[data-invitation-theme] .openButton,
+.bookApp[data-invitation-theme] .btnGold {
+  background: color-mix(in srgb, var(--theme-accent) 90%, transparent);
+  border-color: color-mix(in srgb, var(--theme-accent) 75%, var(--theme-gold));
+}
+
+.bookApp[data-invitation-theme] .familyBlessingsIntro h2,
+.bookApp[data-invitation-theme] .familyBlock h3,
+.bookApp[data-invitation-theme] .familyCoupleNames,
+.bookApp[data-invitation-theme] .receptionDetailLabel,
+.bookApp[data-invitation-theme] .locationPopoverHeader p,
+.bookApp[data-invitation-theme] .locationVenueName,
+.bookApp[data-invitation-theme] .heritageBackIntro h2,
+.bookApp[data-invitation-theme] .heritageCoupleNames,
+.bookApp[data-invitation-theme] .heritageAssistance h3,
+.bookApp[data-invitation-theme] .heritageAssistance .contactCard .eyebrow,
+.bookApp[data-invitation-theme] .heritageAssistance .contactCard h3,
+.bookApp[data-invitation-theme] .heritageAssistance .contactCard a,
+.bookApp[data-invitation-theme] .heritageAssistance .contactCard p.muted {
+  color: var(--theme-accent);
+}
+
+.bookApp[data-invitation-theme] .familyBlessingsContent,
+.bookApp[data-invitation-theme] .receptionDetailsOverlay,
+.bookApp[data-invitation-theme] .heritageBackContent {
+  color: var(--theme-ink);
+}
+
+.bookApp[data-invitation-theme] .familyGoldDivider,
+.bookApp[data-invitation-theme] .receptionDetailDivider,
+.bookApp[data-invitation-theme] .heritageGoldRule,
+.bookApp[data-invitation-theme] .heritageSectionRule {
+  color: var(--theme-gold);
+}
+
+.bookApp[data-invitation-theme] .familyGoldDivider::before,
+.bookApp[data-invitation-theme] .familyGoldDivider::after,
+.bookApp[data-invitation-theme] .receptionDetailDivider::before,
+.bookApp[data-invitation-theme] .receptionDetailDivider::after {
+  background: color-mix(in srgb, var(--theme-gold) 72%, transparent);
+}
+
+.bookApp[data-invitation-theme] .pageDot.active {
+  background: var(--theme-gold);
+  border-color: color-mix(in srgb, var(--theme-soft) 85%, white);
+}
+
+.bookApp[data-invitation-theme] .navArrow {
+  border-color: color-mix(in srgb, var(--theme-gold) 55%, transparent);
+  color: var(--theme-soft);
+}
+
+/* The assistance panel remains readable on every dark/light artwork variant. */
+.bookApp[data-invitation-theme] .heritageAssistance {
+  background: color-mix(in srgb, var(--theme-soft) 90%, transparent);
+  border-color: color-mix(in srgb, var(--theme-gold) 65%, transparent);
+}
+
+/* With ten choices (classic + nine requested variants), use a stable grid.
+   The control is outside .pageViewport, so it never shortens or distorts pages. */
+.themeSwitcher {
+  width: min(100%, 1180px);
+  flex-direction: column;
+  align-items: stretch;
+  gap: 9px;
+}
+
+.themeSwitcherLabel {
+  text-align: center;
+}
+
+.themeOptions {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.themeOption {
+  width: 100%;
+  min-width: 0;
+  justify-content: flex-start;
+}
+
+.themeOption > span:nth-child(2) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.themeOption.active {
+  border-color: color-mix(in srgb, var(--theme-gold) 75%, white);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--theme-accent) 42%, transparent);
+}
+
+@media (max-width: 820px) {
+  .themeOptions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .themeSwitcher {
+    width: calc(100% - 4px);
+    padding: 8px;
+  }
+  .themeOptions { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .themeOption { min-height: 33px; padding: 5px 7px; }
+  .themeSwatch { width: 20px; height: 20px; flex-basis: 20px; }
+  .themeOption > span:nth-child(2) { font-size: .69rem; }
+}
+
+@media (max-width: 350px) {
+  .themeOption > span:nth-child(2) { font-size: .64rem; }
+}
+
+/* ========================================================================== */
+/* PHASE 2B — PRODUCTION-SAFE CLASSIC + BLUSH REFINEMENT                      */
+/* ========================================================================== */
+
+/* Final override: only two production themes are exposed, so the chooser can
+   use an auto-fit layout without shrinking the invitation viewport. */
+.themeSwitcher {
+  width: min(100%, 760px);
+}
+
+.themeOptions {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+.themeOption {
+  width: 100%;
+  justify-content: center;
+}
+
+@media (max-width: 560px) {
+  .themeSwitcher {
+    width: calc(100% - 4px);
+    padding: 8px;
+  }
+
+  .themeOptions {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 6px;
+  }
+}
+
+/* ========================================================================== */
+/* PHASE 2A — BLUSH MONOGRAM CONSISTENCY FIX                                  */
+/* ========================================================================== */
+
+/* The blush theme uses one matching high-resolution S&D crest across the
+   family, reception-details and gratitude pages. Classic Deep Red remains
+   untouched because its Phase 1 artwork already contains the approved title
+   treatment. */
+.bookApp[data-invitation-theme="blush"] .familyMonogramArtwork {
+  width: 23.5%;
+  top: 3.0%;
+  opacity: 1;
+  mix-blend-mode: normal;
+  filter: none;
+}
+
+.insideRightThemeMonogram {
+  position: absolute;
+  z-index: 3;
+  top: 1.5%;
+  left: 50%;
+  width: 15.5%;
+  height: auto;
+  transform: translateX(-50%);
+  display: block;
+  object-fit: contain;
+  opacity: 1;
+  pointer-events: none;
+}
+
+.insideRightDynamicTitle {
+  position: absolute;
+  z-index: 3;
+  top: 13.7%;
+  left: 50%;
+  width: 68%;
+  transform: translateX(-50%);
+  margin: 0;
+  text-align: center;
+  color: var(--theme-accent, #a14f66);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.45rem, 4.15vw, 3rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: .005em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.bookApp[data-invitation-theme="blush"] .receptionDetailsOverlay {
+  top: 23.7%;
+}
+
+.bookApp[data-invitation-theme="blush"] .heritageBackMonogram {
+  width: 16.8%;
+  top: 2.0%;
+  opacity: 1;
+  filter: none;
+}
+
+@media (max-width: 680px) {
+  .bookApp[data-invitation-theme="blush"] .familyMonogramArtwork {
+    width: 24.5%;
+    top: 3.2%;
+  }
+
+  .insideRightThemeMonogram {
+    width: 16.5%;
+    top: 1.7%;
+  }
+
+  .insideRightDynamicTitle {
+    top: 13.9%;
+    width: 72%;
+    font-size: clamp(1.15rem, 4.25vw, 2.15rem);
+  }
+}
+
+@media (max-width: 420px) {
+  .bookApp[data-invitation-theme="blush"] .familyMonogramArtwork {
+    width: 26%;
+    top: 3.35%;
+  }
+
+  .insideRightThemeMonogram {
+    width: 17.5%;
+    top: 1.9%;
+  }
+
+  .insideRightDynamicTitle {
+    top: 14.1%;
+    width: 76%;
+    font-size: clamp(1rem, 4.35vw, 1.65rem);
+  }
+}
+
+/* ========================================================================== */
+/* PHASE 2A — RANI MAGENTA THEME                                              */
+/* Classic Deep Red and Blush Rose rules above remain unchanged.             */
+/* ========================================================================== */
+
+/* The generated Rani Magenta front artwork is intentionally text-free so all
+   guest/event copy remains dynamic and sourced from EVENT. */
+.bookApp[data-invitation-theme="magenta"] .frontCover {
+  container-type: inline-size;
+}
+
+.bookApp[data-invitation-theme="magenta"] .dynamicFrontCopy {
+  position: absolute;
+  z-index: 3;
+  top: 3.2%;
+  left: 50%;
+  width: 68%;
+  height: 61%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: var(--theme-ink);
+  pointer-events: none;
+}
+
+.bookApp[data-invitation-theme="magenta"] .dynamicFrontMonogram {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 20%;
+  height: auto;
+  transform: translateX(-50%);
+  object-fit: contain;
+}
+
+.bookApp[data-invitation-theme="magenta"] .dynamicFrontHeading {
+  position: absolute;
+  top: 24%;
+  left: 50%;
+  width: 100%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: var(--theme-accent);
+  font-weight: 400;
+  line-height: .86;
+}
+
+.bookApp[data-invitation-theme="magenta"] .dynamicFrontHeading > span {
+  display: block;
+  font-size: clamp(1.75rem, 6.2cqw, 4.15rem);
+  letter-spacing: .015em;
+  text-transform: none;
+}
+
+.bookApp[data-invitation-theme="magenta"] .dynamicFrontHeading > em {
+  display: block;
+  margin-top: .14em;
+  color: var(--theme-gold);
+  font-size: clamp(1.45rem, 5.1cqw, 3.4rem);
+  font-weight: 400;
+}
+
+.bookApp[data-invitation-theme="magenta"] .dynamicFrontRule {
+  position: absolute;
+  top: 41.5%;
+  left: 50%;
+  width: 39%;
+  height: 1px;
+  transform: translateX(-50%);
+  background: color-mix(in srgb, var(--theme-gold) 72%, transparent);
+  color: var(--theme-gold);
+}
+
+.bookApp[data-invitation-theme="magenta"] .dynamicFrontRule span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  padding: 0 .55cqw;
+  transform: translate(-50%, -50%);
+  background: #f6e5ca;
+  font-size: clamp(.55rem, 1.35cqw, .9rem);
+}
+
+.bookApp[data-invitation-theme="magenta"] .dynamicFrontTagline {
+  position: absolute;
+  top: 44.3%;
+  left: 50%;
+  width: 78%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: var(--theme-ink);
+  font-size: clamp(.78rem, 2.15cqw, 1.35rem);
+  line-height: 1.25;
+}
+
+.bookApp[data-invitation-theme="magenta"] .dynamicFrontNamesRule {
+  top: 52.7%;
+  width: 29%;
+}
+
+.bookApp[data-invitation-theme="magenta"] .dynamicFrontNames {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  width: 100%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: var(--theme-accent);
+  font-size: clamp(1.35rem, 4.3cqw, 2.9rem);
+  font-style: italic;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.bookApp[data-invitation-theme="magenta"] .dynamicFrontNames b {
+  padding: 0 .32em;
+  color: var(--theme-gold);
+  font-weight: 400;
+  font-style: normal;
+}
+
+.bookApp[data-invitation-theme="magenta"] .dynamicFrontClosingRule {
+  top: 66.1%;
+  width: 26%;
+}
+
+.bookApp[data-invitation-theme="magenta"] .dynamicFrontClosing {
+  position: absolute;
+  top: 69.2%;
+  left: 50%;
+  width: 75%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: var(--theme-ink);
+  font-size: clamp(.66rem, 1.75cqw, 1.05rem);
+  line-height: 1.35;
+}
+
+.bookApp[data-invitation-theme="magenta"] .dynamicFrontClosing span {
+  display: block;
+}
+
+/* Matching S&D crest on Pages 2, 3 and 4. The transparent crest contains
+   antique-gold linework with Rani-magenta initials/lotus, so no pink/deep-red
+   background patch can bleed into this theme. */
+.bookApp[data-invitation-theme="magenta"] .familyMonogramArtwork {
+  width: 22.5%;
+  top: 2.8%;
+  opacity: 1;
+  mix-blend-mode: normal;
+  filter: none;
+}
+
+.bookApp[data-invitation-theme="magenta"] .insideRightThemeMonogram {
+  width: 15.5%;
+  top: 2.5%;
+  left: 50%;
+  transform: translateX(-40%);
+}
+
+.bookApp[data-invitation-theme="magenta"] .insideRightDynamicTitle {
+  top: 13.7%;
+  color: var(--theme-accent);
+}
+
+.bookApp[data-invitation-theme="magenta"] .receptionDetailsOverlay {
+  top: 23.7%;
+}
+
+.bookApp[data-invitation-theme="magenta"] .heritageBackMonogram {
+  width: 16.8%;
+  top: 2.0%;
+  opacity: 1;
+  filter: none;
+}
+
+@media (max-width: 680px) {
+  .bookApp[data-invitation-theme="magenta"] .familyMonogramArtwork {
+    width: 24%;
+    top: 3.05%;
+  }
+
+  .bookApp[data-invitation-theme="magenta"] .insideRightThemeMonogram {
+    width: 16.5%;
+    top: 2.5%;
+    left: 50%;
+    transform: translateX(-40%);
+  }
+
+  .bookApp[data-invitation-theme="magenta"] .insideRightDynamicTitle {
+    top: 13.9%;
+  }
+}
+
+@media (max-width: 420px) {
+  .bookApp[data-invitation-theme="magenta"] .familyMonogramArtwork {
+    width: 25.5%;
+    top: 3.2%;
+  }
+
+  .bookApp[data-invitation-theme="magenta"] .insideRightThemeMonogram {
+    width: 17.5%;
+    top: 2.5%;
+  }
+
+  .bookApp[data-invitation-theme="magenta"] .insideRightDynamicTitle {
+    top: 14.1%;
+  }
+}
+
+/* The Rani Magenta inside-right template intentionally leaves the location
+   medallion text-free. Render the label in code so the blank artwork remains
+   reusable and the clickable hotspot stays exactly centred over it. */
+.bookApp[data-invitation-theme="magenta"] .insideRightDynamicLocationLabel {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 80.0%;
+  width: 18%;
+  transform: translateX(-40%);
+  color: var(--theme-accent);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(.72rem, 2.05vw, 1.35rem);
+  font-weight: 600;
+  line-height: 1.06;
+  text-align: center;
+  pointer-events: none;
+}
+
+.bookApp[data-invitation-theme="magenta"] .insideRightDynamicLocationLabel.withLocationIcon {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .20em;
+}
+
+.bookApp[data-invitation-theme="magenta"] .insideRightLocationIcon {
+  width: 1em;
+  height: 1em;
+  flex: 0 0 1em;
+  fill: none;
+  stroke: var(--theme-accent);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bookApp[data-invitation-theme="magenta"] .receptionCalendarItem .btn {
+  background: linear-gradient(135deg, #b20b57, #7f0a40);
+  border-color: color-mix(in srgb, var(--theme-gold) 74%, var(--theme-accent));
+  color: #fff8e9;
+  box-shadow: 0 4px 12px rgba(127, 10, 64, .16);
+}
+
+.bookApp[data-invitation-theme="magenta"] .receptionCalendarItem .btn:hover {
+  background: linear-gradient(135deg, #c41366, #92104b);
+  transform: translateY(-1px);
+}
+
+.bookApp[data-invitation-theme="magenta"] .insideRightDynamicLocationLabel.withLocationIcon > span {
+  display: block;
+}
+
+@media (max-width: 680px) {
+  .bookApp[data-invitation-theme="magenta"] .insideRightDynamicLocationLabel {
+    top: 81.1%;
+    width: 19%;
+    font-size: clamp(.62rem, 2.1vw, 1.05rem);
+  }
+}
+
+/* ========================================================================== */
+/* PHASE 2A — ROYAL NAVY THEME                                                */
+/* Existing Classic, Blush and Rani Magenta rules/assets remain unchanged.   */
+/* ========================================================================== */
+
+/* Royal Navy artwork already contains its correctly centred S&D crest on
+   Front, Inside Left and Back. Only Inside Right needs the transparent crest
+   overlay, so duplicate monograms are intentionally avoided. */
+
+.bookApp[data-invitation-theme="navy"] .frontCover {
+  container-type: inline-size;
+}
+
+.bookApp[data-invitation-theme="navy"] .dynamicFrontCopy {
+  position: absolute;
+  z-index: 3;
+  top: 3.0%;
+  left: 50%;
+  width: 68%;
+  height: 61%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: var(--theme-ink);
+  pointer-events: none;
+}
+
+/* Leave the top ~22% of the artwork unobstructed for the embedded crest. */
+.bookApp[data-invitation-theme="navy"] .dynamicFrontHeading {
+  position: absolute;
+  top: 31.5%;
+  left: 50%;
+  width: 100%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: var(--theme-accent);
+  font-weight: 400;
+  line-height: .88;
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .76);
+}
+
+.bookApp[data-invitation-theme="navy"] .dynamicFrontHeading > span {
+  display: block;
+  color: var(--theme-gold);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.65rem, 5.85cqw, 4rem);
+  letter-spacing: .015em;
+}
+
+.bookApp[data-invitation-theme="navy"] .dynamicFrontHeading > em {
+  display: block;
+  margin-top: .12em;
+  color: var(--theme-accent);
+  font-size: clamp(1.42rem, 5cqw, 3.35rem);
+  font-weight: 400;
+}
+
+.bookApp[data-invitation-theme="navy"] .dynamicFrontRule {
+  position: absolute;
+  top: 49.2%;
+  left: 50%;
+  width: 37%;
+  height: 1px;
+  transform: translateX(-50%);
+  background: color-mix(in srgb, var(--theme-gold) 74%, transparent);
+  color: var(--theme-gold);
+}
+
+.bookApp[data-invitation-theme="navy"] .dynamicFrontRule span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  padding: 0 .55cqw;
+  transform: translate(-50%, -50%);
+  background: #f5e5c9;
+  font-size: clamp(.55rem, 1.3cqw, .9rem);
+}
+
+.bookApp[data-invitation-theme="navy"] .dynamicFrontTagline {
+  position: absolute;
+  top: 52.0%;
+  left: 50%;
+  width: 80%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: var(--theme-ink);
+  font-size: clamp(.76rem, 2.05cqw, 1.3rem);
+  line-height: 1.25;
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .78);
+}
+
+.bookApp[data-invitation-theme="navy"] .dynamicFrontNamesRule {
+  top: 60.1%;
+  width: 28%;
+}
+
+.bookApp[data-invitation-theme="navy"] .dynamicFrontNames {
+  position: absolute;
+  top: 62.7%;
+  left: 50%;
+  width: 100%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: var(--theme-accent);
+  font-family: 'Brush Script MT', 'Segoe Script', 'Snell Roundhand', 'Apple Chancery', cursive;
+  font-size: clamp(1.4rem, 4.45cqw, 3rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .82);
+}
+
+.bookApp[data-invitation-theme="navy"] .dynamicFrontNames b {
+  padding: 0 .32em;
+  color: var(--theme-gold);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: .72em;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.bookApp[data-invitation-theme="navy"] .dynamicFrontClosingRule {
+  top: 73.2%;
+  width: 25%;
+}
+
+.bookApp[data-invitation-theme="navy"] .dynamicFrontClosing {
+  position: absolute;
+  top: 76.2%;
+  left: 50%;
+  width: 76%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: var(--theme-ink);
+  font-size: clamp(.64rem, 1.72cqw, 1.04rem);
+  line-height: 1.33;
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .78);
+}
+
+.bookApp[data-invitation-theme="navy"] .dynamicFrontClosing span {
+  display: block;
+}
+
+/* Inside Left uses the crest already embedded in the Royal Navy template.
+   Keep the dynamic family text below it and inside the ivory parchment area. */
+.bookApp[data-invitation-theme="navy"] .familyBlessingsIntro {
+  top: 27.6%;
+  width: 59%;
+}
+
+.bookApp[data-invitation-theme="navy"] .familyBlessingsIntro h2,
+.bookApp[data-invitation-theme="navy"] .familyBlock h3,
+.bookApp[data-invitation-theme="navy"] .receptionDetailLabel,
+.bookApp[data-invitation-theme="navy"] .insideRightDynamicTitle,
+.bookApp[data-invitation-theme="navy"] .heritageBackIntro h2,
+.bookApp[data-invitation-theme="navy"] .heritageCoupleNames,
+.bookApp[data-invitation-theme="navy"] .heritageAssistance h3,
+.bookApp[data-invitation-theme="navy"] .heritageAssistance .contactCard .eyebrow,
+.bookApp[data-invitation-theme="navy"] .heritageAssistance .contactCard h3,
+.bookApp[data-invitation-theme="navy"] .heritageAssistance .contactCard a,
+.bookApp[data-invitation-theme="navy"] .heritageAssistance .contactCard p.muted {
+  color: var(--theme-accent);
+}
+
+.bookApp[data-invitation-theme="navy"] .familyBlessingsIntro p,
+.bookApp[data-invitation-theme="navy"] .familyBlock p,
+.bookApp[data-invitation-theme="navy"] .familyBlessingsClosing,
+.bookApp[data-invitation-theme="navy"] .receptionDetailValue,
+.bookApp[data-invitation-theme="navy"] .heritageBackMessage,
+.bookApp[data-invitation-theme="navy"] .heritageJourneyMessage {
+  color: #29384a;
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .72);
+}
+
+/* Page 3: a single, transparent navy/gold-compatible crest, centred exactly
+   over the blank parchment. */
+.bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
+  top: 1.85%;
+  left: 50%;
+  width: 13.6%;
+  transform: translateX(-38.0%);
+  opacity: 1;
+  filter: contrast(1.04) saturate(1.03);
+}
+
+.bookApp[data-invitation-theme="navy"] .insideRightDynamicTitle {
+  top: 14.1%;
+  width: 68%;
+  color: var(--theme-accent);
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .8);
+}
+
+.bookApp[data-invitation-theme="navy"] .receptionDetailsOverlay {
+  top: 23.9%;
+  width: 45%;
+  color: #29384a;
+}
+
+/* Make dynamic controls readable without covering the heritage artwork. */
+.bookApp[data-invitation-theme="navy"] .receptionCalendarItem .btn {
+  background: color-mix(in srgb, var(--theme-accent) 92%, transparent);
+  border-color: color-mix(in srgb, var(--theme-gold) 72%, var(--theme-accent));
+  color: #fff8e9;
+}
+
+.bookApp[data-invitation-theme="navy"] .receptionCountdownItem .countdownUnit {
+  background: rgba(255, 248, 232, .86);
+  border-color: color-mix(in srgb, var(--theme-gold) 55%, transparent);
+}
+
+/* Populate the blank medallion with a centred location label and pin. */
+.bookApp[data-invitation-theme="navy"] .insideRightDynamicLocationLabel {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 77.6%;
+  width: 18%;
+  height: 12.8%;
+  transform: translateX(-40%);
+  color: var(--theme-accent-dark);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(.67rem, 1.82vw, 1.2rem);
+  font-weight: 700;
+  line-height: 1.04;
+  text-align: center;
+  pointer-events: none;
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .9);
+}
+
+.bookApp[data-invitation-theme="navy"] .insideRightDynamicLocationLabel.withLocationIcon {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .12em;
+}
+
+.bookApp[data-invitation-theme="navy"] .insideRightDynamicLocationLabel > span {
+  display: block;
+}
+
+.bookApp[data-invitation-theme="navy"] .insideRightLocationIcon {
+  width: 1.2em;
+  height: 1.2em;
+  flex: 0 0 1.2em;
+  fill: var(--theme-accent);
+  stroke: var(--theme-gold);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bookApp[data-invitation-theme="navy"] .exactLocationHotspot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: scale(.9);
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(18, 56, 95, .12), rgba(185, 138, 52, .05) 56%, transparent 72%);
+  box-shadow: 0 0 0 rgba(7, 28, 50, 0);
+  opacity: 0;
+  transition: opacity .2s ease, transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+  pointer-events: none;
+}
+
+.bookApp[data-invitation-theme="navy"] .exactLocationHotspot:hover::before,
+.bookApp[data-invitation-theme="navy"] .exactLocationHotspot:focus-visible::before,
+.bookApp[data-invitation-theme="navy"] .exactLocationHotspot[aria-expanded="true"]::before {
+  opacity: 1;
+  transform: scale(1);
+  border-color: rgba(185, 138, 52, .68);
+  box-shadow: 0 0 22px rgba(7, 28, 50, .22), inset 0 0 16px rgba(255, 248, 230, .2);
+}
+
+/* Page 4 already contains its centred Royal Navy crest. Dynamic content sits
+   below it; the assistance panel intentionally remains ivory/high-contrast. */
+.bookApp[data-invitation-theme="navy"] .heritageBackIntro {
+  top: 26.8%;
+  width: 48%;
+}
+
+.bookApp[data-invitation-theme="navy"] .heritageCoupleNames {
+  top: 44.8%;
+  width: 53%;
+}
+
+.bookApp[data-invitation-theme="navy"] .heritageNamesRule {
+  top: 53.0%;
+}
+
+.bookApp[data-invitation-theme="navy"] .heritageJourneyMessage {
+  top: 56.8%;
+  width: 36%;
+}
+
+.bookApp[data-invitation-theme="navy"] .heritageLotusMark {
+  top: 63.8%;
+  color: var(--theme-gold);
+}
+
+.bookApp[data-invitation-theme="navy"] .heritageAssistance {
+  top: 69.3%;
+  width: 44%;
+  background: rgba(252, 241, 217, .94);
+  border-color: color-mix(in srgb, var(--theme-gold) 68%, transparent);
+  box-shadow: 0 .45cqw 1.5cqw rgba(7, 28, 50, .16);
+}
+
+@media (max-width: 680px) {
+  .bookApp[data-invitation-theme="navy"] .familyBlessingsIntro {
+    top: 27.9%;
+    width: 62%;
+  }
+
+  .bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
+    top: 2.35%;
+    width: 17%;
+  }
+
+  .bookApp[data-invitation-theme="navy"] .insideRightDynamicTitle {
+    top: 14.3%;
+    width: 72%;
+  }
+
+  .bookApp[data-invitation-theme="navy"] .receptionDetailsOverlay {
+    top: 24.05%;
+    width: 48%;
+  }
+
+  .bookApp[data-invitation-theme="navy"] .heritageAssistance {
+    width: 48%;
+  }
+}
+
+@media (max-width: 420px) {
+  .bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
+    top: 2.5%;
+    width: 18.2%;
+  }
+
+  .bookApp[data-invitation-theme="navy"] .insideRightDynamicTitle {
+    top: 14.5%;
+    width: 76%;
+  }
+
+  .bookApp[data-invitation-theme="navy"] .receptionDetailsOverlay {
+    top: 24.2%;
+    width: 51%;
+  }
+}
+
+/* ========================================================================== */
+/* PHASE 2A — ROYAL PLUM THEME                                                */
+/* Existing Deep Red, Blush Rose, Rani Magenta and Royal Navy remain intact. */
+/* ========================================================================== */
+
+/* Royal Plum uses the same proven geometry as Royal Navy. Pages 1, 2 and 4
+   contain their centred S&D crest in the artwork. Page 3 receives one
+   transparent plum/gold crest from the theme asset map. */
+.bookApp[data-invitation-theme="plum"] .frontCover {
+  container-type: inline-size;
+}
+
+.bookApp[data-invitation-theme="plum"] .dynamicFrontCopy {
+  position: absolute;
+  z-index: 3;
+  top: 3.0%;
+  left: 50%;
+  width: 68%;
+  height: 61%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: var(--theme-ink);
+  pointer-events: none;
+}
+
+/* Keep a generous safe zone below the crest. */
+.bookApp[data-invitation-theme="plum"] .dynamicFrontHeading {
+  position: absolute;
+  top: 31.5%;
+  left: 50%;
+  width: 100%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: var(--theme-accent);
+  font-weight: 400;
+  line-height: .88;
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .82);
+}
+
+.bookApp[data-invitation-theme="plum"] .dynamicFrontHeading > span {
+  display: block;
+  color: var(--theme-gold);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.65rem, 5.85cqw, 4rem);
+  letter-spacing: .015em;
+}
+
+.bookApp[data-invitation-theme="plum"] .dynamicFrontHeading > em {
+  display: block;
+  margin-top: .12em;
+  color: var(--theme-accent);
+  font-size: clamp(1.42rem, 5cqw, 3.35rem);
+  font-weight: 400;
+}
+
+.bookApp[data-invitation-theme="plum"] .dynamicFrontRule {
+  position: absolute;
+  top: 49.2%;
+  left: 50%;
+  width: 37%;
+  height: 1px;
+  transform: translateX(-50%);
+  background: color-mix(in srgb, var(--theme-gold) 74%, transparent);
+  color: var(--theme-gold);
+}
+
+.bookApp[data-invitation-theme="plum"] .dynamicFrontRule span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  padding: 0 .55cqw;
+  transform: translate(-50%, -50%);
+  background: #f5e5c9;
+  font-size: clamp(.55rem, 1.3cqw, .9rem);
+}
+
+.bookApp[data-invitation-theme="plum"] .dynamicFrontTagline {
+  position: absolute;
+  top: 52.0%;
+  left: 50%;
+  width: 80%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: #45334d;
+  font-size: clamp(.76rem, 2.05cqw, 1.3rem);
+  line-height: 1.25;
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .82);
+}
+
+.bookApp[data-invitation-theme="plum"] .dynamicFrontNamesRule {
+  top: 60.1%;
+  width: 28%;
+}
+
+.bookApp[data-invitation-theme="plum"] .dynamicFrontNames {
+  position: absolute;
+  top: 62.7%;
+  left: 50%;
+  width: 100%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: var(--theme-accent);
+  font-family: 'Brush Script MT', 'Segoe Script', 'Snell Roundhand', 'Apple Chancery', cursive;
+  font-size: clamp(1.4rem, 4.45cqw, 3rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .86);
+}
+
+.bookApp[data-invitation-theme="plum"] .dynamicFrontNames b {
+  padding: 0 .32em;
+  color: var(--theme-gold);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: .72em;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.bookApp[data-invitation-theme="plum"] .dynamicFrontClosingRule {
+  top: 73.2%;
+  width: 25%;
+}
+
+.bookApp[data-invitation-theme="plum"] .dynamicFrontClosing {
+  position: absolute;
+  top: 76.2%;
+  left: 50%;
+  width: 76%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: #45334d;
+  font-size: clamp(.64rem, 1.72cqw, 1.04rem);
+  line-height: 1.33;
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .84);
+}
+
+.bookApp[data-invitation-theme="plum"] .dynamicFrontClosing span {
+  display: block;
+}
+
+/* Page 2: the crest is embedded in the supplied Royal Plum artwork. */
+.bookApp[data-invitation-theme="plum"] .familyBlessingsIntro {
+  top: 27.6%;
+  width: 59%;
+}
+
+.bookApp[data-invitation-theme="plum"] .familyBlessingsIntro h2,
+.bookApp[data-invitation-theme="plum"] .familyBlock h3,
+.bookApp[data-invitation-theme="plum"] .receptionDetailLabel,
+.bookApp[data-invitation-theme="plum"] .insideRightDynamicTitle,
+.bookApp[data-invitation-theme="plum"] .heritageBackIntro h2,
+.bookApp[data-invitation-theme="plum"] .heritageCoupleNames,
+.bookApp[data-invitation-theme="plum"] .heritageAssistance h3,
+.bookApp[data-invitation-theme="plum"] .heritageAssistance .contactCard .eyebrow,
+.bookApp[data-invitation-theme="plum"] .heritageAssistance .contactCard h3,
+.bookApp[data-invitation-theme="plum"] .heritageAssistance .contactCard a,
+.bookApp[data-invitation-theme="plum"] .heritageAssistance .contactCard p.muted {
+  color: var(--theme-accent);
+}
+
+.bookApp[data-invitation-theme="plum"] .familyBlessingsIntro p,
+.bookApp[data-invitation-theme="plum"] .familyBlock p,
+.bookApp[data-invitation-theme="plum"] .familyBlessingsClosing,
+.bookApp[data-invitation-theme="plum"] .receptionDetailValue,
+.bookApp[data-invitation-theme="plum"] .heritageBackMessage,
+.bookApp[data-invitation-theme="plum"] .heritageJourneyMessage {
+  color: #3f3345;
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .78);
+}
+
+/* Page 3: centre one matching crest above the supplied decorative divider.
+   Width/top are deliberately smaller than Navy so the crest ends before the
+   template's existing gold lotus ornament and cannot collide with the title. */
+.bookApp[data-invitation-theme="plum"] .insideRightThemeMonogram {
+  top: 2.0%;
+  left: 50%;
+  width: 13.5%;
+  transform: translateX(-37%);
+  opacity: 1;
+  filter: contrast(1.04) saturate(1.06);
+}
+
+.bookApp[data-invitation-theme="plum"] .insideRightDynamicTitle {
+  top: 13.8%;
+  width: 68%;
+  color: var(--theme-accent);
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .84);
+}
+
+.bookApp[data-invitation-theme="plum"] .receptionDetailsOverlay {
+  top: 23.5%;
+  width: 45%;
+  color: #3f3345;
+}
+
+.bookApp[data-invitation-theme="plum"] .receptionCalendarItem .btn {
+  background: linear-gradient(135deg, #6b2385, #4b155f);
+  border-color: color-mix(in srgb, var(--theme-gold) 74%, var(--theme-accent));
+  color: #fff8e9;
+  box-shadow: 0 4px 12px rgba(63, 17, 79, .15);
+}
+
+.bookApp[data-invitation-theme="plum"] .receptionCalendarItem .btn:hover {
+  background: linear-gradient(135deg, #7a2a96, #55186b);
+  transform: translateY(-1px);
+}
+
+.bookApp[data-invitation-theme="plum"] .receptionCountdownItem .countdownUnit {
+  background: rgba(255, 248, 232, .9);
+  border-color: color-mix(in srgb, var(--theme-gold) 56%, transparent);
+  box-shadow: 0 2px 7px rgba(64, 20, 75, .08);
+}
+
+/* Blank medallion is populated dynamically with a pin icon and label. */
+.bookApp[data-invitation-theme="plum"] .insideRightDynamicLocationLabel {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 77.0%;
+  width: 18%;
+  height: 12.8%;
+  transform: translateX(-40%);
+  color: var(--theme-accent-dark);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(.67rem, 1.82vw, 1.2rem);
+  font-weight: 700;
+  line-height: 1.04;
+  text-align: center;
+  pointer-events: none;
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .9);
+}
+
+.bookApp[data-invitation-theme="plum"] .insideRightDynamicLocationLabel.withLocationIcon {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .12em;
+}
+
+.bookApp[data-invitation-theme="plum"] .insideRightDynamicLocationLabel > span {
+  display: block;
+}
+
+.bookApp[data-invitation-theme="plum"] .insideRightLocationIcon {
+  width: 1.25em;
+  height: 1.25em;
+  flex: 0 0 1.25em;
+  fill: var(--theme-soft);
+  stroke: var(--theme-accent);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Attractive circular hover/focus treatment without the old square artifact. */
+.bookApp[data-invitation-theme="plum"] .exactLocationHotspot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: scale(.9);
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(108, 35, 133, .12), rgba(183, 138, 54, .05) 56%, transparent 72%);
+  box-shadow: 0 0 0 rgba(95, 28, 117, 0);
+  opacity: 0;
+  transition: opacity .2s ease, transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+  pointer-events: none;
+}
+
+.bookApp[data-invitation-theme="plum"] .exactLocationHotspot:hover::before,
+.bookApp[data-invitation-theme="plum"] .exactLocationHotspot:focus-visible::before,
+.bookApp[data-invitation-theme="plum"] .exactLocationHotspot[aria-expanded="true"]::before {
+  opacity: 1;
+  transform: scale(1);
+  border-color: rgba(183, 138, 54, .68);
+  box-shadow: 0 0 22px rgba(91, 27, 112, .22), inset 0 0 16px rgba(255, 248, 230, .2);
+}
+
+/* Theme the hover/tap location card as a premium plum/ivory glass panel. */
+.bookApp[data-invitation-theme="plum"] .locationDetailsPopover {
+  border: 1px solid rgba(183, 138, 54, .82);
+  background:
+    linear-gradient(145deg, rgba(255, 249, 235, .99), rgba(249, 238, 220, .985));
+  box-shadow: 0 20px 50px rgba(53, 16, 66, .30), 0 0 0 1px rgba(106, 32, 131, .08);
+}
+
+.bookApp[data-invitation-theme="plum"] .locationDetailsPopover::after {
+  border-right-color: rgba(183, 138, 54, .82);
+  border-bottom-color: rgba(183, 138, 54, .82);
+  background: rgba(250, 240, 222, .99);
+}
+
+.bookApp[data-invitation-theme="plum"] .locationPopoverHeader {
+  padding-bottom: .48rem;
+  border-bottom: 1px solid rgba(183, 138, 54, .30);
+}
+
+.bookApp[data-invitation-theme="plum"] .locationPopoverHeader p,
+.bookApp[data-invitation-theme="plum"] .locationVenueName {
+  color: var(--theme-accent-dark);
+}
+
+.bookApp[data-invitation-theme="plum"] .utilityCloseButton {
+  border-color: rgba(183, 138, 54, .62);
+  color: var(--theme-accent-dark);
+  background: rgba(255, 251, 242, .98);
+}
+
+.bookApp[data-invitation-theme="plum"] .utilityCloseButton:hover {
+  color: #fff9eb;
+  background: var(--theme-accent);
+}
+
+/* Page 4: embedded crest; all content remains within the broad ivory centre. */
+.bookApp[data-invitation-theme="plum"] .heritageBackIntro {
+  top: 26.8%;
+  width: 48%;
+}
+
+.bookApp[data-invitation-theme="plum"] .heritageCoupleNames {
+  top: 44.8%;
+  width: 53%;
+}
+
+.bookApp[data-invitation-theme="plum"] .heritageNamesRule {
+  top: 53.0%;
+}
+
+.bookApp[data-invitation-theme="plum"] .heritageJourneyMessage {
+  top: 56.8%;
+  width: 36%;
+}
+
+.bookApp[data-invitation-theme="plum"] .heritageLotusMark {
+  top: 63.8%;
+  color: var(--theme-gold);
+}
+
+/* High contrast is intentional here because the lower landscape is visually
+   rich. Names and phone numbers remain readable on every viewport. */
+.bookApp[data-invitation-theme="plum"] .heritageAssistance {
+  top: 69.3%;
+  width: 44%;
+  background: rgba(252, 241, 217, .95);
+  border-color: color-mix(in srgb, var(--theme-gold) 70%, transparent);
+  box-shadow: 0 .45cqw 1.5cqw rgba(53, 16, 66, .18);
+  backdrop-filter: blur(2px);
+}
+
+@media (max-width: 680px) {
+  .bookApp[data-invitation-theme="plum"] .familyBlessingsIntro {
+    top: 27.9%;
+    width: 62%;
+  }
+
+  .bookApp[data-invitation-theme="plum"] .insideRightThemeMonogram {
+    top: 1.05%;
+    width: 14.5%;
+  }
+
+  .bookApp[data-invitation-theme="plum"] .insideRightDynamicTitle {
+    top: 14.0%;
+    width: 72%;
+  }
+
+  .bookApp[data-invitation-theme="plum"] .receptionDetailsOverlay {
+    top: 23.75%;
+    width: 48%;
+  }
+
+  .bookApp[data-invitation-theme="plum"] .insideRightDynamicLocationLabel {
+    top: 80.1%;
+    width: 20%;
+    font-size: clamp(.58rem, 1.95vw, .98rem);
+  }
+
+  .bookApp[data-invitation-theme="plum"] .heritageAssistance {
+    width: 48%;
+  }
+}
+
+@media (max-width: 420px) {
+  .bookApp[data-invitation-theme="plum"] .insideRightThemeMonogram {
+    top: 1.2%;
+    width: 15.5%;
+  }
+
+  .bookApp[data-invitation-theme="plum"] .insideRightDynamicTitle {
+    top: 14.2%;
+    width: 76%;
+  }
+
+  .bookApp[data-invitation-theme="plum"] .receptionDetailsOverlay {
+    top: 23.95%;
+    width: 51%;
+  }
+
+  .bookApp[data-invitation-theme="plum"] .insideRightDynamicLocationLabel {
+    top: 80.25%;
+    width: 21%;
+  }
+}
+
+/* ========================================================================== */
+/* PHASE 2A — SAFFRON GOLD THEME                                              */
+/* Dedicated guards for the saffron/orange templates so text stays centred,    */
+/* readable and safely inside the ivory writing zone.                           */
+/* ========================================================================== */
+
+.bookApp[data-invitation-theme="saffron"] .dynamicFrontCopy {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  text-align: center;
+  color: var(--theme-ink);
+}
+
+/* RECEPTION Invitation: Keep a generous safe zone below the crest and lotus ornament. */
+.bookApp[data-invitation-theme="saffron"] .dynamicFrontHeading {
+  position: absolute;
+  top: 25.6%;
+  left: 50%;
+  width: 78%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: var(--theme-accent);
+  font-family: Georgia, 'Times New Roman', 'Palatino Linotype', serif;
+  text-shadow: 0 1px 0 rgba(255, 249, 236, .88);
+}
+
+.bookApp[data-invitation-theme="saffron"] .dynamicFrontHeading > span {
+  display: block;
+  color: var(--theme-gold);
+  font-size: clamp(.95rem, 2.6cqw, 1.7rem);
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.bookApp[data-invitation-theme="saffron"] .dynamicFrontHeading > em {
+  display: block;
+  margin-top: .38em;
+  color: var(--theme-accent);
+  font-size: clamp(.92rem, 2.35cqw, 1.56rem);
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: .05em;
+}
+
+.bookApp[data-invitation-theme="saffron"] .dynamicFrontRule {
+  position: absolute;
+  left: 50%;
+  height: 1px;
+  transform: translateX(-50%);
+  background: color-mix(in srgb, var(--theme-gold) 74%, transparent);
+  color: var(--theme-gold);
+}
+
+.bookApp[data-invitation-theme="saffron"] .dynamicFrontRule span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  padding: 0 .55cqw;
+  transform: translate(-50%, -50%);
+  background: #f6e9cf;
+  font-size: clamp(.55rem, 1.3cqw, .9rem);
+}
+
+.bookApp[data-invitation-theme="saffron"] .dynamicFrontTagline {
+  position: absolute;
+  top: 35.0%;
+  left: 50%;
+  width: 80%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: #5c4227;
+  font-size: clamp(.76rem, 2.05cqw, 1.3rem);
+  line-height: 1.25;
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .82);
+}
+
+.bookApp[data-invitation-theme="saffron"] .dynamicFrontNamesRule {
+  top: 40.1%;
+  width: 28%;
+}
+
+/* the first name of the couple is always bolded and gold, the second name is italicized and saffron-colored */
+.bookApp[data-invitation-theme="saffron"] .dynamicFrontNames {
+  position: absolute;
+  top: 42.7%;
+  left: 50%;
+  width: 100%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: var(--theme-accent);
+  font-family: 'Brush Script MT', 'Segoe Script', 'Snell Roundhand', 'Apple Chancery', cursive;
+  font-size: clamp(1.42rem, 4.45cqw, 3rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .88);
+}
+
+.bookApp[data-invitation-theme="saffron"] .dynamicFrontNames b {
+  padding: 0 .32em;
+  color: var(--theme-gold);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: .72em;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.bookApp[data-invitation-theme="saffron"] .dynamicFrontClosingRule {
+  top: 49.2%;
+  width: 25%;
+}
+
+.bookApp[data-invitation-theme="saffron"] .dynamicFrontClosing {
+  position: absolute;
+  top: 52.0%;
+  left: 50%;
+  width: 76%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: #5b4226;
+  font-size: clamp(.64rem, 1.72cqw, 1.04rem);
+  line-height: 1.33;
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .84);
+}
+
+.bookApp[data-invitation-theme="saffron"] .dynamicFrontClosing span {
+  display: block;
+}
+
+/* Page 2: the crest is embedded in the supplied Saffron Gold artwork. */
+.bookApp[data-invitation-theme="saffron"] .familyBlessingsIntro {
+  top: 27.7%;
+  width: 59%;
+}
+
+.bookApp[data-invitation-theme="saffron"] .familyBlessingsIntro h2,
+.bookApp[data-invitation-theme="saffron"] .familyBlock h3,
+.bookApp[data-invitation-theme="saffron"] .receptionDetailLabel,
+.bookApp[data-invitation-theme="saffron"] .insideRightDynamicTitle,
+.bookApp[data-invitation-theme="saffron"] .heritageBackIntro h2,
+.bookApp[data-invitation-theme="saffron"] .heritageCoupleNames,
+.bookApp[data-invitation-theme="saffron"] .heritageAssistance h3,
+.bookApp[data-invitation-theme="saffron"] .heritageAssistance .contactCard .eyebrow,
+.bookApp[data-invitation-theme="saffron"] .heritageAssistance .contactCard h3,
+.bookApp[data-invitation-theme="saffron"] .heritageAssistance .contactCard a,
+.bookApp[data-invitation-theme="saffron"] .heritageAssistance .contactCard p.muted {
+  color: var(--theme-accent);
+}
+
+.bookApp[data-invitation-theme="saffron"] .familyBlessingsIntro p,
+.bookApp[data-invitation-theme="saffron"] .familyBlock p,
+.bookApp[data-invitation-theme="saffron"] .familyBlessingsClosing,
+.bookApp[data-invitation-theme="saffron"] .receptionDetailValue,
+.bookApp[data-invitation-theme="saffron"] .heritageBackMessage,
+.bookApp[data-invitation-theme="saffron"] .heritageJourneyMessage {
+  color: #4e3923;
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .8);
+}
+
+/* Page 3: centred crest + guarded details area. */
+.bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram {
+  top: 2.95%;
+  left: 50%;
+  width: 13.5%;
+  transform: translateX(-50%);
+  opacity: 1;
+  filter: contrast(1.03) saturate(1.04);
+}
+
+/* RECEPTION DETAILS title*/
+.bookApp[data-invitation-theme="saffron"] .insideRightDynamicTitle {
+  top: 14.85%;
+  width: 69%;
+  color: var(--theme-accent);
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .86);
+}
+
+.bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay {
+  top: 23.45%;
+  width: 45.5%;
+  color: #4e3923;
+}
+
+.bookApp[data-invitation-theme="saffron"] .receptionCalendarItem .btn {
+  background: linear-gradient(135deg, #cb7b1c, #9d5911);
+  border-color: color-mix(in srgb, var(--theme-gold) 74%, var(--theme-accent));
+  color: #fff8ec;
+  box-shadow: 0 4px 12px rgba(122, 69, 16, .16);
+}
+
+.bookApp[data-invitation-theme="saffron"] .receptionCalendarItem .btn:hover {
+  background: linear-gradient(135deg, #d9892f, #a86212);
+  transform: translateY(-1px);
+}
+
+.bookApp[data-invitation-theme="saffron"] .receptionCountdownItem .countdownUnit {
+  background: rgba(255, 248, 234, .92);
+  border-color: color-mix(in srgb, var(--theme-gold) 58%, transparent);
+  box-shadow: 0 2px 7px rgba(122, 69, 16, .08);
+}
+
+.bookApp[data-invitation-theme="saffron"] .insideRightDynamicLocationLabel {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 80.1%;
+  width: 18%;
+  transform: translateX(-40%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--theme-accent-dark);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(.67rem, 1.82vw, 1.2rem);
+  font-weight: 700;
+  line-height: 1.04;
+  text-align: center;
+  pointer-events: none;
+  text-shadow: 0 1px 0 rgba(255, 250, 238, .9);
+}
+
+/* Attractive circular hover/focus treatment without visual artifacts. */
+.bookApp[data-invitation-theme="saffron"] .exactLocationHotspot::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 72%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%) scale(.9);
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(203, 123, 28, .12), rgba(194, 141, 45, .06) 56%, transparent 72%);
+  box-shadow: 0 0 0 rgba(157, 89, 17, 0);
+  opacity: 0;
+  transition: opacity .2s ease, transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+  pointer-events: none;
+}
+
+.bookApp[data-invitation-theme="saffron"] .exactLocationHotspot:hover::before,
+.bookApp[data-invitation-theme="saffron"] .exactLocationHotspot:focus-visible::before,
+.bookApp[data-invitation-theme="saffron"] .exactLocationHotspot[aria-expanded="true"]::before {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  border-color: rgba(194, 141, 45, .68);
+  box-shadow: 0 0 22px rgba(185, 107, 20, .2), inset 0 0 16px rgba(255, 248, 230, .22);
+}
+
+.bookApp[data-invitation-theme="saffron"] .locationDetailsPopover {
+  border: 1px solid rgba(194, 141, 45, .84);
+  background: linear-gradient(145deg, rgba(255, 249, 235, .99), rgba(250, 239, 219, .985));
+  box-shadow: 0 20px 50px rgba(122, 69, 16, .26), 0 0 0 1px rgba(185, 107, 20, .08);
+}
+
+.bookApp[data-invitation-theme="saffron"] .locationDetailsPopover::after {
+  border-right-color: rgba(194, 141, 45, .84);
+  border-bottom-color: rgba(194, 141, 45, .84);
+  background: rgba(250, 240, 222, .99);
+}
+
+.bookApp[data-invitation-theme="saffron"] .locationPopoverHeader {
+  padding-bottom: .48rem;
+  border-bottom: 1px solid rgba(194, 141, 45, .30);
+}
+
+.bookApp[data-invitation-theme="saffron"] .locationPopoverHeader p,
+.bookApp[data-invitation-theme="saffron"] .locationVenueName {
+  color: var(--theme-accent-dark);
+}
+
+.bookApp[data-invitation-theme="saffron"] .utilityCloseButton {
+  border-color: rgba(194, 141, 45, .62);
+  color: var(--theme-accent-dark);
+  background: rgba(255, 251, 242, .98);
+}
+
+.bookApp[data-invitation-theme="saffron"] .utilityCloseButton:hover {
+  color: #fff9eb;
+  background: var(--theme-accent);
+}
+
+/* Page 4: embedded crest; all content stays in the wide ivory centre. */
+.bookApp[data-invitation-theme="saffron"] .heritageBackIntro {
+  top: 26.8%;
+  width: 48%;
+}
+
+.bookApp[data-invitation-theme="saffron"] .heritageCoupleNames {
+  top: 44.8%;
+  width: 53%;
+}
+
+.bookApp[data-invitation-theme="saffron"] .heritageNamesRule {
+  top: 53.0%;
+}
+
+.bookApp[data-invitation-theme="saffron"] .heritageJourneyMessage {
+  top: 56.8%;
+  width: 36%;
+}
+
+.bookApp[data-invitation-theme="saffron"] .heritageLotusMark {
+  top: 63.8%;
+  color: var(--theme-gold);
+}
+
+.bookApp[data-invitation-theme="saffron"] .heritageAssistance {
+  top: 69.3%;
+  width: 44%;
+  background: rgba(252, 241, 217, .95);
+  border-color: color-mix(in srgb, var(--theme-gold) 70%, transparent);
+  box-shadow: 0 .45cqw 1.5cqw rgba(122, 69, 16, .16);
+  backdrop-filter: blur(2px);
+}
+
+@media (max-width: 680px) {
+  .bookApp[data-invitation-theme="saffron"] .familyBlessingsIntro {
+    top: 27.9%;
+    width: 62%;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram {
+    top: 1.05%;
+    width: 14.5%;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .insideRightDynamicTitle {
+    top: 14.0%;
+    width: 72%;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay {
+    top: 23.7%;
+    width: 48%;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .insideRightDynamicLocationLabel {
+    top: 80.2%;
+    width: 20%;
+    font-size: clamp(.58rem, 1.95vw, .98rem);
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .heritageAssistance {
+    width: 48%;
+  }
+}
+
+@media (max-width: 420px) {
+  .bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram {
+    top: 1.2%;
+    width: 15.5%;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .insideRightDynamicTitle {
+    top: 14.2%;
+    width: 76%;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay {
+    top: 23.95%;
+    width: 51%;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .insideRightDynamicLocationLabel {
+    top: 80.25%;
+    width: 21%;
+  }
+}
+
+/* ========================================================================== */
+/* PHASE 2A — UX HARDENING: URL THEMES, THUMBNAILS, TRANSITIONS & A11Y        */
+/* ========================================================================== */
+
+/* Thumbnail theme picker. Full-size artwork is never loaded solely for the
+   picker; each theme uses a compact WebP thumbnail generated from its front. */
+.themeSwitcher {
+  width: min(100%, 960px);
+  padding: 12px;
+  gap: 10px;
+}
+
+.themeSwitcherHeading {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  text-align: center;
+}
+
+.themeSwitcherHint {
+  color: rgba(255, 242, 211, .72);
+  font-size: .7rem;
+  letter-spacing: .02em;
+}
+
+.themeOptions {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 9px;
+}
+
+.themeOption {
+  min-width: 0;
+  min-height: 76px;
+  padding: 7px 8px;
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) 18px;
+  align-items: center;
+  justify-content: stretch;
+  gap: 8px;
+  border-radius: 14px;
+  text-align: left;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.themeOption:hover {
+  transform: translateY(-2px);
+}
+
+.themeOption:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--theme-gold) 82%, white);
+  outline-offset: 3px;
+}
+
+.themeThumbnailFrame {
+  position: relative;
+  width: 46px;
+  aspect-ratio: 3 / 4.25;
+  overflow: hidden;
+  border: 1px solid rgba(255, 240, 210, .6);
+  border-radius: 8px;
+  background: var(--swatch, #71131b);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .2);
+}
+
+.themeThumbnail {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.themeSwatch {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 12px;
+  height: 12px;
+  border: 1px solid rgba(255,255,255,.88);
+  border-radius: 50%;
+  background: var(--swatch);
+  box-shadow: 0 1px 3px rgba(0,0,0,.22);
+}
+
+.themeOptionName {
+  min-width: 0;
+  overflow: hidden;
+  color: #fff2d3;
+  font-size: .76rem;
+  font-weight: 700;
+  line-height: 1.18;
+  text-overflow: ellipsis;
+}
+
+.themeOption.active {
+  background: color-mix(in srgb, var(--theme-accent) 30%, rgba(255,255,255,.12));
+  border-color: color-mix(in srgb, var(--theme-gold) 78%, white);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--theme-gold) 32%, transparent),
+    0 7px 18px rgba(0,0,0,.16);
+}
+
+.themeCheck {
+  width: 18px;
+  height: 18px;
+  justify-self: end;
+}
+
+/* Keying the viewport by theme/page gives a lightweight transition without
+   keeping duplicate high-resolution page images mounted in the DOM. */
+.themeTransitionFrame {
+  animation: themePageCrossfade .28s cubic-bezier(.2, .7, .3, 1) both;
+}
+
+@keyframes themePageCrossfade {
+  from { opacity: .42; transform: translateY(4px) scale(.997); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Long-text safety. These rules deliberately wrap rather than clip dynamic
+   family names, venue/address values, invitation copy and contact details. */
+.dynamicFrontCopy,
+.dynamicFrontHeading,
+.dynamicFrontTagline,
+.dynamicFrontNames,
+.dynamicFrontClosing,
+.familyBlessingsContent,
+.familyBlessingsIntro,
+.familyBlock,
+.familyBlessingsClosing,
+.receptionDetailsOverlay,
+.receptionDetailValue,
+.receptionAddressValue,
+.heritageBackContent,
+.heritageBackMessage,
+.heritageCoupleNames,
+.heritageJourneyMessage,
+.heritageAssistance,
+.contactCard,
+.contactCard p,
+.contactCard a {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  hyphens: auto;
+}
+
+.dynamicFrontHeading,
+.familyBlessingsIntro h2,
+.familyBlock h3,
+.insideRightDynamicTitle,
+.receptionDetailLabel,
+.heritageBackIntro h2,
+.heritageAssistance h3 {
+  text-wrap: balance;
+}
+
+.dynamicFrontTagline,
+.dynamicFrontClosing,
+.familyBlessingsIntro p,
+.familyBlessingsClosing,
+.receptionDetailValue,
+.heritageBackMessage,
+.heritageJourneyMessage {
+  text-wrap: pretty;
+}
+
+/* Previous theme rules intentionally used nowrap for short real names. The
+   final safety override allows unusual/long names to wrap instead of escaping
+   the parchment safe zone. */
+.bookApp[data-invitation-theme] .dynamicFrontNames {
+  width: 92%;
+  white-space: normal;
+}
+
+.bookApp[data-invitation-theme] .dynamicFrontNames span {
+  display: inline-block;
+  max-width: 44%;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+
+.receptionAddressValue {
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+/* Clear keyboard focus affordances for page navigation and map interaction. */
+.navArrow:focus-visible,
+.pageDot:focus-visible,
+.openButton:focus-visible,
+.exactLocationHotspot:focus-visible,
+.utilityCloseButton:focus-visible,
+.btn:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--theme-gold) 82%, white);
+  outline-offset: 3px;
+}
+
+.exactLocationHotspot {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Responsive validation matrix: fluid rules are exercised at
+   320 / 360 / 390 / 430 / 768 / 1024 / 1440px by the accompanying tests. */
+@media (max-width: 430px) {
+  .themeOptions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .themeOption {
+    min-height: 66px;
+    grid-template-columns: 38px minmax(0, 1fr) 16px;
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .themeThumbnailFrame { width: 38px; }
+  .themeOptionName { font-size: .68rem; }
+  .themeSwitcherHint { width: 100%; font-size: .64rem; }
+}
+
+@media (max-width: 360px) {
+  .themeSwitcher { padding-inline: 6px; }
+  .themeOptions { gap: 5px; }
+  .themeOption { grid-template-columns: 34px minmax(0, 1fr) 14px; }
+  .themeThumbnailFrame { width: 34px; }
+  .themeOptionName { font-size: .63rem; }
+}
+
+@media (min-width: 681px) and (max-width: 1024px) {
+  .themeOptions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .themeTransitionFrame,
+  .themeOption {
+    animation: none !important;
+    transition: none !important;
+  }
+}

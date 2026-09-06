@@ -1,0 +1,199 @@
+/* ========================================================================== */
+/* PHASE 2B.1 + 2B.2 — SMART SHARING, DEEP LINKS, QR + NFC                  */
+/* Kept in a separate stylesheet so Phase 2A theme artwork/layout stays safe. */
+/* ========================================================================== */
+
+.phase2bExperienceTools {
+  width: min(100%, 840px);
+  margin: 0 auto 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.smartSharePanel,
+.qrNfcPanel {
+  border: 1px solid color-mix(in srgb, var(--theme-gold) 50%, transparent);
+  border-radius: 16px;
+  background: rgba(255, 248, 232, .94);
+  color: var(--theme-ink);
+  box-shadow: 0 12px 30px rgba(20, 8, 4, .14);
+  backdrop-filter: blur(8px);
+}
+
+.smartSharePanel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px 16px;
+  padding: 12px 14px;
+}
+
+.smartShareCopy {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.smartShareCopy strong,
+.qrNfcSummary,
+.qrNfcCardLabel {
+  color: var(--theme-accent);
+}
+
+.smartShareCopy span,
+.qrNfcIntro,
+.qrNfcCardHint,
+.entryUrlPreview {
+  font-size: .78rem;
+  line-height: 1.35;
+}
+
+.smartShareActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.experienceButton {
+  min-height: 38px;
+  border: 1px solid color-mix(in srgb, var(--theme-gold) 75%, transparent);
+  border-radius: 999px;
+  padding: .45rem .85rem;
+  background: rgba(255,255,255,.62);
+  color: var(--theme-accent-dark);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.experienceButtonPrimary {
+  border-color: var(--theme-accent);
+  background: var(--theme-accent);
+  color: var(--theme-soft);
+}
+
+.experienceButton:hover {
+  transform: translateY(-1px);
+}
+
+.experienceButton:focus-visible,
+.qrNfcSummary:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--theme-gold) 78%, white);
+  outline-offset: 3px;
+}
+
+.smartShareStatus {
+  min-height: 1em;
+  grid-column: 1 / -1;
+  font-size: .7rem;
+  color: var(--theme-accent-dark);
+}
+
+.qrNfcPanel {
+  overflow: hidden;
+}
+
+.qrNfcSummary {
+  padding: 11px 14px;
+  cursor: pointer;
+  font-weight: 700;
+  list-style-position: inside;
+}
+
+.qrNfcBody {
+  padding: 0 14px 14px;
+}
+
+.qrNfcIntro {
+  margin: 0 0 10px;
+}
+
+.qrNfcGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.qrAccessCard,
+.nfcAccessCard {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--theme-gold) 35%, transparent);
+  border-radius: 14px;
+  background: rgba(255,255,255,.48);
+  text-align: center;
+}
+
+.invitationQr,
+.invitationQrPlaceholder {
+  width: min(150px, 70%);
+  aspect-ratio: 1;
+  border-radius: 10px;
+  background: #fff;
+  object-fit: contain;
+}
+
+.invitationQr {
+  padding: 5px;
+}
+
+.invitationQrPlaceholder {
+  background:
+    linear-gradient(45deg, #111 25%, transparent 25%) 0 0 / 18px 18px,
+    linear-gradient(-45deg, #111 25%, transparent 25%) 0 0 / 18px 18px,
+    #fff;
+  opacity: .1;
+}
+
+.nfcGlyph {
+  min-height: 80px;
+  display: grid;
+  place-items: center;
+  color: var(--theme-accent);
+  font-size: 2rem;
+  letter-spacing: -.2em;
+  transform: rotate(-12deg);
+}
+
+.entryUrlPreview {
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(0,0,0,.045);
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+@media (max-width: 680px) {
+  .phase2bExperienceTools { margin-bottom: 10px; }
+
+  .smartSharePanel {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+
+  .smartShareActions {
+    justify-content: flex-start;
+  }
+
+  .qrNfcGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .invitationQr,
+  .invitationQrPlaceholder {
+    width: min(132px, 48vw);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .experienceButton {
+    transition: none !important;
+    transform: none !important;
+  }
+}

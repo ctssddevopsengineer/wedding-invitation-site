@@ -1,0 +1,18 @@
+/* Saffron's lotus is at 51% of the artwork width. Use the approved mobile
+   crest placement at every viewport size, with proportional clearance.
+   Pale gold lettering on a deep warm brown fill keeps the initials readable. */
+.bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram {
+  left: 51.3% !important;
+  right: auto !important;
+  top: 2.2% !important;
+  width: 12.8% !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 !important;
+  transform: translateX(-48.75%) !important;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  /* Recolor the high-contrast shared crest without an SVG channel filter. */
+  filter: sepia(1) saturate(1.8) !important;
+}

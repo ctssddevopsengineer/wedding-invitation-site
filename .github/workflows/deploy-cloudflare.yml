@@ -1,0 +1,70 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Render invitation configuration
+        env:
+          EVENT_TIMEZONE: ${{ vars.EVENT_TIMEZONE }}
+          EVENT_TIMEZONE_OFFSET: ${{ vars.EVENT_TIMEZONE_OFFSET }}
+          EVENT_START_DATE: ${{ vars.EVENT_START_DATE }}
+          EVENT_START_TIME: ${{ vars.EVENT_START_TIME }}
+          GOOGLE_MAPS_URL: ${{ vars.GOOGLE_MAPS_URL }}
+          VENUE_NAME: ${{ vars.VENUE_NAME }}
+          VENUE_ADDRESS: ${{ vars.VENUE_ADDRESS }}
+          GROOM_NAME: ${{ vars.GROOM_NAME }}
+          BRIDE_NAME: ${{ vars.BRIDE_NAME }}
+          GROOM_FATHER_NAME: ${{ vars.GROOM_FATHER_NAME }}
+          GROOM_MOTHER_NAME: ${{ vars.GROOM_MOTHER_NAME }}
+          BRIDE_FATHER_NAME: ${{ vars.BRIDE_FATHER_NAME }}
+          BRIDE_MOTHER_NAME: ${{ vars.BRIDE_MOTHER_NAME }}
+          GROOM_FAMILY_CONTACT_NAME: ${{ vars.GROOM_FAMILY_CONTACT_NAME }}
+          GROOM_FAMILY_PHONE_NUMBER: ${{ vars.GROOM_FAMILY_PHONE_NUMBER }}
+          BRIDE_FAMILY_CONTACT_NAME: ${{ vars.BRIDE_FAMILY_CONTACT_NAME }}
+          BRIDE_FAMILY_PHONE_NUMBER: ${{ vars.BRIDE_FAMILY_PHONE_NUMBER }}
+        run: npm run config:render
+
+      - name: Build static Next.js site
+        run: npm run build
+
+      - name: Validate static export
+        run: npm run validate:export
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy out --project-name=${{ vars.CLOUDFLARE_PROJECT_NAME }}
