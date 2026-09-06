@@ -31,10 +31,10 @@ test('Saffron Gold keeps the monogram anchor centred, offsets only the rendered 
   }
 });
 
-test('Rani Magenta shifts only inside-right text overlays slightly right for optical centring', () => {
+test('Rani Magenta shifts only inside-right text overlays slightly further right for optical centring', () => {
   assert.match(
     css,
-    /\.bookApp\[data-invitation-theme="magenta"\] \.insideRightDynamicTitle,\s*\n\.bookApp\[data-invitation-theme="magenta"\] \.receptionDetailsOverlay\s*\{[\s\S]*?transform:\s*translateX\(calc\(-50% \+ \.55cqw\)\)\s*!important/
+    /\.bookApp\[data-invitation-theme="magenta"\] \.insideRightDynamicTitle,\s*\n\.bookApp\[data-invitation-theme="magenta"\] \.receptionDetailsOverlay\s*\{[\s\S]*?transform:\s*translateX\(calc\(-50% \+ \.85cqw\)\)\s*!important/
   );
   const match = css.match(/\.bookApp\[data-invitation-theme="magenta"\] \.insideRightDynamicTitle,\s*\n\.bookApp\[data-invitation-theme="magenta"\] \.receptionDetailsOverlay\s*\{([\s\S]*?)\}/);
   assert.ok(match, 'missing Rani Magenta inside-right optical centring rule');

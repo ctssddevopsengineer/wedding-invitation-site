@@ -36,13 +36,14 @@
 }
 
 /* Rani Magenta inside-right text is optically a little left of the parchment
-   centre even though its CSS anchor is 50%. Apply one tiny, shared X correction
-   to the dynamic heading and the complete reception-details stack. This moves
-   only the text overlays; monogram, artwork, widths, heights and page geometry
-   stay unchanged. */
+   centre even though its CSS anchor is 50%. Apply one small, shared X correction
+   to the dynamic heading and the complete reception-details stack. The previous
+   .55cqw correction was intentionally increased only slightly to .85cqw so the
+   text reads centred without moving the monogram, artwork, widths, heights or
+   page geometry. */
 .bookApp[data-invitation-theme="magenta"] .insideRightDynamicTitle,
 .bookApp[data-invitation-theme="magenta"] .receptionDetailsOverlay {
-  transform: translateX(calc(-50% + .55cqw)) !important;
+  transform: translateX(calc(-50% + .85cqw)) !important;
 }
 
 /* Royal Navy calendar controls use a stronger interactive state than the
