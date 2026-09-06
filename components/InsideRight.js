@@ -84,23 +84,32 @@ export default function InsideRight({ themeId, initialLocationOpen = false, onLo
 
       {insideRightMonogram && (
         <>
-          {themeId === 'saffron' && (
-            <svg width="0" height="0" aria-hidden="true" focusable="false" style={{ position: 'absolute' }}>
+          {themeId === 'saffron' ? (
+            <svg
+              className="insideRightThemeMonogram"
+              viewBox="0 0 640 640"
+              width="640"
+              height="640"
+              role="img"
+              aria-label={t('{couple} monogram', { couple: EVENT.couple })}
+              focusable="false"
+            >
               <defs>
                 <filter id={monogramContrastId} colorInterpolationFilters="sRGB">
-                  {/* Separate the orange fill from the gold lettering using their
-                      blue channels, preserving the transparent crest silhouette. */}
+                  {/* Render the pale gold lettering and dark brown fill together
+                      with the crest, without an external CSS filter reference. */}
                   <feColorMatrix type="matrix" values="0 0 8.55 0 -0.4753  0 0 9.4 0 -0.7278  0 0 7.45 0 -0.6816  0 0 0 1 0" />
                 </filter>
               </defs>
+              <image href={insideRightMonogram} width="640" height="640" filter={`url(#${monogramContrastId})`} />
             </svg>
+          ) : (
+            <Artwork
+              className="insideRightThemeMonogram"
+              src={insideRightMonogram}
+              alt={t('{couple} monogram', { couple: EVENT.couple })}
+            />
           )}
-          <Artwork
-            className="insideRightThemeMonogram"
-            style={themeId === 'saffron' ? { '--monogram-contrast-filter': `url("#${monogramContrastId}")` } : undefined}
-            src={insideRightMonogram}
-            alt={t('{couple} monogram', { couple: EVENT.couple })}
-          />
           <h2 className="insideRightDynamicTitle">{language === 'en' ? <>&ensp;Reception<br />Details</> : <>{t('Reception')}<br />{t('Details')}</>}</h2>
         </>
       )}
