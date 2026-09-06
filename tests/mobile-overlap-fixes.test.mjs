@@ -31,6 +31,18 @@ test('Saffron Gold keeps the monogram anchor centred, offsets only the rendered 
   }
 });
 
+test('Rani Magenta shifts only inside-right text overlays slightly right for optical centring', () => {
+  assert.match(
+    css,
+    /\.bookApp\[data-invitation-theme="magenta"\] \.insideRightDynamicTitle,\s*\n\.bookApp\[data-invitation-theme="magenta"\] \.receptionDetailsOverlay\s*\{[\s\S]*?transform:\s*translateX\(calc\(-50% \+ \.55cqw\)\)\s*!important/
+  );
+  const match = css.match(/\.bookApp\[data-invitation-theme="magenta"\] \.insideRightDynamicTitle,\s*\n\.bookApp\[data-invitation-theme="magenta"\] \.receptionDetailsOverlay\s*\{([\s\S]*?)\}/);
+  assert.ok(match, 'missing Rani Magenta inside-right optical centring rule');
+  for (const property of ['left', 'right', 'top', 'bottom', 'width', 'height', 'margin', 'padding']) {
+    assert.doesNotMatch(match[1], new RegExp(`(^|[;\\s])${property}\\s*:`, 'm'));
+  }
+});
+
 test('Saffron reused inside-left crest visually removes its parchment background without moving the page', () => {
   const reused = blockFor('.bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogramFromInsideLeft');
   assert.match(reused, /left:\s*0\s*!important/);
