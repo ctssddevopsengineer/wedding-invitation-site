@@ -35,6 +35,30 @@
   transform: translate(-50%, 1.4cqw) !important;
 }
 
+/* Royal Navy calendar controls use a stronger interactive state than the
+   generic theme button treatment. Both Google Calendar and Apple / Outlook
+   now receive a clearly visible navy/gold highlight on mouse hover and keyboard
+   focus without changing their dimensions or the reception-details geometry. */
+.bookApp[data-invitation-theme="navy"] .receptionCalendarItem .btn {
+  transition:
+    background .16s ease,
+    border-color .16s ease,
+    color .16s ease,
+    box-shadow .16s ease,
+    transform .16s ease;
+}
+
+.bookApp[data-invitation-theme="navy"] .receptionCalendarItem .btn:hover,
+.bookApp[data-invitation-theme="navy"] .receptionCalendarItem .btn:focus-visible {
+  background: linear-gradient(135deg, #1d4f7e, #092845) !important;
+  border-color: #d6ad55 !important;
+  color: #fffdf4 !important;
+  box-shadow:
+    0 0 0 1px rgba(214, 173, 85, .34),
+    0 5px 14px rgba(7, 28, 50, .28);
+  transform: translateY(-1px);
+}
+
 @media (max-width: 680px) {
   /* ------------------------------------------------------------------------ */
   /* BABY PINK — keep long couple names on one balanced line without collision */
