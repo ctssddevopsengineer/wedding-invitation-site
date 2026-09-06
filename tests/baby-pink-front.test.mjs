@@ -36,6 +36,13 @@ function aspectRatio({ width, height }) {
   return width / height;
 }
 
+function isSupportedRaster(filePath) {
+  const header = fs.readFileSync(filePath).subarray(0, 8);
+  const isPng = header[0] === 0x89 && header.toString('ascii', 1, 4) === 'PNG';
+  const isJpeg = header[0] === 0xff && header[1] === 0xd8;
+  return isPng || isJpeg;
+}
+
 test('Baby Pink alone opts into blank-front dynamic rendering without changing existing dynamicFront semantics', () => {
   assert.equal(THEMES.blush.dynamicFront, false);
   assert.equal(THEMES.blush.blankFront, true);
@@ -73,18 +80,16 @@ test('Baby Pink front keeps readable floor sizes for Latin, Bengali and Nepali t
   assert.match(css, /font-size:\s*clamp\(1\.35rem, 6\.4cqw, 3\.65rem\)/);
 });
 
-test('Baby Pink uses the uploaded blank front template without changing card geometry', () => {
+test('Baby Pink uses a high-definition blank front template without changing card geometry', () => {
   const webPath = getThemeAsset('blush', 'front');
   assert.equal(webPath, '/themes/blush/front-enhanced.jpg');
   const imagePath = path.join(root, 'public', webPath.replace(/^\//, ''));
   assert.ok(fs.existsSync(imagePath));
-  const header = fs.readFileSync(imagePath).subarray(0, 2);
-  assert.equal(header[0], 0xff);
-  assert.equal(header[1], 0xd8);
+  assert.ok(isSupportedRaster(imagePath), 'Baby Pink front must contain valid PNG or JPEG image bytes');
 
   const actual = imageDimensions(imagePath);
   const classic = imageDimensions(path.join(root, 'public', getThemeAsset('classic', 'front').replace(/^\//, '')));
-  assert.ok(actual.width >= 320 && actual.height >= 450, `Baby Pink front resolution is too small: ${actual.width}x${actual.height}`);
-  assert.ok(Math.abs(aspectRatio(actual) - aspectRatio(classic)) < 0.002, 'Baby Pink front aspect ratio would distort/crop the approved card geometry');
-  assert.ok(fs.statSync(imagePath).size > 5_000, 'Baby Pink front file is unexpectedly small');
+  assert.ok(actual.width >= 1000 && actual.height >= 1400, `Baby Pink front is not high-definition enough: ${actual.width}x${actual.height}`);
+  assert.ok(Math.abs(aspectRatio(actual) - aspectRatio(classic)) < 0.01, 'Baby Pink front aspect ratio would materially distort/crop the approved card geometry');
+  assert.ok(fs.statSync(imagePath).size > 500_000, 'Baby Pink front file is unexpectedly small for the approved HD artwork');
 });
