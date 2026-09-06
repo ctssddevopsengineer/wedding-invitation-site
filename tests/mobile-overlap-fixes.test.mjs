@@ -31,20 +31,42 @@ test('Baby Pink front uses a non-colliding three-part couple-name layout on phon
 test('Royal Plum page-3 monogram is locked to the exact horizontal centre on mobile', () => {
   const block = blockFor('.bookApp[data-invitation-theme="plum"] .insideRightThemeMonogram');
   assert.match(block, /left:\s*50%\s*!important/);
+  assert.match(block, /right:\s*auto\s*!important/);
   assert.match(block, /transform:\s*translateX\(-50%\)\s*!important/);
   assert.match(block, /object-position:\s*center/);
 });
 
-test('Saffron Gold separates monogram, title and reception details into explicit mobile zones', () => {
+test('Royal Plum page-3 location label is centred inside the medallion on mobile', () => {
+  const block = blockFor('.bookApp[data-invitation-theme="plum"] .insideRightDynamicLocationLabel');
+  assert.match(block, /left:\s*50%\s*!important/);
+  assert.match(block, /right:\s*auto\s*!important/);
+  assert.match(block, /transform:\s*translateX\(-50%\)\s*!important/);
+  assert.match(block, /text-align:\s*center/);
+  assert.match(block, /justify-content:\s*center/);
+  assert.match(block, /align-items:\s*center/);
+});
+
+test('Saffron Gold keeps crest and title below the top floral artwork on mobile', () => {
   const monogram = blockFor('.bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram');
   const title = blockFor('.bookApp[data-invitation-theme="saffron"] .insideRightDynamicTitle');
   const details = blockFor('.bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay');
 
-  assert.match(monogram, /top:\s*4\.25%\s*!important/);
-  assert.match(title, /top:\s*13\.25%\s*!important/);
+  assert.match(monogram, /top:\s*5\.55%\s*!important/);
+  assert.match(monogram, /left:\s*50%\s*!important/);
+  assert.match(monogram, /translateX\(-50%\)/);
+  assert.match(title, /top:\s*14\.65%\s*!important/);
+  assert.match(title, /font-size:\s*clamp\(\.96rem, 4\.2cqw, 1\.95rem\)/);
   assert.match(details, /top:\s*23\.55%\s*!important/);
   assert.match(details, /height:\s*46\.6%\s*!important/);
   assert.match(details, /justify-content:\s*space-between/);
+});
+
+test('Royal Navy page-3 monogram clears the top flower and stays centred on mobile', () => {
+  const block = blockFor('.bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram');
+  assert.match(block, /top:\s*5\.1%\s*!important/);
+  assert.match(block, /left:\s*50%\s*!important/);
+  assert.match(block, /right:\s*auto\s*!important/);
+  assert.match(block, /transform:\s*translateX\(-50%\)\s*!important/);
 });
 
 test('Deep Red countdown receives its own protected mobile vertical space', () => {
@@ -59,6 +81,8 @@ test('Deep Red countdown receives its own protected mobile vertical space', () =
 test('Samsung A55-class width band has dedicated compact-phone safeguards', () => {
   assert.match(css, /@media \(min-width: 361px\) and \(max-width: 430px\)/);
   assert.match(css, /data-invitation-theme="blush"\][\s\S]*?font-size:\s*clamp\(\.84rem, 3\.55cqw, 1\.45rem\)/);
-  assert.match(css, /data-invitation-theme="saffron"\][\s\S]*?top:\s*23\.35%\s*!important/);
+  assert.match(css, /data-invitation-theme="saffron"\][\s\S]*?top:\s*5\.75%\s*!important/);
+  assert.match(css, /data-invitation-theme="saffron"\][\s\S]*?top:\s*14\.8%\s*!important/);
+  assert.match(css, /data-invitation-theme="navy"\][\s\S]*?top:\s*5\.3%\s*!important/);
   assert.match(css, /data-invitation-theme="classic"\][\s\S]*?top:\s*22\.05%\s*!important/);
 });
