@@ -11,8 +11,10 @@
    only the rendered crest by a tiny internal X translation. This avoids the
    previous regression where changing the anchor created the impression that
    the whole composition had shifted. Contrast is applied only to the crest.
-   Reception Details is lowered independently by a tiny Y translation while
-   preserving its existing horizontal centring and dimensions. */
+
+   The visible Reception Details heading and the full details stack are lowered
+   independently on the Y axis. Their horizontal anchors, widths/heights and the
+   approved parchment/card artwork remain unchanged. */
 .bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram {
   left: 50% !important;
   right: auto !important;
@@ -20,8 +22,12 @@
   filter: contrast(1.28) saturate(1.12) drop-shadow(0 0 .75px rgba(69, 38, 7, .58));
 }
 
+.bookApp[data-invitation-theme="saffron"] .insideRightDynamicTitle {
+  transform: translate(-50%, .9cqw) !important;
+}
+
 .bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay {
-  transform: translate(-50%, .7cqw) !important;
+  transform: translate(-50%, 1.4cqw) !important;
 }
 
 @media (max-width: 680px) {
@@ -115,7 +121,7 @@
     top: 14.65% !important;
     width: 42% !important;
     margin: 0 !important;
-    transform: translateX(-50%) !important;
+    transform: translate(-50%, .9cqw) !important;
     text-align: center;
     line-height: .97;
     font-size: clamp(.96rem, 4.2cqw, 1.95rem) !important;
@@ -126,7 +132,7 @@
     height: 46.6% !important;
     width: 51% !important;
     justify-content: space-between;
-    transform: translate(-50%, .7cqw) !important;
+    transform: translate(-50%, 1.4cqw) !important;
   }
 
   .bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay > br {
