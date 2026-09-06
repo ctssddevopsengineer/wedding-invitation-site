@@ -34,10 +34,12 @@
   }
 
   /* ------------------------------------------------------------------------ */
-  /* ROYAL PLUM — force page-3 crest onto the exact card centre line.         */
+  /* ROYAL PLUM — force page-3 crest onto the card centre line and keep the   */
+  /* dynamic Location / Map label centred inside the printed medallion.       */
   /* ------------------------------------------------------------------------ */
   .bookApp[data-invitation-theme="plum"] .insideRightThemeMonogram {
     left: 50% !important;
+    right: auto !important;
     top: 4.35% !important;
     width: 12.5% !important;
     max-height: 7.4%;
@@ -45,6 +47,7 @@
     transform: translateX(-50%) !important;
     object-fit: contain;
     object-position: center;
+    display: block;
   }
 
   .bookApp[data-invitation-theme="plum"] .insideRightDynamicTitle {
@@ -57,29 +60,48 @@
     line-height: .98;
   }
 
+  .bookApp[data-invitation-theme="plum"] .insideRightDynamicLocationLabel {
+    left: 50% !important;
+    right: auto !important;
+    margin: 0 !important;
+    transform: translateX(-50%) !important;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .bookApp[data-invitation-theme="plum"] .insideRightDynamicLocationLabel > span {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+
   /* ------------------------------------------------------------------------ */
-  /* SAFFRON GOLD — separate crest, title and details into explicit zones.     */
+  /* SAFFRON GOLD — move the crest/title below the top floral artwork. The    */
+  /* artwork itself is not resized or repositioned.                            */
   /* ------------------------------------------------------------------------ */
   .bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram {
     left: 50% !important;
-    top: 4.25% !important;
+    right: auto !important;
+    top: 5.55% !important;
     width: 12.2% !important;
     max-height: 7.2%;
     margin: 0 !important;
     transform: translateX(-50%) !important;
     object-fit: contain;
     object-position: center;
+    display: block;
   }
 
   .bookApp[data-invitation-theme="saffron"] .insideRightDynamicTitle {
     left: 50% !important;
-    top: 13.25% !important;
+    top: 14.65% !important;
     width: 42% !important;
     margin: 0 !important;
     transform: translateX(-50%) !important;
     text-align: center;
     line-height: .97;
-    font-size: clamp(1.02rem, 4.55cqw, 2.12rem) !important;
+    font-size: clamp(.96rem, 4.2cqw, 1.95rem) !important;
   }
 
   .bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay {
@@ -100,6 +122,21 @@
 
   .bookApp[data-invitation-theme="saffron"] .receptionDetailItem {
     flex: 0 0 auto;
+  }
+
+  /* ------------------------------------------------------------------------ */
+  /* ROYAL NAVY — the original mobile crest sat too close to the decorative   */
+  /* flower. Move only the overlay; do not change template/card geometry.      */
+  /* ------------------------------------------------------------------------ */
+  .bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
+    left: 50% !important;
+    right: auto !important;
+    top: 5.1% !important;
+    margin: 0 !important;
+    transform: translateX(-50%) !important;
+    object-fit: contain;
+    object-position: center;
+    display: block;
   }
 
   /* ------------------------------------------------------------------------ */
@@ -138,9 +175,22 @@
     font-size: clamp(.84rem, 3.55cqw, 1.45rem) !important;
   }
 
+  .bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram {
+    top: 5.75% !important;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .insideRightDynamicTitle {
+    top: 14.8% !important;
+    font-size: clamp(.92rem, 4.05cqw, 1.68rem) !important;
+  }
+
   .bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay {
     top: 23.35% !important;
     height: 46.35% !important;
+  }
+
+  .bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
+    top: 5.3% !important;
   }
 
   .bookApp[data-invitation-theme="classic"] .receptionDetailsOverlay {
@@ -160,5 +210,18 @@
   .bookApp[data-invitation-theme="plum"] .insideRightThemeMonogram,
   .bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram {
     width: 11.8% !important;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram {
+    top: 5.8% !important;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .insideRightDynamicTitle {
+    top: 14.9% !important;
+    font-size: clamp(.86rem, 3.9cqw, 1.45rem) !important;
+  }
+
+  .bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
+    top: 5.35% !important;
   }
 }
