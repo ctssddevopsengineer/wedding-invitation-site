@@ -6,6 +6,11 @@ on:
       - development
       - master
       - release/**
+  push:
+    branches:
+      - development
+      - master
+      - release/**
 
 permissions:
   contents: read
@@ -15,34 +20,50 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+
   set-environment:
     runs-on: ubuntu-latest
+
     outputs:
-      environment: ${{ steps.set-env.outputs.environment }}
+      environment: ${{ steps.environment.outputs.environment }}
+
     steps:
-      - name: Check branch name and set environment variable
-        id: set-env
+      - name: Determine target environment
+        id: environment
+        shell: bash
         run: |
-          if [[ "${{ github.base_ref }}" == "development" ]]; then
-            echo "environment=unt" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.base_ref }}" == "master" ]]; then
-            echo "environment=prd" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.base_ref }}" == "release/**" ]]; then
-            echo "environment=uat" >> $GITHUB_OUTPUT
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BRANCH="${{ github.base_ref }}"
           else
-            echo "This workflow only runs on development, master, or release branches."
-            exit 1
+            BRANCH="${{ github.ref_name }}"
           fi
-        
-      - name: Display environment variable
-        run: echo "Environment variable is set to ${{ steps.set-env.outputs.environment }}"
-        
-  test-build:
-    name: Tests and GitHub Pages-compatible build
+
+          case "$BRANCH" in
+            development)
+              ENVIRONMENT="unt"
+              ;;
+            master)
+              ENVIRONMENT="prd"
+              ;;
+            release/*)
+              ENVIRONMENT="uat"
+              ;;
+            *)
+              echo "Unsupported branch: $BRANCH"
+              exit 1
+              ;;
+          esac
+
+          echo "environment=$ENVIRONMENT" >> "$GITHUB_OUTPUT"
+          echo "Resolved environment: $ENVIRONMENT"
+
+
+  test:
+    name: Test application
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     needs: set-environment
-    environment: ${{ needs.set-environment.outputs.environment }}
+    timeout-minutes: 15
+
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -66,10 +87,37 @@ jobs:
           NEXT_PUBLIC_BASE_PATH: ''
         run: npm run test:phase2b
 
-      # CI uses neutral fixture values only to prove that the deployment template
-      # can be rendered and exported. Production values come from environment vars.
-      - name: Render CI invitation configuration
-        if: false
+
+  build:
+    name: Build deployment artifact
+
+    # Only create the real deployment artifact after merge/push
+    if: github.event_name == 'push'
+
+    runs-on: ubuntu-latest
+
+    needs:
+      - set-environment
+      - test
+
+    environment: ${{ needs.set-environment.outputs.environment }}
+
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Render invitation configuration
         env:
           EVENT_TIMEZONE: ${{ vars.EVENT_TIMEZONE }}
           EVENT_TIMEZONE_OFFSET: ${{ vars.EVENT_TIMEZONE_OFFSET }}
@@ -90,22 +138,20 @@ jobs:
           BRIDE_FAMILY_PHONE_NUMBER: ${{ vars.BRIDE_FAMILY_PHONE_NUMBER }}
         run: npm run config:render
 
-      - name: Build GitHub Pages-compatible static export
+      - name: Build static export
         env:
           NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
         run: npm run build
 
-      - name: Validate GitHub Pages-compatible export
-        if: false
+      - name: Validate static export
         env:
           NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
         run: npm run validate:export
 
-      - name: Upload build artifact
-        if: false
+      - name: Upload deployment artifact
         uses: actions/upload-artifact@v7
         with:
-          name: github-pages
+          name: github-pages-${{ github.sha }}
           path: out/
           retention-days: 1
           if-no-files-found: error
