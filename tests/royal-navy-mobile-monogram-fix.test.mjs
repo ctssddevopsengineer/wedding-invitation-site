@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 const css = fs.readFileSync(new URL('../app/royal-navy-mobile-monogram-fix.css', import.meta.url), 'utf8');
 const layout = fs.readFileSync(new URL('../app/layout.js', import.meta.url), 'utf8');
-const monogramPath = new URL('../public/themes/navy/inside-right-monogram.png', import.meta.url);
+const monogramPath = fileURLToPath(new URL('../public/themes/navy/inside-right-monogram.png', import.meta.url));
 
 test('Royal Navy mobile monogram clearance stylesheet loads after overlap fixes', () => {
   assert.match(
