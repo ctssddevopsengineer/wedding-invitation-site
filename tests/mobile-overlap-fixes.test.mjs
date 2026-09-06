@@ -46,14 +46,15 @@ test('Royal Plum page-3 location label is centred inside the medallion on mobile
   assert.match(block, /align-items:\s*center/);
 });
 
-test('Saffron Gold keeps crest and title below the top floral artwork on mobile', () => {
+test('Saffron Gold visually centres the ampersand over the flower while keeping title/details protected on mobile', () => {
   const monogram = blockFor('.bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram');
   const title = blockFor('.bookApp[data-invitation-theme="saffron"] .insideRightDynamicTitle');
   const details = blockFor('.bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay');
 
   assert.match(monogram, /top:\s*5\.55%\s*!important/);
-  assert.match(monogram, /left:\s*50%\s*!important/);
-  assert.match(monogram, /translateX\(-50%\)/);
+  assert.match(monogram, /left:\s*50\.8%\s*!important/);
+  assert.match(monogram, /right:\s*auto\s*!important/);
+  assert.match(monogram, /transform:\s*translateX\(-50%\)\s*!important/);
   assert.match(title, /top:\s*14\.65%\s*!important/);
   assert.match(title, /font-size:\s*clamp\(\.96rem, 4\.2cqw, 1\.95rem\)/);
   assert.match(details, /top:\s*23\.55%\s*!important/);
@@ -81,6 +82,7 @@ test('Deep Red countdown receives its own protected mobile vertical space', () =
 test('Samsung A55-class width band has dedicated compact-phone safeguards', () => {
   assert.match(css, /@media \(min-width: 361px\) and \(max-width: 430px\)/);
   assert.match(css, /data-invitation-theme="blush"\][\s\S]*?font-size:\s*clamp\(\.84rem, 3\.55cqw, 1\.45rem\)/);
+  assert.match(css, /data-invitation-theme="saffron"\][\s\S]*?left:\s*50\.8%\s*!important/);
   assert.match(css, /data-invitation-theme="saffron"\][\s\S]*?top:\s*5\.75%\s*!important/);
   assert.match(css, /data-invitation-theme="saffron"\][\s\S]*?top:\s*14\.8%\s*!important/);
   assert.match(css, /data-invitation-theme="navy"\][\s\S]*?top:\s*5\.3%\s*!important/);
