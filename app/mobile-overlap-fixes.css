@@ -6,17 +6,22 @@
 /* remains untouched while dynamic overlays stay readable and separated.      */
 /* ========================================================================== */
 
-/* Saffron Gold visual-centering/contrast correction for every viewport.
-   Only the overlay crest is adjusted: no card, parchment, artwork, spacing,
-   dimensions or surrounding UI/UX geometry is changed. The source crest is
-   slightly asymmetric, so 51.1% places the visible '&' on the parchment's
-   optical centreline. The subtle filter separates the existing gold lettering
-   from the similarly coloured artwork without replacing/redesigning the crest. */
-.bookApp[data-invitation-theme="saffron"] :is(.insideRightThemeMonogram) {
-  left: 51.1% !important;
+/* Saffron Gold refinement for every viewport.
+   Keep the monogram's anchor on the exact page centre (left: 50%) and move
+   only the rendered crest by a tiny internal X translation. This avoids the
+   previous regression where changing the anchor created the impression that
+   the whole composition had shifted. Contrast is applied only to the crest.
+   Reception Details is lowered independently by a tiny Y translation while
+   preserving its existing horizontal centring and dimensions. */
+.bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram {
+  left: 50% !important;
   right: auto !important;
-  transform: translateX(-50%) !important;
-  filter: contrast(1.18) saturate(1.08) drop-shadow(0 0 .55px rgba(82, 48, 12, .42));
+  transform: translateX(calc(-50% + .35cqw)) !important;
+  filter: contrast(1.28) saturate(1.12) drop-shadow(0 0 .75px rgba(69, 38, 7, .58));
+}
+
+.bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay {
+  transform: translate(-50%, .7cqw) !important;
 }
 
 @media (max-width: 680px) {
@@ -90,19 +95,16 @@
   }
 
   /* ------------------------------------------------------------------------ */
-  /* SAFFRON GOLD — move the crest/title below the top floral artwork. The    */
-  /* artwork itself is not resized or repositioned. The crest asset is        */
-  /* visually asymmetric, so its anchor is nudged right until the '&' aligns  */
-  /* with the centre of the parchment/flower directly beneath it.             */
+  /* SAFFRON GOLD — keep the container centred; offset only the crest pixels. */
   /* ------------------------------------------------------------------------ */
   .bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram {
-    left: 51.1% !important;
+    left: 50% !important;
     right: auto !important;
     top: 5.55% !important;
     width: 12.2% !important;
     max-height: 7.2%;
     margin: 0 !important;
-    transform: translateX(-50%) !important;
+    transform: translateX(calc(-50% + .35cqw)) !important;
     object-fit: contain;
     object-position: center;
     display: block;
@@ -124,6 +126,7 @@
     height: 46.6% !important;
     width: 51% !important;
     justify-content: space-between;
+    transform: translate(-50%, .7cqw) !important;
   }
 
   .bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay > br {
