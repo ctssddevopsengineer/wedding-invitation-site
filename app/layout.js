@@ -5,6 +5,7 @@ import './responsive-layout.css';
 import './languages.css';
 import './blush-front.css';
 import './classic-front.css';
+import './device-hardening.css';
 
 const bengali = localFont({ src: './fonts/noto-serif-bengali.ttf', variable: '--font-bengali', display: 'swap', preload: false });
 const devanagari = localFont({ src: './fonts/noto-serif-devanagari.ttf', variable: '--font-devanagari', display: 'swap', preload: false });
