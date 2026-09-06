@@ -6,6 +6,7 @@ import {
   buildInvitationRelativeUrl,
   deepLinkFromPageIndex,
   getDeepLinkState,
+  getInitialDeepLinkState,
   pageIndexFromDeepLink,
   resolvePageDeepLink
 } from '../lib/deep-link.mjs';
@@ -33,6 +34,29 @@ test('location deep links open page three and request the map panel', () => {
     pageLink: 'location',
     pageIndex: 2,
     locationOpen: true
+  });
+});
+
+test('initial navigation keeps explicit deep links, while browser reload always starts from Front', () => {
+  assert.deepEqual(getInitialDeepLinkState('?theme=plum&page=details', 'navigate'), {
+    pageLink: 'details',
+    pageIndex: 2,
+    locationOpen: false
+  });
+  assert.deepEqual(getInitialDeepLinkState('?theme=plum&page=location', 'navigate'), {
+    pageLink: 'location',
+    pageIndex: 2,
+    locationOpen: true
+  });
+  assert.deepEqual(getInitialDeepLinkState('?theme=plum&page=back', 'reload'), {
+    pageLink: 'front',
+    pageIndex: 0,
+    locationOpen: false
+  });
+  assert.deepEqual(getInitialDeepLinkState('?theme=navy&page=location', 'reload'), {
+    pageLink: 'front',
+    pageIndex: 0,
+    locationOpen: false
   });
 });
 
@@ -65,8 +89,11 @@ test('NFC helper creates one URL NDEF record and feature detection is progressiv
   assert.equal(supportsWebNfc({ NDEFReader: class {} }), true);
 });
 
-test('InvitationBook restores and synchronizes theme, page and location deep-link state', () => {
-  assert.match(book, /getDeepLinkState\(window\.location\.search\)/);
+test('InvitationBook resets only reload entry to Front and preserves history/deep-link behavior', () => {
+  assert.match(book, /getInitialDeepLinkState\(window\.location\.search, navigationType\)/);
+  assert.match(book, /getEntriesByType\?\.\('navigation'\)/);
+  assert.match(book, /navigationEntry\?\.type \?\? 'navigate'/);
+  assert.match(book, /const deepLink = getDeepLinkState\(window\.location\.search\);/);
   assert.match(book, /buildInvitationRelativeUrl/);
   assert.match(book, /locationDeepLinked/);
   assert.match(book, /<SmartSharePanel/);
