@@ -3,41 +3,52 @@ import fs from 'node:fs';
 import test from 'node:test';
 import { EVENT } from '../lib/event.mjs';
 import { localizeEvent, translate } from '../lib/locale.mjs';
+import { transliterate } from '../lib/transliterate.mjs';
 
 const renderSource = fs.readFileSync(new URL('../scripts/render-event-config.mjs', import.meta.url), 'utf8');
-const ciWorkflow = fs.readFileSync(new URL('../.github/workflows/ci.yml', import.meta.url), 'utf8');
-const cdWorkflow = fs.readFileSync(new URL('../.github/workflows/cd.yml', import.meta.url), 'utf8');
-const cloudflareWorkflow = fs.readFileSync(new URL('../.github/workflows/deploy-cloudflare.yml', import.meta.url), 'utf8');
 
-const LOCALIZED_KEYS = [
-  'GROOM_NAME_BN', 'BRIDE_NAME_BN', 'VENUE_NAME_BN', 'VENUE_ADDRESS_BN',
-  'GROOM_FATHER_NAME_BN', 'GROOM_MOTHER_NAME_BN', 'BRIDE_FATHER_NAME_BN', 'BRIDE_MOTHER_NAME_BN',
-  'GROOM_FAMILY_CONTACT_NAME_BN', 'BRIDE_FAMILY_CONTACT_NAME_BN',
-  'GROOM_NAME_NE', 'BRIDE_NAME_NE', 'VENUE_NAME_NE', 'VENUE_ADDRESS_NE',
-  'GROOM_FATHER_NAME_NE', 'GROOM_MOTHER_NAME_NE', 'BRIDE_FATHER_NAME_NE', 'BRIDE_MOTHER_NAME_NE',
-  'GROOM_FAMILY_CONTACT_NAME_NE', 'BRIDE_FAMILY_CONTACT_NAME_NE'
+const workflowPaths = [
+  '../.github/workflows/ci.yml',
+  '../.github/workflows/cd.yml',
+  '../.github/workflows/deploy-cloudflare.yml'
 ];
+const workflowSources = workflowPaths.map((workflowPath) => ({
+  workflowPath,
+  source: fs.readFileSync(new URL(workflowPath, import.meta.url), 'utf8')
+}));
 
 test('localized invitation placeholders are optional and fall back to base deployment values', () => {
-  for (const key of LOCALIZED_KEYS) {
+  for (const key of [
+    'GROOM_NAME_BN', 'BRIDE_NAME_BN', 'VENUE_NAME_BN', 'VENUE_ADDRESS_BN',
+    'GROOM_FATHER_NAME_BN', 'GROOM_MOTHER_NAME_BN', 'BRIDE_FATHER_NAME_BN', 'BRIDE_MOTHER_NAME_BN',
+    'GROOM_FAMILY_CONTACT_NAME_BN', 'BRIDE_FAMILY_CONTACT_NAME_BN',
+    'GROOM_NAME_NE', 'BRIDE_NAME_NE', 'VENUE_NAME_NE', 'VENUE_ADDRESS_NE',
+    'GROOM_FATHER_NAME_NE', 'GROOM_MOTHER_NAME_NE', 'BRIDE_FATHER_NAME_NE', 'BRIDE_MOTHER_NAME_NE',
+    'GROOM_FAMILY_CONTACT_NAME_NE', 'BRIDE_FAMILY_CONTACT_NAME_NE'
+  ]) {
     assert.match(renderSource, new RegExp(`${key}:`), `${key} fallback missing`);
   }
   assert.match(renderSource, /configured \|\| process\.env\[fallbackKey\]/);
 });
 
-test('all build workflows pass Bengali and Nepali placeholder variables into config:render', () => {
-  for (const [name, workflow] of [
-    ['CI', ciWorkflow],
-    ['GitHub Pages CD', cdWorkflow],
-    ['Cloudflare', cloudflareWorkflow]
-  ]) {
-    for (const key of LOCALIZED_KEYS) {
-      assert.match(workflow, new RegExp(`${key}:\\s*\\$\\{\\{\\s*vars\\.${key}\\s*\\}\\}`), `${name} does not pass ${key}`);
+test('all build workflows expose Bengali and Nepali localized variables to config:render', () => {
+  const localizedKeys = [
+    'GROOM_NAME_BN', 'BRIDE_NAME_BN', 'VENUE_NAME_BN', 'VENUE_ADDRESS_BN',
+    'GROOM_FATHER_NAME_BN', 'GROOM_MOTHER_NAME_BN', 'BRIDE_FATHER_NAME_BN', 'BRIDE_MOTHER_NAME_BN',
+    'GROOM_FAMILY_CONTACT_NAME_BN', 'BRIDE_FAMILY_CONTACT_NAME_BN',
+    'GROOM_NAME_NE', 'BRIDE_NAME_NE', 'VENUE_NAME_NE', 'VENUE_ADDRESS_NE',
+    'GROOM_FATHER_NAME_NE', 'GROOM_MOTHER_NAME_NE', 'BRIDE_FATHER_NAME_NE', 'BRIDE_MOTHER_NAME_NE',
+    'GROOM_FAMILY_CONTACT_NAME_NE', 'BRIDE_FAMILY_CONTACT_NAME_NE'
+  ];
+
+  for (const { workflowPath, source } of workflowSources) {
+    for (const key of localizedKeys) {
+      assert.match(source, new RegExp(`${key}:\\s*\\$\\{\\{ vars\\.${key} \\}\\}`), `${key} missing from ${workflowPath}`);
     }
   }
 });
 
-test('Bengali and Nepali use localized placeholder values everywhere they are rendered', () => {
+test('Bengali and Nepali use explicit localized placeholder values everywhere they are rendered', () => {
   const fixture = {
     ...EVENT,
     groomName: 'Groom',
@@ -90,6 +101,67 @@ test('Bengali and Nepali use localized placeholder values everywhere they are re
   assert.equal(ne.contacts[0].name, 'दुलाहा पक्ष');
   assert.equal(ne.contacts[1].name, 'दुलही पक्ष');
   assert.match(ne.description, /दुलाहा & दुलही/);
+});
+
+test('missing localized values automatically transliterate base English placeholders', () => {
+  const fixture = {
+    ...EVENT,
+    groomName: 'Soukarya',
+    brideName: 'Diksha',
+    venueName: 'Royal Palace Banquet',
+    venueAddress: '12 West Road Kolkata India',
+    localized: { bn: {}, ne: {} },
+    families: {
+      groom: { ...EVENT.families.groom, father: 'Subrata Datta', mother: 'Madhumita Datta' },
+      bride: { ...EVENT.families.bride, father: 'Ramesh Sharma', mother: 'Sunita Sharma' }
+    },
+    contacts: [
+      { ...EVENT.contacts[0], name: 'Subrata Datta' },
+      { ...EVENT.contacts[1], name: 'Ramesh Sharma' }
+    ]
+  };
+
+  const bn = localizeEvent(fixture, 'bn');
+  assert.equal(bn.groomName, 'সৌকার্য');
+  assert.equal(bn.brideName, 'দীক্ষা');
+  assert.doesNotMatch(bn.venueName, /[A-Za-z]/);
+  assert.doesNotMatch(bn.venueAddress, /[A-Za-z]/);
+  assert.doesNotMatch(bn.families.groom.father, /[A-Za-z]/);
+  assert.doesNotMatch(bn.contacts[0].name, /[A-Za-z]/);
+
+  const ne = localizeEvent(fixture, 'ne');
+  assert.equal(ne.groomName, 'सौकार्य');
+  assert.equal(ne.brideName, 'दीक्षा');
+  assert.doesNotMatch(ne.venueName, /[A-Za-z]/);
+  assert.doesNotMatch(ne.venueAddress, /[A-Za-z]/);
+  assert.doesNotMatch(ne.families.bride.mother, /[A-Za-z]/);
+  assert.doesNotMatch(ne.contacts[1].name, /[A-Za-z]/);
+});
+
+test('explicit localized values always win over automatic transliteration', () => {
+  const fixture = {
+    ...EVENT,
+    groomName: 'Soukarya',
+    brideName: 'Diksha',
+    venueName: 'Royal Palace',
+    venueAddress: 'Kolkata',
+    localized: {
+      bn: { groomName: 'সৌকার্য দত্ত', brideName: 'দীক্ষা শর্মা', venueName: 'রাজপ্রাসাদ', venueAddress: 'কলকাতা, পশ্চিমবঙ্গ' },
+      ne: { groomName: 'सौकार्य दत्त', brideName: 'दीक्षा शर्मा', venueName: 'राजदरबार', venueAddress: 'कोलकाता' }
+    }
+  };
+
+  assert.equal(localizeEvent(fixture, 'bn').groomName, 'সৌকার্য দত্ত');
+  assert.equal(localizeEvent(fixture, 'bn').venueName, 'রাজপ্রাসাদ');
+  assert.equal(localizeEvent(fixture, 'ne').brideName, 'दीक्षा शर्मा');
+  assert.equal(localizeEvent(fixture, 'ne').venueName, 'राजदरबार');
+});
+
+test('transliterator preserves punctuation and converts digits for Bengali and Nepali', () => {
+  assert.equal(transliterate('Soukarya 12', 'bn'), 'সৌকার্য ১২');
+  assert.equal(transliterate('Diksha 12', 'ne'), 'दीक्षा १२');
+  assert.equal(transliterate('Already বাংলা', 'bn').endsWith(' বাংলা'), true);
+  assert.equal(transliterate('Soukarya', 'en'), 'Soukarya');
 });
 
 test('source templates may retain deployment tokens until config:render, while localized placeholders remain mapped to base fallbacks', () => {
