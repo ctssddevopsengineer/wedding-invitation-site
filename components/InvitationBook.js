@@ -16,7 +16,7 @@ import { DEFAULT_THEME_ID, THEME_IDS, getTheme, resolveThemeId, THEME_STORAGE_KE
 import { createArtworkLoader, getPageArtworkAssets } from '@/lib/artwork.mjs';
 import { getThemeWarmupAssets } from '@/lib/theme-preload.mjs';
 import { getInitialThemeId, getThemeIdFromSearch } from '@/lib/theme-url.mjs';
-import { buildInvitationRelativeUrl, getDeepLinkState } from '@/lib/deep-link.mjs';
+import { buildInvitationRelativeUrl, getDeepLinkState, getInitialDeepLinkState } from '@/lib/deep-link.mjs';
 
 const PAGE_LABELS = ['Front', 'Inside Left', 'Inside Right', 'Back'];
 const SWIPE_THRESHOLD = 55;
@@ -56,7 +56,9 @@ function InvitationContent({ language, setLanguage }) {
       // Storage may be unavailable in privacy mode. URL/default still work.
     }
 
-    const deepLink = getDeepLinkState(window.location.search);
+    const navigationEntry = window.performance?.getEntriesByType?.('navigation')?.[0];
+    const navigationType = navigationEntry?.type ?? 'navigate';
+    const deepLink = getInitialDeepLinkState(window.location.search, navigationType);
     setPageIndex(deepLink.pageIndex);
     setLocationDeepLinked(deepLink.locationOpen);
     setThemeId(getInitialThemeId({ search: window.location.search, storedTheme }));
