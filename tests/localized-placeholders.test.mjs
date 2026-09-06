@@ -122,7 +122,7 @@ test('missing localized values automatically transliterate base English placehol
   };
 
   const bn = localizeEvent(fixture, 'bn');
-  assert.equal(bn.groomName, 'সৌকার্য');
+  assert.equal(bn.groomName, 'সৌকর্য');
   assert.equal(bn.brideName, 'দীক্ষা');
   assert.doesNotMatch(bn.venueName, /[A-Za-z]/);
   assert.doesNotMatch(bn.venueAddress, /[A-Za-z]/);
@@ -146,19 +146,19 @@ test('explicit localized values always win over automatic transliteration', () =
     venueName: 'Royal Palace',
     venueAddress: 'Kolkata',
     localized: {
-      bn: { groomName: 'সৌকার্য দত্ত', brideName: 'দীক্ষা শর্মা', venueName: 'রাজপ্রাসাদ', venueAddress: 'কলকাতা, পশ্চিমবঙ্গ' },
+      bn: { groomName: 'সৌকর্য দত্ত', brideName: 'দীক্ষা শর্মা', venueName: 'রাজপ্রাসাদ', venueAddress: 'কলকাতা, পশ্চিমবঙ্গ' },
       ne: { groomName: 'सौकार्य दत्त', brideName: 'दीक्षा शर्मा', venueName: 'राजदरबार', venueAddress: 'कोलकाता' }
     }
   };
 
-  assert.equal(localizeEvent(fixture, 'bn').groomName, 'সৌকার্য দত্ত');
+  assert.equal(localizeEvent(fixture, 'bn').groomName, 'সৌকর্য দত্ত');
   assert.equal(localizeEvent(fixture, 'bn').venueName, 'রাজপ্রাসাদ');
   assert.equal(localizeEvent(fixture, 'ne').brideName, 'दीक्षा शर्मा');
   assert.equal(localizeEvent(fixture, 'ne').venueName, 'राजदरबार');
 });
 
 test('transliterator preserves punctuation and converts digits for Bengali and Nepali', () => {
-  assert.equal(transliterate('Soukarya 12', 'bn'), 'সৌকার্য ১২');
+  assert.equal(transliterate('Soukarya 12', 'bn'), 'সৌকর্য ১২');
   assert.equal(transliterate('Diksha 12', 'ne'), 'दीक्षा १२');
   assert.equal(transliterate('Already বাংলা', 'bn').endsWith(' বাংলা'), true);
   assert.equal(transliterate('Soukarya', 'en'), 'Soukarya');
