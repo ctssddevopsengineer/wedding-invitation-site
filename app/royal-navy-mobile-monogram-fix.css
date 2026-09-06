@@ -1,18 +1,17 @@
-/* Royal Navy mobile crest follows the lotus in the source artwork, whose
-   centre is at 51.6% of the page width. The transparent crest has internal
-   padding; this top offset leaves its visible edge above the lotus (10.4%
-   down the artwork), with the same proportional clearance on every phone.
-   Loaded last so earlier mobile overlap overrides cannot move it down. */
+/* Align the ampersand (approximately x=312 in the 640px crest) with the
+   lotus at 51.6% of the page width. The slightly smaller crest sits lower
+   inside the arch while retaining a gap above the flower on every phone.
+   Loaded last to override the earlier mobile crest positioning rules. */
 @media (max-width: 680px) {
   .bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
     left: 51.6% !important;
     right: auto !important;
-    top: 1.5% !important;
-    width: 13.6% !important;
+    top: 2.0% !important;
+    width: 12.8% !important;
     height: auto !important;
     max-height: none !important;
     margin: 0 !important;
-    transform: translateX(-50%) !important;
+    transform: translateX(-48.75%) !important;
     object-fit: contain;
     object-position: center;
     display: block;
