@@ -13,6 +13,6 @@
   object-fit: contain;
   object-position: center;
   display: block;
-  /* The SVG applies the color treatment internally at every viewport size. */
-  filter: none !important;
+  /* Recolor the high-contrast shared crest without an SVG channel filter. */
+  filter: sepia(1) saturate(1.8) !important;
 }

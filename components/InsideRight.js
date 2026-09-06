@@ -3,7 +3,7 @@
 import Artwork from '@/components/Artwork';
 import { useLanguage } from '@/components/LanguageProvider';
 
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import CalendarButtons from '@/components/CalendarButtons';
 import Countdown from '@/components/Countdown';
 import { withBasePath } from '@/lib/public-path.mjs';
@@ -14,7 +14,6 @@ const HOVER_CLOSE_DELAY_MS = 180;
 export default function InsideRight({ themeId, initialLocationOpen = false, onLocationOpenChange }) {
   const { language, t, event: EVENT } = useLanguage();
   const theme = getTheme(themeId);
-  const monogramContrastId = useId();
   const insideRightMonogram = getThemeAsset(themeId, 'insideRightMonogram');
   const [isPinnedOpen, setIsPinnedOpen] = useState(Boolean(initialLocationOpen));
   const [isHoverOpen, setIsHoverOpen] = useState(false);
@@ -84,32 +83,13 @@ export default function InsideRight({ themeId, initialLocationOpen = false, onLo
 
       {insideRightMonogram && (
         <>
-          {themeId === 'saffron' ? (
-            <svg
-              className="insideRightThemeMonogram"
-              viewBox="0 0 640 640"
-              width="640"
-              height="640"
-              role="img"
-              aria-label={t('{couple} monogram', { couple: EVENT.couple })}
-              focusable="false"
-            >
-              <defs>
-                <filter id={monogramContrastId} colorInterpolationFilters="sRGB">
-                  {/* Render the pale gold lettering and dark brown fill together
-                      with the crest, without an external CSS filter reference. */}
-                  <feColorMatrix type="matrix" values="0 0 8.55 0 -0.4753  0 0 9.4 0 -0.7278  0 0 7.45 0 -0.6816  0 0 0 1 0" />
-                </filter>
-              </defs>
-              <image href={insideRightMonogram} width="640" height="640" filter={`url(#${monogramContrastId})`} />
-            </svg>
-          ) : (
-            <Artwork
-              className="insideRightThemeMonogram"
-              src={insideRightMonogram}
-              alt={t('{couple} monogram', { couple: EVENT.couple })}
-            />
-          )}
+          <Artwork
+            className="insideRightThemeMonogram"
+            // The shared crest has the same lettering and geometry, with enough
+            // source contrast for Saffron's warm brown/gold color treatment.
+            src={themeId === 'saffron' ? getThemeAsset('navy', 'insideRightMonogram') : insideRightMonogram}
+            alt={t('{couple} monogram', { couple: EVENT.couple })}
+          />
           <h2 className="insideRightDynamicTitle">{language === 'en' ? <>&ensp;Reception<br />Details</> : <>{t('Reception')}<br />{t('Details')}</>}</h2>
         </>
       )}
