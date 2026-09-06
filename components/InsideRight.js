@@ -14,7 +14,10 @@ const HOVER_CLOSE_DELAY_MS = 180;
 export default function InsideRight({ themeId, initialLocationOpen = false, onLocationOpenChange }) {
   const { language, t, event: EVENT } = useLanguage();
   const theme = getTheme(themeId);
-  const insideRightMonogram = getThemeAsset(themeId, 'insideRightMonogram');
+  const useSaffronInsideLeftMonogram = themeId === 'saffron';
+  const insideRightMonogram = useSaffronInsideLeftMonogram
+    ? getThemeAsset(themeId, 'insideLeft')
+    : getThemeAsset(themeId, 'insideRightMonogram');
   const [isPinnedOpen, setIsPinnedOpen] = useState(Boolean(initialLocationOpen));
   const [isHoverOpen, setIsHoverOpen] = useState(false);
   const closeTimerRef = useRef(null);
@@ -84,7 +87,7 @@ export default function InsideRight({ themeId, initialLocationOpen = false, onLo
       {insideRightMonogram && (
         <>
           <Artwork
-            className="insideRightThemeMonogram"
+            className={`insideRightThemeMonogram ${useSaffronInsideLeftMonogram ? 'insideRightThemeMonogramFromInsideLeft' : ''}`}
             src={insideRightMonogram}
             alt={t('{couple} monogram', { couple: EVENT.couple })}
           />
