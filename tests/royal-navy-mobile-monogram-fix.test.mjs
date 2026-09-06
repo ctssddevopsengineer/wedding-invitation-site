@@ -13,8 +13,8 @@ test('Royal Navy mobile monogram clearance stylesheet loads after overlap fixes'
   assert.match(layout, /import '\.\/mobile-overlap-fixes\.css';\s*\nimport '\.\/royal-navy-mobile-monogram-fix\.css';/);
 });
 
-test('Royal Navy mobile inside-right monogram stays centred and clears the flower', () => {
-  assert.match(css, /@media \(max-width: 680px\)[\s\S]*?data-invitation-theme="navy"\] \.insideRightThemeMonogram\s*\{[\s\S]*?left:\s*50%\s*!important[\s\S]*?top:\s*4\.35%\s*!important[\s\S]*?width:\s*15\.4%\s*!important[\s\S]*?max-height:\s*7\.0%\s*!important[\s\S]*?transform:\s*translateX\(-50%\)\s*!important/);
+test('Royal Navy mobile inside-right monogram uses a measured parchment-centre correction and clears the flower', () => {
+  assert.match(css, /@media \(max-width: 680px\)[\s\S]*?data-invitation-theme="navy"\] \.insideRightThemeMonogram\s*\{[\s\S]*?left:\s*50%\s*!important[\s\S]*?top:\s*4\.35%\s*!important[\s\S]*?width:\s*15\.4%\s*!important[\s\S]*?max-height:\s*7\.0%\s*!important[\s\S]*?transform:\s*translateX\(calc\(-50% \+ \.35cqw\)\)\s*!important/);
 });
 
 test('Royal Navy Samsung A55-class monogram keeps extra flower clearance', () => {
@@ -25,20 +25,17 @@ test('Royal Navy narrow-phone monogram remains centred below the flower', () => 
   assert.match(css, /@media \(max-width: 360px\)[\s\S]*?data-invitation-theme="navy"\] \.insideRightThemeMonogram\s*\{[\s\S]*?top:\s*4\.5%\s*!important[\s\S]*?width:\s*15\.8%\s*!important/);
 });
 
-test('Royal Navy monogram asset reports its visible trim bounds for optical-centre verification', async () => {
+test('Royal Navy monogram artwork itself is optically centred', async () => {
   const metadata = await sharp(monogramPath).metadata();
   const { info } = await sharp(monogramPath).trim({ threshold: 10 }).png().toBuffer({ resolveWithObject: true });
   const imageCenter = metadata.width / 2;
   const visibleCenter = -(info.trimOffsetLeft ?? 0) + info.width / 2;
   const offset = visibleCenter - imageCenter;
-  console.log(`ROYAL_NAVY_MONOGRAM_BOUNDS width=${metadata.width} trimmedWidth=${info.width} leftRemoved=${-(info.trimOffsetLeft ?? 0)} visualCenter=${visibleCenter} imageCenter=${imageCenter} offset=${offset}`);
   assert.ok(Math.abs(offset) <= 2, `monogram artwork itself should be optically centred; offset=${offset}`);
 });
 
-test('Royal Navy parchment visual centre is measured from the actual page artwork', async () => {
+test('Royal Navy mobile X correction matches the measured parchment visual centre', async () => {
   const { data, info } = await sharp(insideRightPath).removeAlpha().raw().toBuffer({ resolveWithObject: true });
-  let minX = info.width;
-  let maxX = -1;
   let sumX = 0;
   let count = 0;
   const yStart = Math.floor(info.height * 0.08);
@@ -51,17 +48,16 @@ test('Royal Navy parchment visual centre is measured from the actual page artwor
       const b = data[i + 2];
       const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
       if (luminance >= 185 && r >= g - 15 && g >= b - 30) {
-        minX = Math.min(minX, x);
-        maxX = Math.max(maxX, x);
         sumX += x;
         count += 1;
       }
     }
   }
   assert.ok(count > 1000, 'expected enough light parchment pixels to measure its visual centre');
-  const bboxCenter = (minX + maxX) / 2;
   const weightedCenter = sumX / count;
   const pageCenter = (info.width - 1) / 2;
-  console.log(`ROYAL_NAVY_PARCHMENT_BOUNDS width=${info.width} minX=${minX} maxX=${maxX} bboxCenter=${bboxCenter.toFixed(2)} weightedCenter=${weightedCenter.toFixed(2)} pageCenter=${pageCenter.toFixed(2)} bboxOffset=${(bboxCenter-pageCenter).toFixed(2)} weightedOffset=${(weightedCenter-pageCenter).toFixed(2)}`);
-  assert.ok(Number.isFinite(weightedCenter));
+  const measuredOffsetPx = weightedCenter - pageCenter;
+  const cssCorrectionPx = info.width * 0.0035;
+  assert.ok(measuredOffsetPx > 0, `parchment visual centre should sit right of page centre; offset=${measuredOffsetPx}`);
+  assert.ok(Math.abs(cssCorrectionPx - measuredOffsetPx) <= 1, `CSS correction ${cssCorrectionPx.toFixed(2)}px should closely match measured parchment offset ${measuredOffsetPx.toFixed(2)}px`);
 });
