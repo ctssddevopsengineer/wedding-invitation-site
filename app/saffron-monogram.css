@@ -13,5 +13,6 @@
   object-fit: contain;
   object-position: center;
   display: block;
-  filter: var(--monogram-contrast-filter) !important;
+  /* The SVG applies the color treatment internally at every viewport size. */
+  filter: none !important;
 }
