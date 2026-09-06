@@ -196,10 +196,10 @@
   .bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
     left: 50% !important;
     right: auto !important;
-    top: 3.35% !important;
+    top: 3.0% !important;
     width: 16.2% !important;
     margin: 0 !important;
-    transform: translateX(-50%) !important;
+    transform: translateX(-40%) !important;
     object-fit: contain;
     object-position: center;
     display: block;
