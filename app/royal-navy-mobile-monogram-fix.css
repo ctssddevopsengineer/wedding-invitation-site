@@ -1,12 +1,12 @@
-/* Align the ampersand (approximately x=312 in the 640px crest) with the
-   lotus at 51.6% of the page width. The slightly smaller crest sits lower
-   inside the arch while retaining a gap above the flower on every phone.
+/* Optical alignment of the ampersand with the lotus below: a small rightward
+   and downward adjustment keeps the crest comfortably inside the arch,
+   while retaining a gap above the flower on every phone.
    Loaded last to override the earlier mobile crest positioning rules. */
 @media (max-width: 680px) {
   .bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
-    left: 51.6% !important;
+    left: 51.9% !important;
     right: auto !important;
-    top: 2.0% !important;
+    top: 2.2% !important;
     width: 12.8% !important;
     height: auto !important;
     max-height: none !important;
