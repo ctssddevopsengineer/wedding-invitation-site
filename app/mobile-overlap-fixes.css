@@ -1,0 +1,164 @@
+/* ========================================================================== */
+/* MOBILE OVERLAP FIXES                                                       */
+/*                                                                            */
+/* Final, theme-scoped layout guards for narrow phones. These rules are       */
+/* intentionally loaded after device-hardening.css so the approved artwork    */
+/* remains untouched while dynamic overlays stay readable and separated.      */
+/* ========================================================================== */
+
+@media (max-width: 680px) {
+  /* ------------------------------------------------------------------------ */
+  /* BABY PINK — keep long couple names on one balanced line without collision */
+  /* ------------------------------------------------------------------------ */
+  .bookApp[data-invitation-theme="blush"] .dynamicFrontNames {
+    display: grid !important;
+    grid-template-columns: max-content auto max-content;
+    align-items: baseline;
+    justify-content: center;
+    column-gap: clamp(.2rem, 1.1cqw, .5rem);
+    width: 88% !important;
+    max-width: 88% !important;
+    margin-inline: auto;
+    overflow: visible !important;
+    white-space: nowrap;
+    text-overflow: clip;
+    line-height: 1.04;
+    font-size: clamp(.9rem, 3.75cqw, 1.82rem) !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .dynamicFrontNames > span,
+  .bookApp[data-invitation-theme="blush"] .dynamicFrontNames > b {
+    min-width: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* ------------------------------------------------------------------------ */
+  /* ROYAL PLUM — force page-3 crest onto the exact card centre line.         */
+  /* ------------------------------------------------------------------------ */
+  .bookApp[data-invitation-theme="plum"] .insideRightThemeMonogram {
+    left: 50% !important;
+    top: 4.35% !important;
+    width: 12.5% !important;
+    max-height: 7.4%;
+    margin: 0 !important;
+    transform: translateX(-50%) !important;
+    object-fit: contain;
+    object-position: center;
+  }
+
+  .bookApp[data-invitation-theme="plum"] .insideRightDynamicTitle {
+    left: 50% !important;
+    top: 13.15% !important;
+    width: 42% !important;
+    margin: 0 !important;
+    transform: translateX(-50%) !important;
+    text-align: center;
+    line-height: .98;
+  }
+
+  /* ------------------------------------------------------------------------ */
+  /* SAFFRON GOLD — separate crest, title and details into explicit zones.     */
+  /* ------------------------------------------------------------------------ */
+  .bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram {
+    left: 50% !important;
+    top: 4.25% !important;
+    width: 12.2% !important;
+    max-height: 7.2%;
+    margin: 0 !important;
+    transform: translateX(-50%) !important;
+    object-fit: contain;
+    object-position: center;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .insideRightDynamicTitle {
+    left: 50% !important;
+    top: 13.25% !important;
+    width: 42% !important;
+    margin: 0 !important;
+    transform: translateX(-50%) !important;
+    text-align: center;
+    line-height: .97;
+    font-size: clamp(1.02rem, 4.55cqw, 2.12rem) !important;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay {
+    top: 23.55% !important;
+    height: 46.6% !important;
+    width: 51% !important;
+    justify-content: space-between;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay > br {
+    display: none !important;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .receptionDetailDivider {
+    margin-block: 0 !important;
+    flex: 0 0 auto;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .receptionDetailItem {
+    flex: 0 0 auto;
+  }
+
+  /* ------------------------------------------------------------------------ */
+  /* DEEP RED — keep countdown above the artwork's printed blessing.          */
+  /* ------------------------------------------------------------------------ */
+  .bookApp[data-invitation-theme="classic"] .receptionDetailsOverlay {
+    height: 44.35% !important;
+    justify-content: space-between;
+  }
+
+  .bookApp[data-invitation-theme="classic"] .receptionDetailsOverlay > br {
+    display: none !important;
+  }
+
+  .bookApp[data-invitation-theme="classic"] .receptionDetailDivider {
+    margin-block: 0 !important;
+    flex: 0 0 auto;
+  }
+
+  .bookApp[data-invitation-theme="classic"] .receptionDetailItem {
+    flex: 0 0 auto;
+  }
+
+  .bookApp[data-invitation-theme="classic"] .receptionCountdownItem {
+    transform: translateY(-.55cqw);
+  }
+}
+
+/* Samsung A55-class widths and other compact 360–430 px phones need a little
+   more name compression while keeping the same approved artwork geometry. */
+@media (min-width: 361px) and (max-width: 430px) {
+  .bookApp[data-invitation-theme="blush"] .dynamicFrontNames {
+    width: 91% !important;
+    max-width: 91% !important;
+    column-gap: clamp(.15rem, .9cqw, .35rem);
+    font-size: clamp(.84rem, 3.55cqw, 1.45rem) !important;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay {
+    top: 23.35% !important;
+    height: 46.35% !important;
+  }
+
+  .bookApp[data-invitation-theme="classic"] .receptionDetailsOverlay {
+    top: 22.05% !important;
+    height: 44.1% !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .bookApp[data-invitation-theme="blush"] .dynamicFrontNames {
+    width: 94% !important;
+    max-width: 94% !important;
+    column-gap: .12rem;
+    font-size: clamp(.78rem, 3.35cqw, 1.2rem) !important;
+  }
+
+  .bookApp[data-invitation-theme="plum"] .insideRightThemeMonogram,
+  .bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram {
+    width: 11.8% !important;
+  }
+}
