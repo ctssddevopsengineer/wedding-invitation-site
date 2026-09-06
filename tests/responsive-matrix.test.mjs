@@ -5,6 +5,7 @@ import { RESPONSIVE_VALIDATION_WIDTHS, viewportBucket } from '../lib/responsive.
 
 const css = fs.readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8');
 const hardeningCss = fs.readFileSync(new URL('../app/device-hardening.css', import.meta.url), 'utf8');
+const mobileFixCss = fs.readFileSync(new URL('../app/mobile-overlap-fixes.css', import.meta.url), 'utf8');
 const layout = fs.readFileSync(new URL('../app/layout.js', import.meta.url), 'utf8');
 
 test('responsive validation matrix covers compact phones through large desktop displays', () => {
@@ -25,14 +26,14 @@ test('existing responsive CSS keeps the approved template geometry guards', () =
   assert.match(css, /@media \(min-width: 681px\) and \(max-width: 1024px\)/);
 });
 
-test('typography hardening loads last and changes only font size and colour', () => {
-  assert.match(layout, /import '\.\/classic-front\.css';\s*\nimport '\.\/device-hardening\.css';/);
+test('typography hardening remains geometry-free and mobile overlap fixes load after it', () => {
+  assert.match(layout, /import '\.\/classic-front\.css';\s*\nimport '\.\/device-hardening\.css';\s*\nimport '\.\/mobile-overlap-fixes\.css';/);
   assert.match(hardeningCss, /font-size:\s*clamp\(/);
   assert.match(hardeningCss, /color:\s*var\(--theme-ink\)/);
   assert.match(hardeningCss, /color:\s*var\(--theme-accent-dark\)/);
   assert.match(hardeningCss, /color:\s*var\(--theme-gold\)/);
 
-  // The enhancement must not alter template/card geometry, zoom or cropping.
+  // Typography hardening must still never alter template/card geometry, zoom or cropping.
   for (const property of [
     'width', 'max-width', 'min-width', 'height', 'max-height', 'min-height',
     'aspect-ratio', 'transform', 'object-fit', 'position', 'top', 'right', 'bottom',
@@ -40,6 +41,19 @@ test('typography hardening loads last and changes only font size and colour', ()
   ]) {
     assert.doesNotMatch(hardeningCss, new RegExp(`(^|[;{\\s])${property}\\s*:`, 'm'), `${property} must not be overridden by typography hardening`);
   }
+
+  // Geometry corrections are isolated to narrow screens and affected themes only.
+  assert.match(mobileFixCss, /@media \(max-width: 680px\)/);
+  assert.match(mobileFixCss, /data-invitation-theme="blush"/);
+  assert.match(mobileFixCss, /data-invitation-theme="plum"/);
+  assert.match(mobileFixCss, /data-invitation-theme="saffron"/);
+  assert.match(mobileFixCss, /data-invitation-theme="classic"/);
+});
+
+test('Samsung A55-class viewport is represented by the 390 and 430 px validation widths', () => {
+  assert.ok(RESPONSIVE_VALIDATION_WIDTHS.includes(390));
+  assert.ok(RESPONSIVE_VALIDATION_WIDTHS.includes(430));
+  assert.match(mobileFixCss, /@media \(min-width: 361px\) and \(max-width: 430px\)/);
 });
 
 test('theme picker stays outside page viewport geometry and scales independently', () => {
