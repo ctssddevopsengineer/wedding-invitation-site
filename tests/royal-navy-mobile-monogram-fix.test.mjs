@@ -11,14 +11,14 @@ test('Royal Navy mobile monogram override loads after overlap fixes', () => {
 
 test('Royal Navy mobile ampersand aligns with the lotus and the lowered crest keeps clearance', () => {
   assert.match(css, /@media \(max-width: 680px\)/);
-  assert.match(css, /left:\s*51\.6%\s*!important/);
-  assert.match(css, /top:\s*2\.0%\s*!important/);
+  assert.match(css, /left:\s*51\.9%\s*!important/);
+  assert.match(css, /top:\s*2\.2%\s*!important/);
   assert.match(css, /width:\s*12\.8%\s*!important/);
   assert.match(css, /height:\s*auto\s*!important/);
   assert.match(css, /transform:\s*translateX\(-48\.75%\)\s*!important/);
   // Visible crest ends at y=542 in the 640px square asset. The page artwork
   // is 1087 x 1536, with the lotus beginning at approximately y=160.
-  const visibleBottom = 0.020 + (0.128 * 1087 / 1536) * (542 / 640);
+  const visibleBottom = 0.022 + (0.128 * 1087 / 1536) * (542 / 640);
   assert.ok(visibleBottom < 160 / 1536 - 0.005, 'leave a proportional gap above the lotus');
   assert.equal((css.match(/@media/g) || []).length, 1, 'all phone widths share the artwork alignment');
 });
