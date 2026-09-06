@@ -31,10 +31,18 @@ test('Saffron Gold keeps the monogram anchor centred and offsets only the render
   }
 });
 
-test('Saffron Gold lowers only Reception Details while preserving horizontal centring and dimensions', () => {
+test('Saffron Gold lowers the Reception Details heading without changing its horizontal geometry', () => {
+  const title = blockFor('.bookApp[data-invitation-theme="saffron"] .insideRightDynamicTitle');
+  assert.match(title, /transform:\s*translate\(-50%, \.9cqw\)\s*!important/);
+  for (const property of ['left', 'right', 'width', 'height', 'margin', 'padding', 'top', 'bottom']) {
+    assert.doesNotMatch(title, new RegExp(`(^|[;\\s])${property}\\s*:`, 'm'));
+  }
+});
+
+test('Saffron Gold lowers the full details stack while preserving horizontal centring and dimensions', () => {
   const details = blockFor('.bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay');
-  assert.match(details, /transform:\s*translate\(-50%, \.7cqw\)\s*!important/);
-  for (const property of ['left', 'right', 'width', 'height', 'margin', 'padding']) {
+  assert.match(details, /transform:\s*translate\(-50%, 1\.4cqw\)\s*!important/);
+  for (const property of ['left', 'right', 'width', 'height', 'margin', 'padding', 'top', 'bottom']) {
     assert.doesNotMatch(details, new RegExp(`(^|[;\\s])${property}\\s*:`, 'm'));
   }
 });
@@ -66,7 +74,7 @@ test('Royal Plum page-3 location label is centred inside the medallion on mobile
   assert.match(block, /align-items:\s*center/);
 });
 
-test('Saffron Gold keeps mobile title/details zones while using the safe crest offset', () => {
+test('Saffron Gold lowers title and all reception detail content together on mobile', () => {
   const monogram = blockFor('.bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram');
   const title = blockFor('.bookApp[data-invitation-theme="saffron"] .insideRightDynamicTitle');
   const details = blockFor('.bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay');
@@ -75,11 +83,12 @@ test('Saffron Gold keeps mobile title/details zones while using the safe crest o
   assert.match(monogram, /left:\s*50%\s*!important/);
   assert.match(monogram, /transform:\s*translateX\(calc\(-50% \+ \.35cqw\)\)\s*!important/);
   assert.match(title, /top:\s*14\.65%\s*!important/);
+  assert.match(title, /transform:\s*translate\(-50%, \.9cqw\)\s*!important/);
   assert.match(title, /font-size:\s*clamp\(\.96rem, 4\.2cqw, 1\.95rem\)/);
   assert.match(details, /top:\s*23\.55%\s*!important/);
   assert.match(details, /height:\s*46\.6%\s*!important/);
   assert.match(details, /justify-content:\s*space-between/);
-  assert.match(details, /transform:\s*translate\(-50%, \.7cqw\)\s*!important/);
+  assert.match(details, /transform:\s*translate\(-50%, 1\.4cqw\)\s*!important/);
 });
 
 test('Royal Navy page-3 monogram clears the top flower and stays centred on mobile', () => {
@@ -106,6 +115,8 @@ test('Samsung A55-class width band keeps Saffron horizontal centring intact', ()
   assert.match(css, /data-invitation-theme="saffron"\][\s\S]*?translateX\(calc\(-50% \+ \.35cqw\)\)/);
   assert.match(css, /data-invitation-theme="saffron"\][\s\S]*?top:\s*5\.75%\s*!important/);
   assert.match(css, /data-invitation-theme="saffron"\][\s\S]*?top:\s*14\.8%\s*!important/);
+  assert.match(css, /data-invitation-theme="saffron"\][\s\S]*?translate\(-50%, \.9cqw\)/);
+  assert.match(css, /data-invitation-theme="saffron"\][\s\S]*?translate\(-50%, 1\.4cqw\)/);
   assert.match(css, /data-invitation-theme="navy"\][\s\S]*?top:\s*5\.3%\s*!important/);
   assert.match(css, /data-invitation-theme="classic"\][\s\S]*?top:\s*22\.05%\s*!important/);
 });
