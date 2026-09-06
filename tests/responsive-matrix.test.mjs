@@ -19,21 +19,27 @@ test('responsive validation matrix covers compact phones through large desktop d
   assert.equal(viewportBucket(1920), 'large-desktop');
 });
 
-test('CSS includes targeted compact-phone, phone/tablet, large desktop and reduced-motion guards', () => {
+test('existing responsive CSS keeps the approved template geometry guards', () => {
   assert.match(css, /@media \(max-width: 360px\)/);
   assert.match(css, /@media \(max-width: 430px\)/);
   assert.match(css, /@media \(min-width: 681px\) and \(max-width: 1024px\)/);
-  assert.match(hardeningCss, /@media \(min-width: 1441px\)/);
-  assert.match(hardeningCss, /@media \(prefers-reduced-motion: reduce\)/);
 });
 
-test('device hardening loads last and guards dynamic text from clipping or camouflage', () => {
+test('typography hardening loads last and changes only font size and colour', () => {
   assert.match(layout, /import '\.\/classic-front\.css';\s*\nimport '\.\/device-hardening\.css';/);
-  assert.match(hardeningCss, /overflow-wrap:\s*anywhere/);
-  assert.match(hardeningCss, /white-space:\s*normal/);
-  assert.match(hardeningCss, /flex-wrap:\s*wrap/);
-  assert.match(hardeningCss, /color-mix\(in srgb, var\(--theme-ink\)/);
-  assert.match(hardeningCss, /min-height:\s*44px/);
+  assert.match(hardeningCss, /font-size:\s*clamp\(/);
+  assert.match(hardeningCss, /color:\s*var\(--theme-ink\)/);
+  assert.match(hardeningCss, /color:\s*var\(--theme-accent-dark\)/);
+  assert.match(hardeningCss, /color:\s*var\(--theme-gold\)/);
+
+  // The enhancement must not alter template/card geometry, zoom or cropping.
+  for (const property of [
+    'width', 'max-width', 'min-width', 'height', 'max-height', 'min-height',
+    'aspect-ratio', 'transform', 'object-fit', 'position', 'top', 'right', 'bottom',
+    'left', 'margin', 'padding', 'overflow', 'white-space', 'flex-wrap', 'gap'
+  ]) {
+    assert.doesNotMatch(hardeningCss, new RegExp(`(^|[;{\\s])${property}\\s*:`, 'm'), `${property} must not be overridden by typography hardening`);
+  }
 });
 
 test('theme picker stays outside page viewport geometry and scales independently', () => {

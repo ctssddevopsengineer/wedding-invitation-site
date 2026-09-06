@@ -1,64 +1,9 @@
-/* Cross-device hardening loaded last. Keeps theme artwork fixed while making
-   dynamic copy readable, wrappable and collision-resistant from compact phones
-   through large desktop displays. */
+/* Typography-only cross-device refinement.
+   IMPORTANT: this file must never change card/template geometry, artwork size,
+   viewport size, positioning, spacing, cropping or zoom. Existing UI/UX geometry
+   from development remains the source of truth. */
 
-.bookApp,
-.bookStage,
-.pageViewport,
-.invitePage {
-  min-width: 0;
-}
-
-.pageViewport {
-  width: min(100%, 1087px);
-  margin-inline: auto;
-  overflow: hidden;
-}
-
-.page-back .pageViewport {
-  width: min(100%, 1536px);
-}
-
-:is(.dynamicFrontCopy,.familyBlessingsContent,.receptionDetailsOverlay,.heritageBackContent) {
-  overflow-wrap: anywhere;
-  word-break: normal;
-  hyphens: auto;
-}
-
-:is(.dynamicFrontNames,.familyCoupleNames,.heritageCoupleNames) {
-  min-width: 0;
-  white-space: normal;
-  flex-wrap: wrap;
-  row-gap: .15em;
-  overflow: visible;
-  text-overflow: clip;
-  text-wrap: balance;
-}
-
-:is(.dynamicFrontNames,.familyCoupleNames,.heritageCoupleNames) > span {
-  min-width: 0;
-  max-width: 100%;
-  overflow-wrap: anywhere;
-}
-
-/* Never allow invitation body copy to collapse below a practical reading floor. */
-.dynamicFrontTagline,
-.dynamicFrontClosing,
-.familyBlessingsIntro p,
-.familyBlock p,
-.familyBlessingsClosing,
-.receptionDetailValue,
-.receptionAddressValue,
-.heritageBackMessage,
-.heritageJourneyMessage,
-.heritageAssistance .contactCard p,
-.heritageAssistance .contactCard a,
-.heritageAssistance .contactCard p.muted {
-  font-size: max(var(--responsive-copy-floor, .72rem), 1em);
-}
-
-/* Theme-aware contrast: parchment areas use dark theme ink; accent headings use
-   the darker theme accent and gold remains decorative rather than body copy. */
+/* Theme-aware text colours. */
 .dynamicFrontTagline,
 .dynamicFrontClosing,
 .familyBlessingsIntro p,
@@ -69,90 +14,161 @@
 .heritageBackMessage,
 .heritageJourneyMessage,
 .locationVenueName,
-.locationVenueAddress {
-  color: color-mix(in srgb, var(--theme-ink) 92%, #000 8%);
-  text-shadow: 0 1px 0 color-mix(in srgb, var(--theme-soft) 72%, transparent);
+.locationVenueAddress,
+.heritageAssistance .contactCard h3,
+.heritageAssistance .contactCard p,
+.heritageAssistance .contactCard a,
+.heritageAssistance .contactCard p.muted {
+  color: var(--theme-ink) !important;
 }
 
-.receptionDetailLabel,
+.dynamicFrontHeading,
 .familyBlessingsIntro h2,
 .familyBlock h3,
+.receptionDetailLabel,
+.insideRightDynamicTitle,
 .heritageBackIntro h2,
 .heritageAssistance > h3 {
-  color: var(--theme-accent-dark);
+  color: var(--theme-accent-dark) !important;
 }
 
-/* Improve readability of controls on touch devices without changing artwork. */
-.bookNav button,
-.languageSwitcher select,
-.themeOption,
-.openButton,
-.btn,
-.utilityCloseButton {
-  min-height: 44px;
+.dynamicFrontHeading > em,
+.dynamicFrontNames b,
+.familyCoupleNames b,
+.heritageCoupleNames b {
+  color: var(--theme-gold) !important;
 }
 
+/* Base readable typography. No size/position changes are made to the template. */
+.dynamicFrontHeading > span {
+  font-size: clamp(1.35rem, 5.5cqw, 4rem) !important;
+}
+
+.dynamicFrontHeading > em {
+  font-size: clamp(1.15rem, 4.65cqw, 3.35rem) !important;
+}
+
+.dynamicFrontTagline {
+  font-size: clamp(.7rem, 1.95cqw, 1.3rem) !important;
+}
+
+.dynamicFrontNames {
+  font-size: clamp(1.08rem, 4.15cqw, 3rem) !important;
+}
+
+.dynamicFrontClosing {
+  font-size: clamp(.66rem, 1.62cqw, 1.04rem) !important;
+}
+
+.familyBlessingsIntro h2 {
+  font-size: clamp(.82rem, 3.2cqw, 2.55rem) !important;
+}
+
+.familyBlessingsIntro p,
+.familyBlock p,
+.familyBlessingsClosing {
+  font-size: clamp(.66rem, 1.72cqw, 1.3rem) !important;
+}
+
+.familyCoupleNames {
+  font-size: clamp(1.05rem, 4.65cqw, 4rem) !important;
+}
+
+.familyBlock h3 {
+  font-size: clamp(.74rem, 2.15cqw, 1.72rem) !important;
+}
+
+.receptionDetailLabel {
+  font-size: clamp(.68rem, 1.95cqw, 1.45rem) !important;
+}
+
+.receptionDetailValue {
+  font-size: clamp(.62rem, 1.58cqw, 1.18rem) !important;
+}
+
+.receptionAddressValue {
+  font-size: clamp(.58rem, 1.36cqw, 1.03rem) !important;
+}
+
+.receptionCalendarItem .btn {
+  font-size: clamp(.56rem, 1cqw, .72rem) !important;
+}
+
+.receptionCountdownItem .countdownUnit strong {
+  font-size: clamp(.56rem, 1.15cqw, .88rem) !important;
+}
+
+.receptionCountdownItem .countdownUnit span {
+  font-size: clamp(.46rem, .64cqw, .52rem) !important;
+}
+
+.heritageBackIntro h2 {
+  font-size: clamp(11px, 2.28cqw, 36px) !important;
+}
+
+.heritageBackMessage,
+.heritageJourneyMessage {
+  font-size: clamp(7px, 1.08cqw, 17px) !important;
+}
+
+.heritageCoupleNames {
+  font-size: clamp(11px, 3.18cqw, 49px) !important;
+}
+
+.heritageAssistance > h3 {
+  font-size: clamp(9px, 1.32cqw, 21px) !important;
+}
+
+.heritageAssistance .contactCard .eyebrow {
+  font-size: clamp(6px, .78cqw, 12px) !important;
+}
+
+.heritageAssistance .contactCard h3,
+.heritageAssistance .contactCard p,
+.heritageAssistance .contactCard a,
+.heritageAssistance .contactCard p.muted {
+  font-size: clamp(7px, .9cqw, 14px) !important;
+}
+
+/* Small screens: typography only. Template/card dimensions remain untouched. */
 @media (max-width: 680px) {
-  .bookApp { --responsive-copy-floor: .7rem; }
+  .dynamicFrontHeading > span {
+    font-size: clamp(1.22rem, 5.25cqw, 2.8rem) !important;
+  }
 
-  .dynamicFrontCopy {
-    width: min(68%, 32rem) !important;
-    max-width: 68% !important;
+  .dynamicFrontHeading > em {
+    font-size: clamp(1.02rem, 4.5cqw, 2.3rem) !important;
   }
 
   .dynamicFrontTagline,
   .dynamicFrontClosing {
-    font-size: clamp(.7rem, 2.4cqw, 1rem) !important;
-    line-height: 1.42;
+    font-size: clamp(.64rem, 1.9cqw, .94rem) !important;
   }
 
   .dynamicFrontNames {
-    font-size: clamp(1.05rem, 5cqw, 2.2rem) !important;
-    line-height: 1.1;
-  }
-
-  .familyBlessingsContent {
-    width: min(76%, 34rem);
+    font-size: clamp(1rem, 4.35cqw, 2.25rem) !important;
   }
 
   .familyBlessingsIntro p,
   .familyBlock p,
   .familyBlessingsClosing {
-    font-size: clamp(.7rem, 1.9cqw, .9rem) !important;
-    line-height: 1.45;
+    font-size: clamp(.62rem, 1.62cqw, .88rem) !important;
   }
 
   .familyCoupleNames {
-    width: 76% !important;
-    max-width: 76% !important;
-    font-size: clamp(1rem, 4.35cqw, 2.2rem) !important;
-    line-height: 1.08;
-  }
-
-  .receptionDetailsOverlay {
-    width: 52% !important;
+    font-size: clamp(.95rem, 4.2cqw, 2.2rem) !important;
   }
 
   .receptionDetailLabel {
-    font-size: clamp(.68rem, 1.9cqw, .98rem) !important;
+    font-size: clamp(.62rem, 1.78cqw, .98rem) !important;
   }
 
   .receptionDetailValue {
-    font-size: clamp(.66rem, 1.65cqw, .88rem) !important;
-    line-height: 1.3;
+    font-size: clamp(.58rem, 1.45cqw, .84rem) !important;
   }
 
   .receptionAddressValue {
-    font-size: clamp(.64rem, 1.5cqw, .82rem) !important;
-    line-height: 1.32;
-  }
-
-  .receptionCalendarItem .btn {
-    font-size: clamp(.62rem, 1.2cqw, .76rem) !important;
-  }
-
-  .receptionCountdownItem .countdownUnit span {
-    font-size: clamp(.58rem, .9cqw, .7rem) !important;
+    font-size: clamp(.54rem, 1.24cqw, .74rem) !important;
   }
 
   .heritageBackMessage,
@@ -160,91 +176,31 @@
   .heritageAssistance .contactCard p,
   .heritageAssistance .contactCard a,
   .heritageAssistance .contactCard p.muted {
-    font-size: clamp(.66rem, 1cqw, .8rem) !important;
+    font-size: clamp(6.5px, 1cqw, 13px) !important;
   }
 }
 
-@media (max-width: 430px) {
-  .bookApp { --responsive-copy-floor: .68rem; }
-
-  .languageSwitcher,
-  .phase2bExperienceTools,
-  .bookNav {
-    padding-inline: .5rem;
-  }
-
-  .dynamicFrontCopy {
-    width: 70% !important;
-    max-width: 70% !important;
-  }
-
-  .familyBlessingsContent {
-    width: 78%;
-  }
-
-  .familyCoupleNames {
-    width: 80% !important;
-    max-width: 80% !important;
-  }
-
-  .receptionDetailsOverlay {
-    width: 54% !important;
-  }
-
-  .heritageBackIntro,
-  .bookApp[data-invitation-theme] .heritageBackIntro {
-    width: 56% !important;
-  }
-
-  .heritageCoupleNames,
-  .bookApp[data-invitation-theme] .heritageCoupleNames {
-    width: 68% !important;
-    max-width: 68% !important;
-  }
-
-  .heritageAssistance,
-  .bookApp[data-invitation-theme] .heritageAssistance {
-    width: 58% !important;
-  }
+/* Bengali / Nepali glyphs need slightly different readable floors, but the
+   surrounding template geometry is intentionally unchanged. */
+.bookApp:is([lang="bn"],[lang="ne"]) .dynamicFrontHeading > span {
+  font-size: clamp(1.18rem, 5cqw, 3rem) !important;
 }
 
-@media (max-width: 360px) {
-  .dynamicFrontCopy { width: 72% !important; max-width: 72% !important; }
-  .receptionDetailsOverlay { width: 56% !important; }
-  .heritageAssistance,
-  .bookApp[data-invitation-theme] .heritageAssistance { width: 60% !important; }
+.bookApp:is([lang="bn"],[lang="ne"]) .dynamicFrontHeading > em {
+  font-size: clamp(1rem, 4.2cqw, 2.5rem) !important;
 }
 
-@media (min-width: 1441px) {
-  .bookStage { padding-inline: 1.5rem; }
-  .pageViewport { max-height: 88vh; }
-  .page-back .pageViewport { max-height: 82vh; }
+.bookApp:is([lang="bn"],[lang="ne"]) .dynamicFrontTagline,
+.bookApp:is([lang="bn"],[lang="ne"]) .dynamicFrontClosing,
+.bookApp:is([lang="bn"],[lang="ne"]) .familyBlessingsIntro p,
+.bookApp:is([lang="bn"],[lang="ne"]) .familyBlock p,
+.bookApp:is([lang="bn"],[lang="ne"]) .familyBlessingsClosing,
+.bookApp:is([lang="bn"],[lang="ne"]) .receptionDetailValue,
+.bookApp:is([lang="bn"],[lang="ne"]) .receptionAddressValue {
+  font-size: clamp(.62rem, 1.5cqw, .9rem) !important;
 }
 
-/* Bengali/Nepali dynamic placeholder values can be longer than Latin text.
-   Give them extra line-height and width while retaining the same artwork. */
-.bookApp:is([lang="bn"],[lang="ne"]) :is(.dynamicFrontNames,.familyCoupleNames,.heritageCoupleNames) {
-  font-family: var(--language-font);
-  line-height: 1.22;
-  white-space: normal;
-}
-
-.bookApp:is([lang="bn"],[lang="ne"]) :is(.familyBlock p,.receptionDetailValue,.receptionAddressValue,.locationVenueName,.locationVenueAddress,.heritageAssistance .contactCard h3) {
-  font-family: var(--language-font);
-  line-height: 1.42;
-  overflow-wrap: anywhere;
-}
-
-.bookApp:is([lang="bn"],[lang="ne"]) .receptionDetailsOverlay {
-  gap: .18cqw;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .themeTransitionFrame,
-  .themeOption,
-  .openButton,
-  .btn {
-    transition: none !important;
-    animation: none !important;
-  }
+.bookApp:is([lang="bn"],[lang="ne"]) .dynamicFrontNames,
+.bookApp:is([lang="bn"],[lang="ne"]) .familyCoupleNames {
+  font-size: clamp(1rem, 4cqw, 2.4rem) !important;
 }
