@@ -29,7 +29,7 @@ jobs:
             echo "environment=unt" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref_name }}" == "master" ]]; then
             echo "environment=prd" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref_name }}" == "release/**" ]]; then
+          elif [[ "${{ github.ref_name }}" == release/** ]]; then
             echo "environment=uat" >> $GITHUB_OUTPUT
           else
             echo "This workflow only runs on development, master, or release branches."
