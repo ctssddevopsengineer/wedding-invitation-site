@@ -189,13 +189,15 @@
   }
 
   /* ------------------------------------------------------------------------ */
-  /* ROYAL NAVY — the original mobile crest sat too close to the decorative   */
-  /* flower. Move only the overlay; do not change template/card geometry.      */
+  /* ROYAL NAVY — keep the monogram exactly on the horizontal centre line and */
+  /* place it at the top portion of the parchment on phones. Only the crest   */
+  /* overlay changes; page/card dimensions and reception text stay untouched.  */
   /* ------------------------------------------------------------------------ */
   .bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
     left: 50% !important;
     right: auto !important;
-    top: 5.1% !important;
+    top: 3.35% !important;
+    width: 16.2% !important;
     margin: 0 !important;
     transform: translateX(-50%) !important;
     object-fit: contain;
@@ -254,7 +256,8 @@
   }
 
   .bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
-    top: 5.3% !important;
+    top: 3.45% !important;
+    width: 16.6% !important;
   }
 
   .bookApp[data-invitation-theme="classic"] .receptionDetailsOverlay {
@@ -286,7 +289,8 @@
   }
 
   .bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
-    top: 5.35% !important;
+    top: 3.5% !important;
+    width: 16.8% !important;
   }
 }
 
