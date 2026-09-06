@@ -1,11 +1,14 @@
 /* ========================================================================== */
 /* ROYAL NAVY — MOBILE INSIDE-RIGHT MONOGRAM CLEARANCE                        */
 /*                                                                            */
-/* The Royal Navy crest must remain exactly on the parchment's horizontal     */
-/* centre line while sitting below the top flower decoration. These overrides */
-/* intentionally load after mobile-overlap-fixes.css and affect only the      */
-/* mobile crest overlay. Desktop/MacBook, page/card geometry, artwork, and     */
-/* reception text positioning remain unchanged.                               */
+/* The Royal Navy crest must remain visually centred on the parchment while   */
+/* sitting below the top flower decoration. The monogram asset itself is      */
+/* centred, but the parchment artwork's visual centre sits slightly right of  */
+/* the page centre. Keep the CSS anchor at 50% and apply only a tiny internal  */
+/* +.35cqw optical correction to the rendered crest. These overrides load     */
+/* after mobile-overlap-fixes.css and affect only the mobile crest overlay.    */
+/* Desktop/MacBook, page/card geometry, artwork, and reception text remain     */
+/* unchanged.                                                                 */
 /* ========================================================================== */
 
 @media (max-width: 680px) {
@@ -16,15 +19,15 @@
     width: 15.4% !important;
     max-height: 7.0% !important;
     margin: 0 !important;
-    transform: translateX(-50%) !important;
+    transform: translateX(calc(-50% + .35cqw)) !important;
     object-fit: contain;
     object-position: center;
     display: block;
   }
 }
 
-/* Samsung A55-class and similar phones get a little more breathing room from
-   the flower while preserving exact horizontal centring. */
+/* Samsung A55-class and similar phones keep the same optical X correction and
+   get a little more breathing room from the flower. */
 @media (min-width: 361px) and (max-width: 430px) {
   .bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
     top: 4.45% !important;
@@ -32,8 +35,8 @@
   }
 }
 
-/* Very narrow phones need the same flower clearance with a modestly larger
-   crest for legibility, still centred on the parchment. */
+/* Very narrow phones keep the same parchment-centre correction with a modestly
+   larger crest for legibility and the same protected flower clearance. */
 @media (max-width: 360px) {
   .bookApp[data-invitation-theme="navy"] .insideRightThemeMonogram {
     top: 4.5% !important;
