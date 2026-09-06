@@ -95,16 +95,17 @@ test('every active theme provides all four page artwork assets and files exist',
   }
 });
 
-test('theme artwork preserves card geometry while Baby Pink front may use a high-definition near-identical source ratio', () => {
-  for (const asset of ['front', 'insideLeft', 'insideRight', 'back']) {
-    const classicPath = path.join(root, 'public', getThemeAsset('classic', asset).replace(/^\//, ''));
-    const expected = imageDimensions(classicPath);
-    for (const themeId of ['blush', 'magenta', 'navy', 'plum', 'saffron']) {
+test('theme artwork preserves approved card geometry while blank HD fronts may use near-identical source ratios', () => {
+  const referenceTheme = 'magenta';
+  for (const asset of PAGE_ASSETS) {
+    const referencePath = path.join(root, 'public', getThemeAsset(referenceTheme, asset).replace(/^\//, ''));
+    const expected = imageDimensions(referencePath);
+    for (const themeId of THEME_IDS) {
       const themedPath = path.join(root, 'public', getThemeAsset(themeId, asset).replace(/^\//, ''));
       const actual = imageDimensions(themedPath);
-      if (themeId === 'blush' && asset === 'front') {
-        assert.ok(actual.width >= 1000 && actual.height >= 1400, `blush.front is not high-definition enough: ${actual.width}x${actual.height}`);
-        assert.ok(Math.abs(aspectRatio(actual) - aspectRatio(expected)) < 0.01, 'blush.front aspect ratio materially changed card geometry');
+      if (asset === 'front' && (themeId === 'classic' || themeId === 'blush')) {
+        assert.ok(actual.width >= 1000 && actual.height >= 1400, `${themeId}.front is not high-definition enough: ${actual.width}x${actual.height}`);
+        assert.ok(Math.abs(aspectRatio(actual) - aspectRatio(expected)) < 0.01, `${themeId}.front aspect ratio materially changed card geometry`);
       } else {
         assert.deepEqual(actual, expected, `${themeId}.${asset} changed dimensions`);
       }
