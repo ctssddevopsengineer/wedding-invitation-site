@@ -132,3 +132,19 @@ test('Samsung A55-class width band keeps Saffron horizontal centring intact', ()
   assert.match(css, /data-invitation-theme="navy"\][\s\S]*?top:\s*5\.3%\s*!important/);
   assert.match(css, /data-invitation-theme="classic"\][\s\S]*?top:\s*22\.05%\s*!important/);
 });
+
+test('Saffron final phone override lowers the complete details group while keeping its lower edge protected', () => {
+  assert.match(css, /SAFFRON GOLD — FINAL MOBILE VERTICAL SPACING/);
+  assert.match(
+    css,
+    /@media \(max-width: 680px\)[\s\S]*?insideRightDynamicTitle\s*\{[\s\S]*?top:\s*15\.45%\s*!important[\s\S]*?receptionDetailsOverlay\s*\{[\s\S]*?top:\s*24\.65%\s*!important[\s\S]*?height:\s*45\.5%\s*!important[\s\S]*?justify-content:\s*space-between/
+  );
+  assert.match(
+    css,
+    /@media \(min-width: 361px\) and \(max-width: 430px\)[\s\S]*?insideRightDynamicTitle\s*\{[\s\S]*?top:\s*15\.6%\s*!important[\s\S]*?receptionDetailsOverlay\s*\{[\s\S]*?top:\s*24\.45%\s*!important[\s\S]*?height:\s*45\.25%\s*!important/
+  );
+  assert.match(
+    css,
+    /@media \(max-width: 360px\)[\s\S]*?insideRightDynamicTitle\s*\{[\s\S]*?top:\s*15\.7%\s*!important[\s\S]*?receptionDetailsOverlay\s*\{[\s\S]*?top:\s*24\.75%\s*!important[\s\S]*?height:\s*45\.4%\s*!important/
+  );
+});
