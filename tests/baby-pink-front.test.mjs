@@ -43,10 +43,11 @@ function isSupportedRaster(filePath) {
   return isPng || isJpeg;
 }
 
-test('Baby Pink alone opts into blank-front dynamic rendering without changing existing dynamicFront semantics', () => {
+test('Blank-artwork themes opt into overlay rendering without changing dynamicFront semantics', () => {
   assert.equal(THEMES.blush.dynamicFront, false);
   assert.equal(THEMES.blush.blankFront, true);
-  assert.equal(THEMES.classic.blankFront, false);
+  assert.equal(THEMES.classic.dynamicFront, false);
+  assert.equal(THEMES.classic.blankFront, true);
   assert.equal(THEMES.magenta.dynamicFront, true);
 });
 
