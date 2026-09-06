@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.base_ref }}
+  group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -40,7 +40,7 @@ jobs:
   test-build:
     name: Tests and GitHub Pages-compatible build
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     needs: set-environment
     environment: ${{ needs.set-environment.outputs.environment }}
     steps:
@@ -69,7 +69,6 @@ jobs:
       # CI uses neutral fixture values only to prove that the deployment template
       # can be rendered and exported. Production values come from environment vars.
       - name: Render CI invitation configuration
-        if: false
         env:
           EVENT_TIMEZONE: ${{ vars.EVENT_TIMEZONE }}
           EVENT_TIMEZONE_OFFSET: ${{ vars.EVENT_TIMEZONE_OFFSET }}
@@ -101,10 +100,8 @@ jobs:
         run: npm run validate:export
 
       - name: Upload build artifact
-        if: false
         uses: actions/upload-artifact@v7
         with:
           name: github-pages
           path: out/
-          retention-days: 1
           if-no-files-found: error
