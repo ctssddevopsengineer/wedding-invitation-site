@@ -3,7 +3,7 @@
 import Artwork from '@/components/Artwork';
 import { useLanguage } from '@/components/LanguageProvider';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import CalendarButtons from '@/components/CalendarButtons';
 import Countdown from '@/components/Countdown';
 import { withBasePath } from '@/lib/public-path.mjs';
@@ -14,6 +14,7 @@ const HOVER_CLOSE_DELAY_MS = 180;
 export default function InsideRight({ themeId, initialLocationOpen = false, onLocationOpenChange }) {
   const { language, t, event: EVENT } = useLanguage();
   const theme = getTheme(themeId);
+  const monogramContrastId = useId();
   const insideRightMonogram = getThemeAsset(themeId, 'insideRightMonogram');
   const [isPinnedOpen, setIsPinnedOpen] = useState(Boolean(initialLocationOpen));
   const [isHoverOpen, setIsHoverOpen] = useState(false);
@@ -83,8 +84,20 @@ export default function InsideRight({ themeId, initialLocationOpen = false, onLo
 
       {insideRightMonogram && (
         <>
+          {themeId === 'saffron' && (
+            <svg width="0" height="0" aria-hidden="true" focusable="false" style={{ position: 'absolute' }}>
+              <defs>
+                <filter id={monogramContrastId} colorInterpolationFilters="sRGB">
+                  {/* Separate the orange fill from the gold lettering using their
+                      blue channels, preserving the transparent crest silhouette. */}
+                  <feColorMatrix type="matrix" values="0 0 8.55 0 -0.4753  0 0 9.4 0 -0.7278  0 0 7.45 0 -0.6816  0 0 0 1 0" />
+                </filter>
+              </defs>
+            </svg>
+          )}
           <Artwork
             className="insideRightThemeMonogram"
+            style={themeId === 'saffron' ? { '--monogram-contrast-filter': `url("#${monogramContrastId}")` } : undefined}
             src={insideRightMonogram}
             alt={t('{couple} monogram', { couple: EVENT.couple })}
           />
