@@ -78,10 +78,12 @@
 
   /* ------------------------------------------------------------------------ */
   /* SAFFRON GOLD — move the crest/title below the top floral artwork. The    */
-  /* artwork itself is not resized or repositioned.                            */
+  /* artwork itself is not resized or repositioned. The crest asset is        */
+  /* visually asymmetric, so its anchor is nudged right until the '&' aligns  */
+  /* with the centre of the flower directly beneath it.                       */
   /* ------------------------------------------------------------------------ */
   .bookApp[data-invitation-theme="saffron"] .insideRightThemeMonogram {
-    left: 50% !important;
+    left: 50.8% !important;
     right: auto !important;
     top: 5.55% !important;
     width: 12.2% !important;
