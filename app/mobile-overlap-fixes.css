@@ -279,3 +279,51 @@
   opacity: 1 !important;
   pointer-events: none;
 }
+
+/* ========================================================================== */
+/* SAFFRON GOLD — FINAL MOBILE VERTICAL SPACING                               */
+/*                                                                            */
+/* Desktop/MacBook stays exactly as approved. On phones, move Reception       */
+/* Details and the complete Day/Date → Countdown stack lower as one visual    */
+/* group. The details box is shortened by the same amount that its top moves  */
+/* down, keeping its lower boundary stable so Until We Celebrate cannot drift */
+/* into the Location/Map artwork. space-between then redistributes the reduced */
+/* free space evenly without allowing individual detail items to overlap.     */
+/* ========================================================================== */
+@media (max-width: 680px) {
+  .bookApp[data-invitation-theme="saffron"] .insideRightDynamicTitle {
+    top: 15.45% !important;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay {
+    top: 24.65% !important;
+    height: 45.5% !important;
+    justify-content: space-between;
+  }
+}
+
+/* Samsung A55 and similar 361–430px devices need the same lower placement,
+   while preserving their slightly tighter original lower boundary. */
+@media (min-width: 361px) and (max-width: 430px) {
+  .bookApp[data-invitation-theme="saffron"] .insideRightDynamicTitle {
+    top: 15.6% !important;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay {
+    top: 24.45% !important;
+    height: 45.25% !important;
+  }
+}
+
+/* Very narrow phones get a little more title/detail separation but retain the
+   same safe lower edge as the generic phone layout. */
+@media (max-width: 360px) {
+  .bookApp[data-invitation-theme="saffron"] .insideRightDynamicTitle {
+    top: 15.7% !important;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .receptionDetailsOverlay {
+    top: 24.75% !important;
+    height: 45.4% !important;
+  }
+}
