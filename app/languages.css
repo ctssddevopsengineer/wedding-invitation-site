@@ -129,7 +129,7 @@
   pointer-events: none;
 }
 .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="blush"] .insideRightDynamicLocationLabel {
-  top: 79.8%; left: 44%; width: 13%; height: 3.8%; background: #fbe8d6; box-shadow: 0 0 .6cqw .25cqw #fbe8d6;
+  top: 79.8%; left: 44%; width: 13%; height: 4.3%; background: #fbe8d6; box-shadow: 0 0 .6cqw .4cqw #fbe8d6;
 }
 
 /* Match the artwork's object-fit: cover coordinate system, including narrow
