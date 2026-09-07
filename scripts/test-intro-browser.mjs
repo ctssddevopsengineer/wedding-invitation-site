@@ -135,7 +135,7 @@ async function sampleParticleFrameTimes(page) {
 
 try {
   if (screenshots) await fs.mkdir(screenshots, { recursive: true });
-  browser = await chromium.launch({ headless: true, ...(process.env.BROWSER_CHANNEL ? { channel: process.env.BROWSER_CHANNEL } : {}) });
+  browser = await chromium.launch({ headless: true, args: ['--mute-audio'], ...(process.env.BROWSER_CHANNEL ? { channel: process.env.BROWSER_CHANNEL } : {}) });
 
   // Full sequence for every theme: the exact same FrontCover DOM node survives.
   for (const theme of THEME_IDS) {
