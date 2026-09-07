@@ -12,6 +12,8 @@ import QrNfcPanel from '@/components/QrNfcPanel';
 import SmartSharePanel from '@/components/SmartSharePanel';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import CinematicIntro from '@/components/CinematicIntro';
+import { MusicProvider } from '@/components/MusicProvider';
+import MusicControl from '@/components/MusicControl';
 import introStyles from '@/components/CinematicIntro.module.css';
 import { INTRO_STORAGE_KEY, shouldShowIntro } from '@/lib/intro.mjs';
 import { INVITATION_PAGES, nextPageIndex, previousPageIndex } from '@/lib/navigation.mjs';
@@ -234,6 +236,7 @@ function InvitationContent({ language, setLanguage }) {
   ];
 
   return (
+    <MusicProvider themeId={themeId} introActive={introActive}>
     <main
       className="bookApp"
       lang={language}
@@ -242,6 +245,7 @@ function InvitationContent({ language, setLanguage }) {
       aria-busy={Boolean(pendingTheme)}
       data-theme-ready={themeReady ? 'true' : 'false'}
     >
+      {!introActive && <MusicControl />}
       <div className={introStyles.chrome} inert={introActive} aria-hidden={introActive ? true : undefined}>
         <LanguageSwitcher onLanguageChange={(value) => setLanguage(resolveLanguage(value))} />
         <ThemeSwitcher
@@ -319,5 +323,6 @@ function InvitationContent({ language, setLanguage }) {
         <button className={introStyles.replay} type="button" data-intro-replay onClick={replayIntro}>{t('Replay Intro')}</button>
       </div>
     </main>
+    </MusicProvider>
   );
 }

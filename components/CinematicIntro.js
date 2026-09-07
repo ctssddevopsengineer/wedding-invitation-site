@@ -4,6 +4,8 @@ import { useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react'
 import { useLanguage } from '@/components/LanguageProvider';
 import { advanceIntro, ENTRANCE_PHASES, INTRO_PHASES } from '@/lib/intro.mjs';
 import WeddingEntrance from '@/components/WeddingEntrance';
+import { useMusic } from '@/components/MusicProvider';
+import MusicControl from '@/components/MusicControl';
 import styles from './CinematicIntro.module.css';
 
 // Alpona-inspired line work is drawn independently of the approved theme art.
@@ -28,6 +30,7 @@ function Alpona({ className }) {
 
 export default function CinematicIntro({ active, ready, onComplete, children }) {
   const { t, event: EVENT } = useLanguage();
+  const music = useMusic();
   const [phase, dispatch] = useReducer(advanceIntro, 'closed');
   const [entranceStatus, setEntranceStatus] = useState('pending');
   const entranceStatusRef = useRef('pending');
@@ -90,6 +93,7 @@ export default function CinematicIntro({ active, ready, onComplete, children }) 
     if (!ready || phase !== 'closed') return;
     skipButton.current?.focus({ preventScroll: true });
     dispatch(reducedMotion.current ? 'reduce-motion' : 'open');
+    music.openIntro();
   }
 
   function handleKeys(event) {
@@ -118,6 +122,7 @@ export default function CinematicIntro({ active, ready, onComplete, children }) 
       )}
       {active && (
         <>
+          <MusicControl intro />
           <div className={styles.border} aria-hidden="true" />
           <button ref={skipButton} className={styles.skip} type="button" data-intro-control data-intro-skip onClick={() => dispatch('skip')}>
             {t('Skip Intro')} <span aria-hidden="true">↗</span>

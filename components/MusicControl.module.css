@@ -1,0 +1,37 @@
+.control {
+  position: fixed;
+  right: max(18px, env(safe-area-inset-right));
+  bottom: max(18px, env(safe-area-inset-bottom));
+  z-index: 110;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 15px;
+  border: 1px solid #dcb879;
+  border-radius: 999px;
+  background: #32151ded;
+  color: #f7e3bf;
+  font: inherit;
+  font-size: .78rem;
+  cursor: pointer;
+  box-shadow: 0 3px 14px #0003;
+}
+.control svg { width: 22px; height: 22px; flex: none; }
+.control:hover { background: #602532; }
+.control:focus-visible { outline: 2px solid #f7e3bf; outline-offset: 4px; }
+.control:disabled { opacity: .5; cursor: default; }
+.control[data-intro-control] {
+  top: max(22px, env(safe-area-inset-top));
+  left: max(22px, env(safe-area-inset-left));
+  bottom: auto;
+  right: auto;
+  width: 44px;
+  padding: 10px;
+}
+.control[data-intro-control] span { display: none; }
+@media (max-width: 430px) {
+  .control { width: 44px; padding: 10px; }
+  .control span { display: none; }
+}

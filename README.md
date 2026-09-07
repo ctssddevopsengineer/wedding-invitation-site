@@ -16,6 +16,37 @@ This project includes:
 
 The application entry point is `app/page.js`, which renders `InvitationBook` from `components/InvitationBook.js`.
 
+## Background music
+
+`lib/music.mjs` is the single track configuration: `introMusic`, the six-entry
+`themeMusic` map, volume and fade/loop timings. The supplied MP3s live in
+`public/audio/`; paths automatically include the GitHub Pages base path.
+
+Music does not fetch, create an audio context or play before interaction.
+**Open Invitation** enables the intro track; completion crossfades to the theme
+track. Skip before opening, repeat visits and deep links remain silent until
+**Play music** is pressed. The closed-envelope music button only sets the mute
+preference. **Replay Intro** fades down until the envelope is opened again.
+
+`MusicProvider` owns one `lib/music-player.mjs` player outside the invitation
+pages. Page navigation never restarts a track. Theme changes crossfade, and
+superseded downloads cannot start playback. Mute is stored in `sessionStorage`;
+playback authorization is deliberately not restored after a reload. Blocked
+storage falls back to the current page's in-memory preference.
+
+Web Audio gain ramps handle fades (including on mobile). Decoded buffers loop on
+the audio clock with a short tail/head blend to avoid restart gaps and clicks;
+the original MP3s are unchanged. Only the current track and a pending transition
+are loaded, rather than preloading the entire collection. Mute and hidden tabs
+fade down then suspend the audio clock, preserving position. Page departure
+pauses immediately; return resumes only previously enabled, unmuted playback.
+Unavailable audio or browser playback restrictions leave a retry control and
+never block the invitation. No AI music selection is involved.
+
+After `npm run build`, run `npm run test:music` (optionally with
+`BROWSER_CHANNEL=chrome`) for real MP3, gesture, navigation, loop, lifecycle and
+failure checks. Browser tests mute hardware output while exercising Web Audio.
+
 ## Tech stack
 
 - Next.js `^16.3.4`
