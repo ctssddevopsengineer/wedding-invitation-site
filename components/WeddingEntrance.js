@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useLanguage } from '@/components/LanguageProvider';
 import { withBasePath } from '@/lib/public-path.mjs';
 import styles from './WeddingEntrance.module.css';
@@ -24,7 +24,7 @@ export default function WeddingEntrance({ phase, onStatusChange }) {
   }, []);
 
   useEffect(() => { onStatusChange(status); }, [status, onStatusChange]);
-  useEffect(() => { if (phase === 'walking') setEntered(true); }, [phase]);
+  useLayoutEffect(() => { if (phase === 'walking') setEntered(true); }, [phase]);
 
   async function characterLoaded(event, name) {
     const image = event.currentTarget;

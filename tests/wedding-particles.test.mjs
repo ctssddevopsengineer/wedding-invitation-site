@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createWeddingParticles, isParticlePhase } from '../lib/wedding-particles.mjs';
 
-test('particles only run in the wedding scene, never over the envelope or real invitation', () => {
-  for (const phase of ['walking', 'together']) assert.equal(isParticlePhase(phase), true);
-  for (const phase of ['closed', 'opening', 'rising', 'scene', 'revealing', 'complete', undefined]) assert.equal(isParticlePhase(phase), false);
+test('particles start after the couple meets and remain through the scene fade', () => {
+  for (const phase of ['together', 'revealing']) assert.equal(isParticlePhase(phase), true);
+  for (const phase of ['closed', 'opening', 'rising', 'scene', 'walking', 'complete', undefined]) assert.equal(isParticlePhase(phase), false);
 });
 
 test('desktop and mobile use small, symmetric fields with all three decorative elements', () => {
