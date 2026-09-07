@@ -162,7 +162,8 @@ try {
     await page.waitForFunction((start) => document.querySelector('.frontCover').getBoundingClientRect().top < start - 40, startTop);
     if (theme === 'classic') await capture(page, 'desktop-rising');
     await page.waitForSelector('[data-cinematic-intro="walking"]');
-    await checkParticles(page);
+    assert.equal(await page.locator('[data-wedding-particles]').count(), 0, 'petals wait until the couple meets');
+    await page.evaluate(() => { window.walkAnimations = [...document.querySelectorAll('[data-character]')].map((node) => node.getAnimations()[0]); });
     assert.equal(await page.locator('[data-wedding-scene]').getAttribute('data-characters'), 'ready');
     const startPositions = await page.locator('[data-character]').evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().left));
     await page.waitForFunction(([left, right]) => {
@@ -170,16 +171,22 @@ try {
       return nodes[0].getBoundingClientRect().left > left + 50 && nodes[1].getBoundingClientRect().left < right - 50;
     }, startPositions);
     if (theme === 'classic') await capture(page, 'desktop-walking');
-    if (theme === 'classic') {
-      await checkParticleSuspension(page);
-      await sampleParticleFrameTimes(page);
-    }
     await page.waitForSelector('[data-cinematic-intro="together"]');
+    await page.evaluate(() => Promise.all(window.walkAnimations.map((animation) => animation.finished)));
+    assert.equal(await page.evaluate(() => [...document.querySelectorAll('[data-character]')].every((node, index) => node.getAnimations()[0] === window.walkAnimations[index])), true, 'walking animations are retained at the meeting, not restarted');
+    await checkParticles(page);
     await checkCoupleSpace(page);
     const stopped = await page.locator('[data-character]').evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().left));
     await page.waitForTimeout(350);
     assert.deepEqual(await page.locator('[data-character]').evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().left)), stopped, 'the couple stops for the pause');
+    if (theme === 'classic') {
+      await checkParticleSuspension(page);
+      await sampleParticleFrameTimes(page);
+    }
     if (theme === 'classic') await capture(page, 'desktop-together');
+    const particleField = await page.locator('[data-wedding-particles]').elementHandle();
+    await page.waitForSelector('[data-cinematic-intro="revealing"]');
+    assert.equal(await particleField.evaluate((node) => node === document.querySelector('[data-wedding-particles]')), true, 'petals survive into the scene fade');
     await complete(page);
     assert.equal(await page.evaluate(() => window.originalFrontCover === document.querySelector('.frontCover')), true, 'FrontCover must not be cloned or remounted');
     assert.equal(await page.locator('.bookStage').evaluate((node) => node === document.activeElement), true);
@@ -228,10 +235,11 @@ try {
       await page.waitForSelector('[data-cinematic-intro="opening"]');
       if (theme === 'classic') {
         await page.waitForSelector('[data-cinematic-intro="walking"]');
-        await checkParticles(page);
+        assert.equal(await page.locator('[data-wedding-particles]').count(), 0);
         const distance = await page.locator('[data-character="bride"]').evaluate((node) => Math.abs(new DOMMatrixReadOnly(getComputedStyle(node).transform).m41));
         assert.ok(distance < (width <= 680 ? 70 : 400), 'phone walking distance is automatically shortened');
         await page.waitForSelector('[data-cinematic-intro="together"]');
+        await checkParticles(page);
         assert.ok(sceneRequests.some((request) => request.endsWith(width <= 680 ? '/wedding-scene-mobile.webp' : '/wedding-scene.webp')));
         if (width <= 680) assert.equal(sceneRequests.some((request) => request.endsWith('/wedding-scene.webp')), false, 'phones do not download the desktop backdrop');
         await checkCoupleSpace(page);
@@ -330,7 +338,7 @@ try {
   const resizing = await newPage({ viewport: { width: 1366, height: 900 } });
   await ready(resizing);
   await resizing.locator('[data-intro-open]').click();
-  await resizing.waitForSelector('[data-cinematic-intro="walking"]');
+  await resizing.waitForSelector('[data-cinematic-intro="together"]');
   await checkParticles(resizing);
   await resizing.setViewportSize({ width: 390, height: 844 });
   await resizing.waitForSelector('[data-wedding-particles][data-compact="true"]');

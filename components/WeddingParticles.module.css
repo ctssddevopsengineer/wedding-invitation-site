@@ -3,6 +3,7 @@
   inset: 0;
   pointer-events: none;
   user-select: none;
+  animation: petalsAppear .6s ease .25s both;
 }
 .lane {
   position: absolute;
@@ -38,6 +39,7 @@
 
 /* The clipping lanes are a hard boundary: nothing can drift into the center.
    All animated properties are compositor-friendly transform and opacity. */
+@keyframes petalsAppear { from { opacity: 0; } to { opacity: 1; } }
 @keyframes edgeFall {
   0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(var(--rotation)); }
   12%, 76% { opacity: var(--intensity); }
@@ -46,7 +48,7 @@
 }
 @keyframes glimmer { 0%, 100% { opacity: .4; } 50% { opacity: 1; } }
 .field[data-paused='true'] { visibility: hidden; }
-.field[data-paused='true'] * { animation-play-state: paused !important; }
+.field[data-paused='true'], .field[data-paused='true'] * { animation-play-state: paused !important; }
 @media (max-width: 680px) { .lane { width: 10vw; } }
 @media (prefers-reduced-motion: reduce) {
   .field { display: none; }

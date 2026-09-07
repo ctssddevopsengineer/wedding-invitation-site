@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useReducer, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
 import { useLanguage } from '@/components/LanguageProvider';
 import { advanceIntro, ENTRANCE_PHASES, INTRO_PHASES } from '@/lib/intro.mjs';
 import WeddingEntrance from '@/components/WeddingEntrance';
@@ -49,7 +49,7 @@ export default function CinematicIntro({ active, ready, onComplete, children }) 
     return () => preference.removeEventListener('change', update);
   }, [active, phase]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!active) {
       dispatch('reset');
       setEntranceStatus('pending');
@@ -69,12 +69,12 @@ export default function CinematicIntro({ active, ready, onComplete, children }) 
     return () => { document.body.style.overflow = oldOverflow; };
   }, [active, ready]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!active || !ready) return;
     if (phase === 'complete') { onComplete(); return; }
     const step = INTRO_PHASES[phase];
     if (!step?.next) return;
-    // A bounded timer also completes the intro if animationend never fires.
+    // Timers bound each phase; completion and focus settle before the next paint.
     const timer = window.setTimeout(() => {
       // Slow downloads cannot hold the invitation hostage or arrive mid-walk.
       dispatch(phase === 'scene' && entranceStatusRef.current !== 'ready' ? 'assets-unavailable' : 'advance');

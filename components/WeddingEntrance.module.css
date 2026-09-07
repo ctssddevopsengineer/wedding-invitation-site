@@ -31,14 +31,13 @@
 .bride { left: calc(50% - var(--figure-width) * .14); --start-x: var(--walk-distance); --entrance-delay: 400ms; }
 .figure { display: block; height: 100%; width: 100%; object-fit: contain; object-position: center bottom; transform-origin: 50% 95%; }
 .person::after { content: ''; position: absolute; bottom: -1%; left: 22%; width: 56%; height: 3%; border-radius: 50%; background: #321a1260; filter: blur(5px); z-index: -1; }
-.weddingScene[data-phase='walking'][data-characters='ready'] .person {
+.weddingScene:is([data-phase='walking'], [data-phase='together'], [data-phase='revealing'])[data-characters='ready'][data-entered='true'] .person {
   animation: processionalWalk 5.6s cubic-bezier(.25, .1, .25, 1) var(--entrance-delay) both;
   will-change: transform, opacity;
 }
-.weddingScene[data-phase='walking'][data-characters='ready'] .figure {
+.weddingScene:is([data-phase='walking'], [data-phase='together'], [data-phase='revealing'])[data-characters='ready'][data-entered='true'] .figure {
   animation: walkingCadence 1.4s ease-in-out var(--entrance-delay) 4 both;
 }
-.weddingScene:is([data-phase='together'], [data-phase='revealing'])[data-characters='ready'][data-entered='true'] .person { opacity: 1; transform: translate3d(0, 0, 0); }
 .weddingScene[data-phase='revealing'] { opacity: 0; transition-duration: .7s; }
 /* Only transform/opacity change per frame. Cadence is deliberately restrained. */
 @keyframes processionalWalk {
