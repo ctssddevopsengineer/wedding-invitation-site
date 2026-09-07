@@ -216,7 +216,7 @@ depend on the guest's network; instantaneous cold downloads cannot be guaranteed
 The existing `ci.yml` and `cd.yml` are unchanged. Their `npm test` step includes the
 new unit tests; the browser matrix can be run locally using the command above.
 
-## Cinematic intro — Phases 1 and 2
+## Cinematic intro — Phases 1, 2 and 3
 
 A red-and-gold Bengali wedding envelope with an S&D seal precedes the front cover.
 Select **Open Invitation** to open the flap and lift the card. A Bengal-to-Himalaya
@@ -228,7 +228,7 @@ inside the existing book stage: there is no second invitation or copied cover.
 Envelope line art and animation are isolated in `CinematicIntro.module.css` and
 `CinematicIntro.js`; approved page components, theme assets and workflow files
 are unchanged. The entrance is isolated in `WeddingEntrance.js` and its CSS module.
-No music or falling particles are included.
+No music is included. Phase 3 adds the restrained side particles described below.
 
 The groom and bride are transparent WebP cutouts with real alpha channels, not
 rectangular pictures. New art lives only in `public/intro/`; `ASSETS.md` records
@@ -272,3 +272,30 @@ storage, failed/late characters and missing-background fallback. Unit tests also
 verify transparent borders, sufficient asset resolution and transfer budgets. Set
 `SCREENSHOT_DIR` to save previews and `NEXT_PUBLIC_BASE_PATH` to match the build.
 Run `npm test` and `npm run test:browser` for the existing regression suites.
+
+### Subtle wedding particles
+
+During the couple's entrance and pause, CSS rose petals, small gold sparkles and
+occasional inline floral marks fall along the left and right edges. The layer uses
+20 particles on desktop and 8 at widths of 680px or less. The side lanes are
+clipped to at most 16% of each desktop edge (220px maximum), or 10% on mobile,
+keeping at least the middle 68% clear on desktop and 80% on mobile.
+Falls start at least 24px below the scene caption;
+a ResizeObserver updates this boundary when translated text wraps or fonts load.
+No particles appear over the emerging card or the actual invitation pages.
+
+Only transform and opacity animate; there is no JavaScript animation loop,
+particle spawning timer, image download or animation library. Tiny floral marks
+take 14 seconds per fall, with shorter, staggered petal/sparkle cycles. The layer
+sits behind the text and characters and never intercepts clicks or focus.
+
+The particle layer is removed before the final reveal, and on Skip or reduced
+motion. All observers and event listeners are cleaned up. A visibilitychange
+listener hides and pauses the CSS timelines while the tab is hidden. Returning
+resumes them only if the intro is still active; a completed intro has no particle
+elements left to resume. CSS also disables the layer for prefers-reduced-motion.
+
+`npm run test:intro` checks desktop/mobile particle budgets, side clipping, text
+clearance after resize/reflow, animated-property limits, hidden-tab suspension,
+reduced motion and removal. It also reports a short local Chrome frame-interval
+comparison with the particle layer hidden and visible.

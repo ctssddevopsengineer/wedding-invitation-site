@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '@/components/LanguageProvider';
 import { withBasePath } from '@/lib/public-path.mjs';
 import styles from './WeddingEntrance.module.css';
+import WeddingParticles from '@/components/WeddingParticles';
+import { isParticlePhase } from '@/lib/wedding-particles.mjs';
 
 export default function WeddingEntrance({ phase, onStatusChange }) {
   const { t, event: EVENT } = useLanguage();
@@ -12,6 +14,7 @@ export default function WeddingEntrance({ phase, onStatusChange }) {
   const [backgroundFailed, setBackgroundFailed] = useState(false);
   const [entered, setEntered] = useState(false);
   const mounted = useRef(false);
+  const captionRef = useRef(null);
   const status = failed ? 'failed' : loaded.groom && loaded.bride ? 'ready' : 'pending';
   const visible = ['scene', 'walking', 'together', 'revealing'].includes(phase);
 
@@ -42,7 +45,8 @@ export default function WeddingEntrance({ phase, onStatusChange }) {
         </picture>
       )}
       <div className={styles.vignette} />
-      <div className={styles.caption} data-entrance-caption>
+      <WeddingParticles active={isParticlePhase(phase) && status === 'ready'} captionRef={captionRef} />
+      <div ref={captionRef} className={styles.caption} data-entrance-caption>
         <p>{t('Two cultures. Two families.')}</p>
         <h2>{t('One beautiful journey.')}</h2>
         <span>{EVENT.couple.includes('{{') ? 'S & D' : EVENT.couple}</span>
