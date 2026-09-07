@@ -215,3 +215,38 @@ depend on the guest's network; instantaneous cold downloads cannot be guaranteed
 
 The existing `ci.yml` and `cd.yml` are unchanged. Their `npm test` step includes the
 new unit tests; the browser matrix can be run locally using the command above.
+
+## Cinematic intro — Phase 1
+
+A red-and-gold Bengali wedding envelope with an S&D seal precedes the front cover.
+Select **Open Invitation** to open the flap, lift the card and reveal the website
+in approximately three seconds. The rising card is the existing `FrontCover`
+inside the existing book stage: there is no second invitation or copied cover.
+Envelope line art and animation are isolated in `CinematicIntro.module.css` and
+`CinematicIntro.js`; approved page components, theme assets and workflow files
+are unchanged. No music, particles or character animation is included.
+
+**Skip Intro** and Escape immediately reveal the invitation at any phase.
+**Replay Intro**, below the invitation navigation, restarts the closed envelope
+at the front cover with the current theme and language. The intro is shown once
+per tab session; completion or skipping records `sd-invitation-intro-seen-v1` in
+session storage. If storage is blocked, opening, skipping and replay still work.
+Direct links to family, details, location or back bypass the automatic intro.
+The existing reload-to-front behavior is preserved, and browser-history
+navigation dismisses an active intro to show its requested page.
+
+Keyboard focus stays within the intro controls while the book is inert; after
+dismissal, focus and scrolling move to the actual invitation stage. Reduced-motion
+visitors still see the closed envelope, but opening reveals the invitation without
+the flap/card choreography. Changing the motion preference during playback also
+finishes immediately. Timers and scroll locks are cleaned up on dismissal.
+Other-theme background preloading pauses during the intro. Slow or missing
+artwork never prevents skipping or completing the sequence.
+
+After building, run `BROWSER_CHANNEL=chrome npm run test:intro` (or omit the channel
+to use Playwright Chromium). It verifies the full sequence across six themes,
+42 theme/device combinations from 320px phones to 1920px desktops and short
+landscape screens, single-cover DOM identity, focus, touch, navigation, replay,
+skip at every phase, reduced motion, blocked storage and failed artwork. Set
+`SCREENSHOT_DIR` to save previews and `NEXT_PUBLIC_BASE_PATH` to match the build.
+Run `npm test` and `npm run test:browser` for the existing regression suites.

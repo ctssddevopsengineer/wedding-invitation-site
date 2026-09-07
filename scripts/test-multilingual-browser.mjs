@@ -5,6 +5,7 @@ import http from 'node:http';
 import path from 'node:path';
 import { chromium } from 'playwright';
 import { translate } from '../lib/locale.mjs';
+import { EVENT } from '../lib/event.mjs';
 
 const root = path.resolve('out');
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
@@ -38,6 +39,8 @@ try {
     page.on('pageerror', (error) => errors.push(error.message));
     await page.goto(url);
     await page.waitForSelector('main[data-theme-ready="true"]');
+    await page.locator('[data-intro-skip]').click();
+    await page.waitForSelector('[data-cinematic-intro="complete"]');
     for (const theme of (process.env.BROWSER_THEMES || 'classic,blush,magenta,navy,plum,saffron').split(',')) {
       for (const language of ['en', 'bn', 'ne']) {
         for (const pageName of ['front', 'family', 'details', 'back']) {
@@ -56,7 +59,9 @@ try {
               if (box.width && (box.left < card.left - 2 || box.right > card.right + 2 || box.bottom > card.bottom + 2)) issues.push(node.className || node.tagName);
             }
             for (const image of document.querySelectorAll('.invitePage picture img')) {
-              if (!image.currentSrc.endsWith('.webp') || !image.naturalWidth) issues.push('artwork not optimized/loaded');
+              // Classic/Blush intentionally use approved JPEG front templates.
+              const expected = image.src.endsWith('.png') ? image.src.replace(/\.png$/, '.webp') : image.src;
+              if (image.currentSrc !== expected || !image.naturalWidth) issues.push('artwork not optimized/loaded');
             }
             // New typography guards apply to translations; approved English geometry is preserved.
             for (const [first, second] of [['.heritageBackIntro', '.heritageCoupleNames'], ['.dynamicFrontNames', '.dynamicFrontClosing']]) {
@@ -70,7 +75,11 @@ try {
           assert.deepEqual(issues, [], `${width}/${theme}/${language}/${pageName}`);
           if (pageName === 'details' && language !== 'en') {
             const dateText = await page.locator('.receptionDetailValue').first().innerText();
-            assert.match(dateText, language === 'bn' ? /[০-৯]/ : /[०-९]/);
+            if (Number.isFinite(EVENT.start.getTime())) {
+              assert.match(dateText, language === 'bn' ? /[০-৯]/ : /[०-९]/);
+            } else {
+              assert.equal(dateText, translate(language, 'Reception date will be announced soon.'));
+            }
             assert.doesNotMatch(dateText, /Sunday|February|January|Monday/);
           }
           if (pageName === 'front') assert.equal(await page.locator('.openButton span').first().innerText(), translate(language, 'Open Invitation'));

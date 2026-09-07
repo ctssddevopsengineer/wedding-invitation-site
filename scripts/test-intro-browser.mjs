@@ -1,0 +1,192 @@
+// Build first. BROWSER_CHANNEL=chrome uses an installed Chrome.
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import http from 'node:http';
+import path from 'node:path';
+import { chromium } from 'playwright';
+import { THEME_IDS } from '../lib/theme.mjs';
+import { translate } from '../lib/locale.mjs';
+
+const root = path.resolve('out');
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+const screenshots = process.env.SCREENSHOT_DIR;
+const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.woff2': 'font/woff2' };
+const server = http.createServer(async (req, res) => {
+  try {
+    let pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
+    if (basePath && !pathname.startsWith(`${basePath}/`)) { res.writeHead(404).end(); return; }
+    pathname = pathname.slice(basePath.length);
+    const file = path.resolve(root, `.${pathname.endsWith('/') ? `${pathname}index.html` : pathname}`);
+    if (!file.startsWith(`${root}${path.sep}`)) { res.writeHead(403).end(); return; }
+    const data = await fs.readFile(file);
+    res.writeHead(200, { 'Content-Type': types[path.extname(file)] || 'application/octet-stream' }).end(data);
+  } catch { res.writeHead(404).end(); }
+});
+await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+const url = `http://127.0.0.1:${server.address().port}${basePath}/`;
+const errors = [];
+let browser;
+async function newPage(options = {}) {
+  const context = await browser.newContext(options);
+  await context.route('https://**', (route) => route.abort());
+  const page = await context.newPage();
+  page.on('pageerror', (error) => errors.push(error.message));
+  return page;
+}
+async function ready(page, search = '') {
+  await page.goto(`${url}${search}`);
+  await page.waitForSelector('main[data-theme-ready="true"]');
+}
+async function complete(page) {
+  await page.waitForSelector('[data-cinematic-intro="complete"]', { timeout: 7000 });
+  await page.waitForFunction(() => document.body.style.overflow !== 'hidden');
+  assert.equal(await page.locator('.invitePage').count(), 1, 'only one real invitation page is mounted');
+  assert.equal(await page.evaluate(() => document.body.style.overflow), '', 'scroll lock is released');
+}
+async function capture(page, name) {
+  if (screenshots) await page.screenshot({ path: path.join(screenshots, `${name}.png`) });
+}
+
+try {
+  if (screenshots) await fs.mkdir(screenshots, { recursive: true });
+  browser = await chromium.launch({ headless: true, ...(process.env.BROWSER_CHANNEL ? { channel: process.env.BROWSER_CHANNEL } : {}) });
+
+  // Full sequence for every theme: the exact same FrontCover DOM node survives.
+  for (const theme of THEME_IDS) {
+    const page = await newPage({ viewport: { width: 1366, height: 900 } });
+    await ready(page, `?theme=${theme}&lang=en&guest=family#invite`);
+    await page.locator('[data-intro-open]').waitFor();
+    assert.equal(await page.locator('[role="dialog"]').count(), 1);
+    assert.equal(await page.locator('.frontCover').count(), 1);
+    await page.locator('.frontCover img').evaluateAll((images) => Promise.all(images.map((image) => image.decode())));
+    await page.evaluate(() => { window.originalFrontCover = document.querySelector('.frontCover'); });
+    assert.equal(await page.locator('[data-intro-open]').evaluate((node) => node === document.activeElement), true);
+    await page.keyboard.press('Shift+Tab');
+    assert.equal(await page.locator('[data-intro-skip]').evaluate((node) => node === document.activeElement), true);
+    await page.keyboard.press('Tab');
+    assert.equal(await page.locator('[data-intro-open]').evaluate((node) => node === document.activeElement), true);
+    await page.keyboard.press('End');
+    await page.evaluate(() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'End' })));
+    assert.equal(new URL(page.url()).searchParams.get('page'), 'front');
+    if (theme === 'classic') await capture(page, 'desktop-closed');
+    await page.keyboard.press('Enter');
+    await page.waitForSelector('[data-cinematic-intro="opening"]');
+    await page.waitForSelector('[data-cinematic-intro="rising"]');
+    const startTop = await page.locator('.frontCover').evaluate((node) => node.getBoundingClientRect().top);
+    await page.waitForFunction((start) => document.querySelector('.frontCover').getBoundingClientRect().top < start - 40, startTop);
+    if (theme === 'classic') await capture(page, 'desktop-rising');
+    await complete(page);
+    assert.equal(await page.evaluate(() => window.originalFrontCover === document.querySelector('.frontCover')), true, 'FrontCover must not be cloned or remounted');
+    assert.equal(await page.locator('.bookStage').evaluate((node) => node === document.activeElement), true);
+    assert.equal(new URL(page.url()).searchParams.get('guest'), 'family');
+    assert.equal(new URL(page.url()).hash, '#invite');
+    assert.equal(await page.locator('audio,video').count(), 0);
+    if (theme === 'classic') await capture(page, 'desktop-revealed');
+    await page.locator('.frontCover .openButton').click();
+    await page.locator('.familyBlessingsTemplate').waitFor();
+    await page.getByRole('button', { name: 'Next page', exact: true }).click();
+    await page.locator('.exactInsideRight').waitFor();
+    await page.getByRole('button', { name: 'Next page', exact: true }).click();
+    await page.locator('.heritageBackCover').waitFor();
+    await page.locator('[data-intro-replay]').click();
+    await page.waitForSelector('[data-cinematic-intro="closed"]');
+    assert.equal(new URL(page.url()).searchParams.get('page'), 'front');
+    await page.locator('[data-intro-skip]').click();
+    await complete(page);
+    await page.reload();
+    await complete(page);
+    assert.equal(await page.locator('[data-intro-open]').count(), 0, 'session completion avoids forced repeat intros');
+    await page.context().close();
+    console.log(`Verified full opening, single FrontCover, navigation and replay: ${theme}.`);
+  }
+
+  // Touch, short landscape screens and every theme at each device size.
+  for (const [width, height] of [[320, 480], [320, 568], [390, 844], [768, 1024], [1366, 768], [1920, 1080], [844, 390]]) {
+    for (const theme of THEME_IDS) {
+      const page = await newPage({ viewport: { width, height }, hasTouch: true });
+      await ready(page, `?theme=${theme}`);
+      const issues = await page.evaluate(() => {
+        const issues = [];
+        const dialog = document.querySelector('[data-cinematic-intro="closed"]');
+        if (dialog.scrollWidth > innerWidth + 1) issues.push('horizontal intro overflow');
+        for (const button of dialog.querySelectorAll('[data-intro-control]')) {
+          const box = button.getBoundingClientRect();
+          if (box.x < 0 || box.y < 0 || box.right > innerWidth || box.bottom > innerHeight || box.height < 44) issues.push('inaccessible control');
+        }
+        return issues;
+      });
+      assert.deepEqual(issues, [], `${width}x${height}/${theme}`);
+      if (theme === 'classic') await capture(page, `closed-${width}x${height}`);
+      await page.locator('[data-intro-open]').tap();
+      await page.waitForSelector('[data-cinematic-intro="opening"]');
+      await page.locator('[data-intro-skip]').tap();
+      await complete(page);
+      await page.context().close();
+    }
+    console.log(`Verified six themes and touch/skip controls: ${width}x${height}.`);
+  }
+
+  const page = await newPage();
+  // Skip works at each phase; cancelled timers cannot advance a fresh replay.
+  for (const phase of ['closed', 'opening', 'rising', 'revealing']) {
+    await ready(page);
+    if (!(await page.locator('[data-intro-open]').count())) await page.locator('[data-intro-replay]').click();
+    if (phase !== 'closed') await page.locator('[data-intro-open]').click();
+    await page.waitForSelector(`[data-cinematic-intro="${phase}"]`);
+    await page.locator('[data-intro-skip]').click();
+    await complete(page);
+  }
+  await page.locator('[data-intro-replay]').click();
+  await page.waitForTimeout(3200);
+  assert.equal(await page.locator('[data-cinematic-intro="closed"]').count(), 1);
+  await page.keyboard.press('Escape');
+  await complete(page);
+  // History navigation dismisses the overlay and honors the target immediately.
+  await page.locator('[data-intro-replay]').click();
+  await page.evaluate(() => { history.pushState({}, '', '?theme=navy&page=location&lang=bn'); dispatchEvent(new PopStateEvent('popstate')); });
+  await complete(page);
+  assert.equal(await page.locator('.exactLocationHotspot').getAttribute('aria-expanded'), 'true');
+  assert.equal(await page.locator('main').getAttribute('data-invitation-theme'), 'navy');
+  await page.context().close();
+
+  for (const language of ['en', 'bn', 'ne']) {
+    const page = await newPage({ reducedMotion: 'reduce' });
+    await ready(page, `?theme=plum&lang=${language}`);
+    assert.equal((await page.locator('[data-intro-open]').innerText()).replace(/\s+/g, ' '), `${translate(language, 'Open Invitation')} →`);
+    const started = Date.now();
+    await page.locator('[data-intro-open]').click();
+    await complete(page);
+    assert.ok(Date.now() - started < 1500, 'reduced motion bypasses the three-second choreography');
+    await page.context().close();
+  }
+
+  const fallback = await newPage();
+  await fallback.context().addInitScript(() => {
+    Storage.prototype.getItem = () => { throw new DOMException('Blocked', 'SecurityError'); };
+    Storage.prototype.setItem = () => { throw new DOMException('Blocked', 'SecurityError'); };
+  });
+  await fallback.route('**/themes/**', (route) => route.abort());
+  await ready(fallback, '?theme=saffron');
+  await fallback.locator('[data-intro-open]').click();
+  await complete(fallback); // Artwork failure cannot strand the user.
+  await fallback.locator('[data-intro-replay]').click();
+  await fallback.locator('[data-intro-open]').click();
+  await fallback.emulateMedia({ reducedMotion: 'reduce' });
+  await complete(fallback);
+  await fallback.context().close();
+
+  for (const target of ['family', 'details', 'location', 'back']) {
+    const page = await newPage();
+    await ready(page, `?theme=blush&page=${target}&lang=bn`);
+    await complete(page);
+    assert.equal(new URL(page.url()).searchParams.get('page'), target);
+    assert.equal(await page.locator('[data-intro-open]').count(), 0);
+    await page.context().close();
+  }
+  assert.deepEqual(errors, []);
+  console.log('Passed intro choreography, 42 responsive theme/device combinations, keyboard focus, touch, skip at every phase, replay, deep links, reduced motion, blocked storage/assets and cleanup; no browser errors.');
+} finally {
+  await browser?.close();
+  server.closeAllConnections();
+  await new Promise((resolve) => server.close(resolve));
+}
