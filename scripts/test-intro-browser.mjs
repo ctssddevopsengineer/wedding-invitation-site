@@ -38,13 +38,27 @@ async function ready(page, search = '') {
   await page.waitForSelector('main[data-theme-ready="true"]');
 }
 async function complete(page) {
-  await page.waitForSelector('[data-cinematic-intro="complete"]', { timeout: 7000 });
+  await page.waitForSelector('[data-cinematic-intro="complete"]', { timeout: 16000 });
   await page.waitForFunction(() => document.body.style.overflow !== 'hidden');
   assert.equal(await page.locator('.invitePage').count(), 1, 'only one real invitation page is mounted');
   assert.equal(await page.evaluate(() => document.body.style.overflow), '', 'scroll lock is released');
 }
 async function capture(page, name) {
   if (screenshots) await page.screenshot({ path: path.join(screenshots, `${name}.png`) });
+}
+
+async function checkCoupleSpace(page) {
+  const issues = await page.evaluate(() => {
+    const issues = [];
+    const caption = document.querySelector('[data-entrance-caption]').getBoundingClientRect();
+    const figures = [...document.querySelectorAll('[data-character]')].map((node) => node.getBoundingClientRect());
+    if (figures.some((box) => box.top < caption.bottom + 8)) issues.push('characters cover scene text');
+    if (figures.some((box) => box.left < 0 || box.right > innerWidth || box.bottom > innerHeight)) issues.push('settled characters outside viewport');
+    if (figures[0].left >= figures[1].left) issues.push('characters switched sides');
+    if (getComputedStyle(document.querySelector('[data-envelope-scene]')).opacity !== '0') issues.push('invitation text visible behind characters');
+    return issues;
+  });
+  assert.deepEqual(issues, []);
 }
 
 try {
@@ -75,6 +89,20 @@ try {
     const startTop = await page.locator('.frontCover').evaluate((node) => node.getBoundingClientRect().top);
     await page.waitForFunction((start) => document.querySelector('.frontCover').getBoundingClientRect().top < start - 40, startTop);
     if (theme === 'classic') await capture(page, 'desktop-rising');
+    await page.waitForSelector('[data-cinematic-intro="walking"]');
+    assert.equal(await page.locator('[data-wedding-scene]').getAttribute('data-characters'), 'ready');
+    const startPositions = await page.locator('[data-character]').evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().left));
+    await page.waitForFunction(([left, right]) => {
+      const nodes = document.querySelectorAll('[data-character]');
+      return nodes[0].getBoundingClientRect().left > left + 50 && nodes[1].getBoundingClientRect().left < right - 50;
+    }, startPositions);
+    if (theme === 'classic') await capture(page, 'desktop-walking');
+    await page.waitForSelector('[data-cinematic-intro="together"]');
+    await checkCoupleSpace(page);
+    const stopped = await page.locator('[data-character]').evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().left));
+    await page.waitForTimeout(350);
+    assert.deepEqual(await page.locator('[data-character]').evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().left)), stopped, 'the couple stops for the pause');
+    if (theme === 'classic') await capture(page, 'desktop-together');
     await complete(page);
     assert.equal(await page.evaluate(() => window.originalFrontCover === document.querySelector('.frontCover')), true, 'FrontCover must not be cloned or remounted');
     assert.equal(await page.locator('.bookStage').evaluate((node) => node === document.activeElement), true);
@@ -119,6 +147,14 @@ try {
       if (theme === 'classic') await capture(page, `closed-${width}x${height}`);
       await page.locator('[data-intro-open]').tap();
       await page.waitForSelector('[data-cinematic-intro="opening"]');
+      if (theme === 'classic') {
+        await page.waitForSelector('[data-cinematic-intro="walking"]');
+        const distance = await page.locator('[data-character="bride"]').evaluate((node) => Math.abs(new DOMMatrixReadOnly(getComputedStyle(node).transform).m41));
+        assert.ok(distance < (width <= 680 ? 70 : 400), 'phone walking distance is automatically shortened');
+        await page.waitForSelector('[data-cinematic-intro="together"]');
+        await checkCoupleSpace(page);
+        await capture(page, `together-${width}x${height}`);
+      }
       await page.locator('[data-intro-skip]').tap();
       await complete(page);
       await page.context().close();
@@ -128,7 +164,7 @@ try {
 
   const page = await newPage();
   // Skip works at each phase; cancelled timers cannot advance a fresh replay.
-  for (const phase of ['closed', 'opening', 'rising', 'revealing']) {
+  for (const phase of ['closed', 'opening', 'rising', 'scene', 'walking', 'together', 'revealing']) {
     await ready(page);
     if (!(await page.locator('[data-intro-open]').count())) await page.locator('[data-intro-replay]').click();
     if (phase !== 'closed') await page.locator('[data-intro-open]').click();
@@ -151,12 +187,15 @@ try {
 
   for (const language of ['en', 'bn', 'ne']) {
     const page = await newPage({ reducedMotion: 'reduce' });
+    const requests = [];
+    page.on('request', (request) => { if (request.url().includes('/intro/')) requests.push(request.url()); });
     await ready(page, `?theme=plum&lang=${language}`);
     assert.equal((await page.locator('[data-intro-open]').innerText()).replace(/\s+/g, ' '), `${translate(language, 'Open Invitation')} →`);
     const started = Date.now();
     await page.locator('[data-intro-open]').click();
     await complete(page);
-    assert.ok(Date.now() - started < 1500, 'reduced motion bypasses the three-second choreography');
+    assert.ok(Date.now() - started < 1500, 'reduced motion bypasses all choreography');
+    assert.deepEqual(requests, [], 'reduced motion does not download decorative character assets');
     await page.context().close();
   }
 
@@ -175,6 +214,37 @@ try {
   await complete(fallback);
   await fallback.context().close();
 
+  for (const asset of ['groom', 'bride']) {
+    const page = await newPage();
+    await page.route(`**/intro/${asset}.webp`, (route) => route.abort());
+    await ready(page);
+    await page.locator('[data-intro-open]').click();
+    await page.waitForSelector('[data-cinematic-intro="complete"]', { timeout: 6500 });
+    await complete(page);
+    await page.locator('.frontCover .openButton').click();
+    await page.locator('.familyBlessingsTemplate').waitFor();
+    await page.context().close();
+  }
+  const slow = await newPage();
+  const held = [];
+  await slow.route('**/intro/bride.webp', (route) => { held.push(route); });
+  await ready(slow);
+  await slow.locator('[data-intro-open]').click();
+  await slow.waitForSelector('[data-cinematic-intro="complete"]', { timeout: 6500 });
+  await complete(slow);
+  await Promise.all(held.map((route) => route.abort().catch(() => {})));
+  await slow.context().close();
+
+  const backgroundFallback = await newPage();
+  await backgroundFallback.route('**/intro/wedding-scene.webp', (route) => route.abort());
+  await ready(backgroundFallback);
+  await backgroundFallback.locator('[data-intro-open]').click();
+  await backgroundFallback.waitForSelector('[data-cinematic-intro="walking"]');
+  assert.equal(await backgroundFallback.locator('[data-wedding-scene]').getAttribute('data-characters'), 'ready');
+  await backgroundFallback.emulateMedia({ reducedMotion: 'reduce' });
+  await complete(backgroundFallback);
+  await backgroundFallback.context().close();
+
   for (const target of ['family', 'details', 'location', 'back']) {
     const page = await newPage();
     await ready(page, `?theme=blush&page=${target}&lang=bn`);
@@ -184,7 +254,7 @@ try {
     await page.context().close();
   }
   assert.deepEqual(errors, []);
-  console.log('Passed intro choreography, 42 responsive theme/device combinations, keyboard focus, touch, skip at every phase, replay, deep links, reduced motion, blocked storage/assets and cleanup; no browser errors.');
+  console.log('Passed six full theme sequences, 42 responsive envelope combinations, seven responsive walking scenes, keyboard/touch, skip at every phase, replay, deep links, reduced motion, missing/late character assets, background fallback and cleanup; no browser errors.');
 } finally {
   await browser?.close();
   server.closeAllConnections();

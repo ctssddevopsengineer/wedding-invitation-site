@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useReducer, useRef } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import { useLanguage } from '@/components/LanguageProvider';
-import { advanceIntro, INTRO_PHASES } from '@/lib/intro.mjs';
+import { advanceIntro, ENTRANCE_PHASES, INTRO_PHASES } from '@/lib/intro.mjs';
+import WeddingEntrance from '@/components/WeddingEntrance';
 import styles from './CinematicIntro.module.css';
 
 // Alpona-inspired line work is drawn independently of the approved theme art.
@@ -28,6 +29,9 @@ function Alpona({ className }) {
 export default function CinematicIntro({ active, ready, onComplete, children }) {
   const { t, event: EVENT } = useLanguage();
   const [phase, dispatch] = useReducer(advanceIntro, 'closed');
+  const [entranceStatus, setEntranceStatus] = useState('pending');
+  const entranceStatusRef = useRef('pending');
+  entranceStatusRef.current = entranceStatus;
   const root = useRef(null);
   const openButton = useRef(null);
   const skipButton = useRef(null);
@@ -48,6 +52,7 @@ export default function CinematicIntro({ active, ready, onComplete, children }) 
   useEffect(() => {
     if (!active) {
       dispatch('reset');
+      setEntranceStatus('pending');
       if (wasActive.current) {
         const stage = root.current?.querySelector('.bookStage');
         stage?.scrollIntoView({ block: 'start', behavior: 'instant' });
@@ -70,9 +75,16 @@ export default function CinematicIntro({ active, ready, onComplete, children }) 
     const step = INTRO_PHASES[phase];
     if (!step?.next) return;
     // A bounded timer also completes the intro if animationend never fires.
-    const timer = window.setTimeout(() => dispatch('advance'), step.duration);
+    const timer = window.setTimeout(() => {
+      // Slow downloads cannot hold the invitation hostage or arrive mid-walk.
+      dispatch(phase === 'scene' && entranceStatusRef.current !== 'ready' ? 'assets-unavailable' : 'advance');
+    }, step.duration);
     return () => window.clearTimeout(timer);
   }, [active, ready, phase, onComplete]);
+
+  useEffect(() => {
+    if (active && entranceStatus === 'failed' && ENTRANCE_PHASES.includes(phase)) dispatch('assets-unavailable');
+  }, [active, phase, entranceStatus]);
 
   function open() {
     if (!ready || phase !== 'closed') return;
@@ -101,6 +113,9 @@ export default function CinematicIntro({ active, ready, onComplete, children }) 
       aria-labelledby={active ? 'intro-title' : undefined}
       onKeyDown={handleKeys}
     >
+      {active && ready && phase !== 'closed' && phase !== 'complete' && (
+        <WeddingEntrance phase={phase} onStatusChange={setEntranceStatus} />
+      )}
       {active && (
         <>
           <div className={styles.border} aria-hidden="true" />
@@ -115,7 +130,7 @@ export default function CinematicIntro({ active, ready, onComplete, children }) 
         </>
       )}
 
-      <div className={active ? styles.scene : styles.passthrough}>
+      <div className={active ? styles.scene : styles.passthrough} data-envelope-scene={active ? true : undefined}>
         {active && <div className={styles.envelopeBack} aria-hidden="true" />}
         {/* The existing stage is mounted exactly once, through every phase. */}
         <div className={active ? styles.card : styles.revealedCard} inert={active} aria-hidden={active ? true : undefined}>

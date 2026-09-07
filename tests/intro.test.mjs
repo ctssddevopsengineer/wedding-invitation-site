@@ -14,12 +14,26 @@ test('opening progresses through the flap and card before revealing the website'
   phase = advanceIntro(phase, 'advance');
   assert.equal(phase, 'rising');
   phase = advanceIntro(phase, 'advance');
+  assert.equal(phase, 'scene');
+  phase = advanceIntro(phase, 'advance');
+  assert.equal(phase, 'walking');
+  phase = advanceIntro(phase, 'advance');
+  assert.equal(phase, 'together');
+  phase = advanceIntro(phase, 'advance');
   assert.equal(phase, 'revealing');
   phase = advanceIntro(phase, 'advance');
   assert.equal(phase, 'complete');
   assert.equal(advanceIntro(phase, 'advance'), 'complete');
   assert.equal(advanceIntro('closed', 'advance'), 'closed');
-  assert.equal(Object.values(INTRO_PHASES).reduce((sum, step) => sum + step.duration, 0), 3000);
+  assert.ok(INTRO_PHASES.walking.duration >= 5000, 'walking remains slow and unhurried');
+  assert.ok(INTRO_PHASES.together.duration >= 1000, 'the couple pauses before the reveal');
+  assert.ok(Object.values(INTRO_PHASES).reduce((sum, step) => sum + step.duration, 0) < 15000, 'the complete intro is bounded');
+});
+
+test('missing or late assets bypass only the entrance and still reveal the invitation', () => {
+  for (const phase of ['scene', 'walking', 'together']) assert.equal(advanceIntro(phase, 'assets-unavailable'), 'revealing');
+  for (const phase of ['closed', 'opening', 'rising', 'revealing', 'complete']) assert.equal(advanceIntro(phase, 'assets-unavailable'), phase);
+  assert.equal(advanceIntro(advanceIntro('scene', 'assets-unavailable'), 'advance'), 'complete');
 });
 
 test('skip and reduced motion finish at every phase; repeated input cannot restart a running sequence', () => {
