@@ -27,7 +27,7 @@
   height: var(--figure-height);
 }
 .person { position: absolute; bottom: 0; height: 100%; width: var(--figure-width); opacity: 0; }
-.groom { right: calc(50% - var(--figure-width) * .14); --start-x: calc(-1 * var(--walk-distance)); --entrance-delay: 0ms; }
+.groom { height: 115%; width: calc(var(--figure-width) * 1.15); right: calc(50% - var(--figure-width) * .205); --start-x: calc(-1 * var(--walk-distance)); --entrance-delay: 0ms; }
 .bride { left: calc(50% - var(--figure-width) * .14); --start-x: var(--walk-distance); --entrance-delay: 400ms; }
 .figure { display: block; height: 100%; width: 100%; object-fit: contain; object-position: center bottom; transform-origin: 50% 95%; }
 .person::after { content: ''; position: absolute; bottom: -1%; left: 22%; width: 56%; height: 3%; border-radius: 50%; background: #321a1260; filter: blur(5px); z-index: -1; }

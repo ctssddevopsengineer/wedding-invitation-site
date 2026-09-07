@@ -36,7 +36,10 @@ export default function WeddingEntrance({ phase, onStatusChange }) {
   return (
     <div className={styles.weddingScene} data-wedding-scene data-visible={visible} data-phase={phase} data-characters={status} data-entered={entered} aria-hidden="true">
       {!backgroundFailed && (
-        <img className={styles.backdrop} src={withBasePath('/intro/wedding-scene.webp')} alt="" decoding="async" onError={() => setBackgroundFailed(true)} />
+        <picture>
+          <source media="(max-width: 680px)" srcSet={withBasePath('/intro/wedding-scene-mobile.webp')} />
+          <img className={styles.backdrop} src={withBasePath('/intro/wedding-scene.webp')} alt="" decoding="async" onError={() => setBackgroundFailed(true)} />
+        </picture>
       )}
       <div className={styles.vignette} />
       <div className={styles.caption} data-entrance-caption>

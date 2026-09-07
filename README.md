@@ -232,7 +232,9 @@ No music or falling particles are included.
 
 The groom and bride are transparent WebP cutouts with real alpha channels, not
 rectangular pictures. New art lives only in `public/intro/`; `ASSETS.md` records
-the image-generation prompts and provenance. Character movement uses transform
+the image-generation prompts and provenance. A portrait backdrop preserves both
+architectural traditions on phones without downloading the desktop backdrop.
+Character movement uses transform
 and opacity, with restrained walking cadence and a 400ms stagger. Small screens
 use a much shorter travel distance. Invitation text fades before the characters
 enter; scene text stays in a separate upper region, above their heads.

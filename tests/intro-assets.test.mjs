@@ -34,4 +34,8 @@ test('the separate scenic backdrop stays within a bounded transfer budget', asyn
   assert.ok(metadata.width >= 1280);
   assert.ok(metadata.width > metadata.height);
   assert.ok(buffer.length < 450_000);
+  const mobile = await fs.readFile(new URL('../public/intro/wedding-scene-mobile.webp', import.meta.url));
+  const mobileMetadata = await sharp(mobile).metadata();
+  assert.ok(mobileMetadata.height > mobileMetadata.width, 'phones have a portrait composition');
+  assert.ok(mobile.length < 300_000);
 });

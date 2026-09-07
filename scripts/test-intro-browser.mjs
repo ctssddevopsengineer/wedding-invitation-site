@@ -132,6 +132,8 @@ try {
   for (const [width, height] of [[320, 480], [320, 568], [390, 844], [768, 1024], [1366, 768], [1920, 1080], [844, 390]]) {
     for (const theme of THEME_IDS) {
       const page = await newPage({ viewport: { width, height }, hasTouch: true });
+      const sceneRequests = [];
+      page.on('request', (request) => { if (request.url().includes('/intro/wedding-scene')) sceneRequests.push(request.url()); });
       await ready(page, `?theme=${theme}`);
       const issues = await page.evaluate(() => {
         const issues = [];
@@ -152,6 +154,8 @@ try {
         const distance = await page.locator('[data-character="bride"]').evaluate((node) => Math.abs(new DOMMatrixReadOnly(getComputedStyle(node).transform).m41));
         assert.ok(distance < (width <= 680 ? 70 : 400), 'phone walking distance is automatically shortened');
         await page.waitForSelector('[data-cinematic-intro="together"]');
+        assert.ok(sceneRequests.some((request) => request.endsWith(width <= 680 ? '/wedding-scene-mobile.webp' : '/wedding-scene.webp')));
+        if (width <= 680) assert.equal(sceneRequests.some((request) => request.endsWith('/wedding-scene.webp')), false, 'phones do not download the desktop backdrop');
         await checkCoupleSpace(page);
         await capture(page, `together-${width}x${height}`);
       }
@@ -244,6 +248,17 @@ try {
   await backgroundFallback.emulateMedia({ reducedMotion: 'reduce' });
   await complete(backgroundFallback);
   await backgroundFallback.context().close();
+
+  for (const language of ['bn', 'ne']) {
+    const page = await newPage({ viewport: { width: 320, height: 480 } });
+    await ready(page, `?lang=${language}`);
+    await page.locator('[data-intro-open]').click();
+    await page.waitForSelector('[data-cinematic-intro="together"]');
+    await checkCoupleSpace(page);
+    await capture(page, `together-320x480-${language}`);
+    await complete(page);
+    await page.context().close();
+  }
 
   for (const target of ['family', 'details', 'location', 'back']) {
     const page = await newPage();
