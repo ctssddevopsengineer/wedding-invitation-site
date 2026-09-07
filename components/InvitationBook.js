@@ -11,6 +11,9 @@ import InsideRight from '@/components/InsideRight';
 import QrNfcPanel from '@/components/QrNfcPanel';
 import SmartSharePanel from '@/components/SmartSharePanel';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
+import CinematicIntro from '@/components/CinematicIntro';
+import introStyles from '@/components/CinematicIntro.module.css';
+import { INTRO_STORAGE_KEY, shouldShowIntro } from '@/lib/intro.mjs';
 import { INVITATION_PAGES, nextPageIndex, previousPageIndex } from '@/lib/navigation.mjs';
 import { DEFAULT_THEME_ID, THEME_IDS, getTheme, resolveThemeId, THEME_STORAGE_KEY } from '@/lib/theme.mjs';
 import { createArtworkLoader, getPageArtworkAssets } from '@/lib/artwork.mjs';
@@ -32,6 +35,7 @@ function InvitationContent({ language, setLanguage }) {
   const [pageIndex, setPageIndex] = useState(0);
   const [themeId, setThemeId] = useState(DEFAULT_THEME_ID);
   const [themeReady, setThemeReady] = useState(false);
+  const [introActive, setIntroActive] = useState(true);
   const [locationDeepLinked, setLocationDeepLinked] = useState(false);
   const touchStartX = useRef(null);
   const artworkLoader = useRef(null);
@@ -49,6 +53,8 @@ function InvitationContent({ language, setLanguage }) {
   useEffect(() => {
     let storedTheme = null;
     let storedLanguage = null;
+    let introSeen = false;
+    try { introSeen = window.sessionStorage.getItem(INTRO_STORAGE_KEY) === 'true'; } catch { /* Intro works without storage. */ }
     try {
       storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
       storedLanguage = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
@@ -61,6 +67,7 @@ function InvitationContent({ language, setLanguage }) {
     const deepLink = getInitialDeepLinkState(window.location.search, navigationType);
     setPageIndex(deepLink.pageIndex);
     setLocationDeepLinked(deepLink.locationOpen);
+    setIntroActive(shouldShowIntro({ pageIndex: deepLink.pageIndex, seen: introSeen }));
     setThemeId(getInitialThemeId({ search: window.location.search, storedTheme }));
     setLanguage(getInitialLanguage({ search: window.location.search, storedLanguage }));
     setThemeReady(true);
@@ -72,6 +79,8 @@ function InvitationContent({ language, setLanguage }) {
       setPendingTheme(null);
       const urlTheme = getThemeIdFromSearch(window.location.search);
       const deepLink = getDeepLinkState(window.location.search);
+      // History navigation must never leave a requested page behind the intro.
+      setIntroActive(false);
       if (urlTheme) setThemeId(urlTheme);
       setLanguage(getInitialLanguage({ search: window.location.search }));
       setPageIndex(deepLink.pageIndex);
@@ -118,7 +127,7 @@ function InvitationContent({ language, setLanguage }) {
   }, [pageIndex]);
 
   useEffect(() => {
-    if (!themeReady || navigator.connection?.saveData || /(^|-)2g$/.test(navigator.connection?.effectiveType || '')) return;
+    if (!themeReady || introActive || navigator.connection?.saveData || /(^|-)2g$/.test(navigator.connection?.effectiveType || '')) return;
     let cancelled = false;
     const timer = window.setTimeout(async () => {
       await warmThemeAssets(themeId, pageIndex, true);
@@ -128,7 +137,7 @@ function InvitationContent({ language, setLanguage }) {
       }
     }, 300);
     return () => { cancelled = true; window.clearTimeout(timer); };
-  }, [themeReady, themeId, pageIndex, warmThemeAssets]);
+  }, [themeReady, introActive, themeId, pageIndex, warmThemeAssets]);
 
   useEffect(() => {
     if (pageIndex !== 2 && locationDeepLinked) setLocationDeepLinked(false);
@@ -136,6 +145,7 @@ function InvitationContent({ language, setLanguage }) {
 
   useEffect(() => {
     function handleKeyboardNavigation(event) {
+      if (introActive) return;
       if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
       if (event.target instanceof Element && event.target.closest(INTERACTIVE_SELECTOR)) return;
 
@@ -156,7 +166,21 @@ function InvitationContent({ language, setLanguage }) {
 
     window.addEventListener('keydown', handleKeyboardNavigation);
     return () => window.removeEventListener('keydown', handleKeyboardNavigation);
+  }, [introActive]);
+
+  const finishIntro = useCallback(() => {
+    setIntroActive(false);
+    try { window.sessionStorage.setItem(INTRO_STORAGE_KEY, 'true'); } catch { /* Replay remains available. */ }
   }, []);
+
+  function replayIntro() {
+    selectionRequest.current += 1;
+    setPendingTheme(null);
+    touchStartX.current = null;
+    setPageIndex(0);
+    setLocationDeepLinked(false);
+    setIntroActive(true);
+  }
 
   async function changeTheme(nextThemeId) {
     const resolved = resolveThemeId(nextThemeId);
@@ -174,10 +198,12 @@ function InvitationContent({ language, setLanguage }) {
   }
 
   function handleTouchStart(event) {
+    if (introActive) return;
     touchStartX.current = event.changedTouches[0]?.clientX ?? null;
   }
 
   function handleTouchEnd(event) {
+    if (introActive) return;
     if (touchStartX.current == null) return;
     const endX = event.changedTouches[0]?.clientX ?? touchStartX.current;
     const delta = endX - touchStartX.current;
@@ -216,74 +242,82 @@ function InvitationContent({ language, setLanguage }) {
       aria-busy={Boolean(pendingTheme)}
       data-theme-ready={themeReady ? 'true' : 'false'}
     >
-      <LanguageSwitcher onLanguageChange={(value) => setLanguage(resolveLanguage(value))} />
-      <ThemeSwitcher
-        themeId={themeId}
-        pendingTheme={pendingTheme}
-        onThemeChange={changeTheme}
-        onThemeWarm={(id) => warmThemeAssets(id, pageIndex)}
-      />
-
-      <div className="phase2bExperienceTools">
-        <SmartSharePanel
+      <div className={introStyles.chrome} inert={introActive} aria-hidden={introActive ? true : undefined}>
+        <LanguageSwitcher onLanguageChange={(value) => setLanguage(resolveLanguage(value))} />
+        <ThemeSwitcher
           themeId={themeId}
-          pageIndex={pageIndex}
-          locationOpen={locationDeepLinked && pageIndex === 2}
+          pendingTheme={pendingTheme}
+          onThemeChange={changeTheme}
+          onThemeWarm={(id) => warmThemeAssets(id, pageIndex)}
         />
-        <QrNfcPanel themeId={themeId} pageIndex={pageIndex} />
+
+        <div className="phase2bExperienceTools">
+          <SmartSharePanel
+            themeId={themeId}
+            pageIndex={pageIndex}
+            locationOpen={locationDeepLinked && pageIndex === 2}
+          />
+          <QrNfcPanel themeId={themeId} pageIndex={pageIndex} />
+        </div>
       </div>
 
-      <section
-        className={`bookStage page-${INVITATION_PAGES[pageIndex]}`}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        aria-live="polite"
-        aria-label={t('{page} invitation page in {theme}', { page: t(PAGE_LABELS[pageIndex]), theme: language === 'en' ? activeTheme.label : t(activeTheme.shortLabel) })}
-      >
-        <div className="pageViewport themeTransitionFrame" key={`${themeId}-${pageIndex}`}>
-          {pages[pageIndex]}
-        </div>
-      </section>
-
-      <nav className="bookNav" aria-label={t("Invitation pages")}>
-        <button
-          type="button"
-          className="navArrow"
-          onClick={() => setPageIndex((current) => previousPageIndex(current))}
-          disabled={pageIndex === 0}
-          aria-label={t("Previous page")}
+      <CinematicIntro active={introActive} ready={themeReady} onComplete={finishIntro}>
+        <section
+          className={`bookStage page-${INVITATION_PAGES[pageIndex]}`}
+          tabIndex={-1}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          aria-live="polite"
+          aria-label={t('{page} invitation page in {theme}', { page: t(PAGE_LABELS[pageIndex]), theme: language === 'en' ? activeTheme.label : t(activeTheme.shortLabel) })}
         >
-          ‹
-        </button>
+          <div className="pageViewport themeTransitionFrame" key={`${themeId}-${pageIndex}`}>
+            {pages[pageIndex]}
+          </div>
+        </section>
+      </CinematicIntro>
 
-        <div className="pageDots">
-          {PAGE_LABELS.map((label, index) => (
-            <button
-              type="button"
-              key={label}
-              className={index === pageIndex ? 'pageDot active' : 'pageDot'}
-              onClick={() => goTo(index)}
-              aria-label={t('Go to {page}', { page: t(label) })}
-              aria-current={index === pageIndex ? 'page' : undefined}
-              title={t(label)}
-            />
-          ))}
-        </div>
+      <div className={introStyles.chrome} inert={introActive} aria-hidden={introActive ? true : undefined}>
+        <nav className="bookNav" aria-label={t("Invitation pages")}>
+          <button
+            type="button"
+            className="navArrow"
+            onClick={() => setPageIndex((current) => previousPageIndex(current))}
+            disabled={pageIndex === 0}
+            aria-label={t("Previous page")}
+          >
+            ‹
+          </button>
 
-        <span className="pageLabel">{t(PAGE_LABELS[pageIndex])}</span>
+          <div className="pageDots">
+            {PAGE_LABELS.map((label, index) => (
+              <button
+                type="button"
+                key={label}
+                className={index === pageIndex ? 'pageDot active' : 'pageDot'}
+                onClick={() => goTo(index)}
+                aria-label={t('Go to {page}', { page: t(label) })}
+                aria-current={index === pageIndex ? 'page' : undefined}
+                title={t(label)}
+              />
+            ))}
+          </div>
 
-        <button
-          type="button"
-          className="navArrow"
-          onClick={() => setPageIndex((current) => nextPageIndex(current))}
-          disabled={pageIndex === INVITATION_PAGES.length - 1}
-          aria-label={t("Next page")}
-        >
-          ›
-        </button>
-      </nav>
+          <span className="pageLabel">{t(PAGE_LABELS[pageIndex])}</span>
 
-      <p className="swipeHint">{t("Swipe, use the arrows, or press \u2190 / \u2192 to explore the invitation")}</p>
+          <button
+            type="button"
+            className="navArrow"
+            onClick={() => setPageIndex((current) => nextPageIndex(current))}
+            disabled={pageIndex === INVITATION_PAGES.length - 1}
+            aria-label={t("Next page")}
+          >
+            ›
+          </button>
+        </nav>
+
+        <p className="swipeHint">{t("Swipe, use the arrows, or press \u2190 / \u2192 to explore the invitation")}</p>
+        <button className={introStyles.replay} type="button" data-intro-replay onClick={replayIntro}>{t('Replay Intro')}</button>
+      </div>
     </main>
   );
 }

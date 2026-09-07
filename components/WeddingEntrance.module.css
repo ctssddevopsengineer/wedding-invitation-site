@@ -1,0 +1,70 @@
+.weddingScene {
+  position: fixed;
+  inset: 0;
+  z-index: 6;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  background: radial-gradient(ellipse at 50% 50%, #b59265, #47302b 80%);
+  transition: opacity .8s ease, visibility .8s;
+  isolation: isolate;
+}
+.weddingScene[data-visible='true'] { opacity: 1; visibility: visible; }
+.backdrop { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 60%; }
+.vignette { position: absolute; inset: 0; background: linear-gradient(#210e12d9, #210e1244 32%, transparent 58%, #210e12a8), radial-gradient(ellipse at center, transparent 35%, #210e1244); }
+.caption { position: absolute; inset-inline: 24px; top: max(92px, 11svh); text-align: center; color: #ffebc7; text-shadow: 0 2px 12px #210e1280; }
+.caption p { margin: 0 0 12px; font-size: clamp(.62rem, 1.2vw, .85rem); letter-spacing: .2em; text-transform: uppercase; }
+.caption h2 { font-size: clamp(1.55rem, 3.5vw, 2.6rem); line-height: 1.1; margin: 0 0 14px; font-weight: 400; }
+.caption span { display: block; font-size: clamp(.8rem, 1.8vw, 1.1rem); max-width: 80%; margin-inline: auto; overflow-wrap: anywhere; }
+.procession {
+  --figure-height: min(52svh, 60vw, 490px);
+  --figure-width: calc(var(--figure-height) * 2 / 3);
+  --walk-distance: clamp(100px, 25vw, 370px);
+  position: absolute;
+  inset-inline: 0;
+  bottom: max(32px, 10svh);
+  height: var(--figure-height);
+}
+.person { position: absolute; bottom: 0; height: 100%; width: var(--figure-width); opacity: 0; }
+.groom { height: 115%; width: calc(var(--figure-width) * 1.15); right: calc(50% - var(--figure-width) * .205); --start-x: calc(-1 * var(--walk-distance)); --entrance-delay: 0ms; }
+.bride { left: calc(50% - var(--figure-width) * .14); --start-x: var(--walk-distance); --entrance-delay: 400ms; }
+.figure { display: block; height: 100%; width: 100%; object-fit: contain; object-position: center bottom; transform-origin: 50% 95%; }
+.person::after { content: ''; position: absolute; bottom: -1%; left: 22%; width: 56%; height: 3%; border-radius: 50%; background: #321a1260; filter: blur(5px); z-index: -1; }
+.weddingScene[data-phase='walking'][data-characters='ready'] .person {
+  animation: processionalWalk 5.6s cubic-bezier(.25, .1, .25, 1) var(--entrance-delay) both;
+  will-change: transform, opacity;
+}
+.weddingScene[data-phase='walking'][data-characters='ready'] .figure {
+  animation: walkingCadence 1.4s ease-in-out var(--entrance-delay) 4 both;
+}
+.weddingScene:is([data-phase='together'], [data-phase='revealing'])[data-characters='ready'][data-entered='true'] .person { opacity: 1; transform: translate3d(0, 0, 0); }
+.weddingScene[data-phase='revealing'] { opacity: 0; transition-duration: .7s; }
+/* Only transform/opacity change per frame. Cadence is deliberately restrained. */
+@keyframes processionalWalk {
+  0% { opacity: 0; transform: translate3d(var(--start-x), 0, 0); }
+  16% { opacity: 1; }
+  100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@keyframes walkingCadence {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  25% { transform: translate3d(0, -1.5px, 0) rotate(.18deg); }
+  50% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  75% { transform: translate3d(0, -1.5px, 0) rotate(-.18deg); }
+}
+@media (max-width: 680px) {
+  .procession { --walk-distance: clamp(28px, 12vw, 68px); bottom: 13svh; }
+  .caption { top: max(88px, 15svh); }
+  .caption p { letter-spacing: .1em; }
+  .backdrop { object-position: 50% 60%; }
+}
+@media (max-height: 500px) and (min-width: 681px) {
+  .caption { top: 24px; }
+  .caption h2 { font-size: 1.5rem; margin-bottom: 8px; }
+  .caption p { margin-bottom: 6px; }
+  .procession { --figure-height: 55svh; --walk-distance: 22vw; bottom: 6svh; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .weddingScene { display: none; transition: none; }
+  .weddingScene *, .person, .figure { animation: none !important; transition: none !important; }
+}
