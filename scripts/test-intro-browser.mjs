@@ -41,6 +41,7 @@ async function complete(page) {
   await page.waitForSelector('[data-cinematic-intro="complete"]', { timeout: 16000 });
   await page.waitForFunction(() => document.body.style.overflow !== 'hidden');
   assert.equal(await page.locator('.invitePage').count(), 1, 'only one real invitation page is mounted');
+  assert.equal(await page.locator('[data-wedding-particles]').count(), 0, 'particles are removed when the intro finishes');
   assert.equal(await page.evaluate(() => document.body.style.overflow), '', 'scroll lock is released');
 }
 async function capture(page, name) {
@@ -59,6 +60,77 @@ async function checkCoupleSpace(page) {
     return issues;
   });
   assert.deepEqual(issues, []);
+}
+
+async function checkParticles(page) {
+  await page.locator('[data-wedding-particles]').waitFor();
+  const result = await page.evaluate(() => {
+    const field = document.querySelector('[data-wedding-particles]');
+    const caption = document.querySelector('[data-entrance-caption]').getBoundingClientRect();
+    const compact = innerWidth <= 680;
+    const issues = [];
+    if (field.querySelectorAll('[data-particle]').length !== (compact ? 8 : 20)) issues.push('particle count exceeds device budget');
+    if (field.querySelectorAll('*').length > 80) issues.push('particle DOM exceeds budget');
+    if (field.querySelector('img,canvas')) issues.push('unexpected asset or canvas overhead');
+    if (getComputedStyle(field).pointerEvents !== 'none') issues.push('particles intercept interaction');
+    for (const lane of field.querySelectorAll('[data-particle-lane]')) {
+      const box = lane.getBoundingClientRect();
+      if (box.top < caption.bottom + 23) issues.push('particles can cross caption text');
+      if (getComputedStyle(lane).overflow !== 'hidden') issues.push('particles can escape side lanes');
+      if (lane.dataset.particleLane === 'left' && box.right > innerWidth * (compact ? .1 : .16) + 1) issues.push('left lane intrudes into center');
+      if (lane.dataset.particleLane === 'right' && box.left < innerWidth * (compact ? .9 : .84) - 1) issues.push('right lane intrudes into center');
+    }
+    const animations = field.getAnimations({ subtree: true });
+    if (!animations.length) issues.push('no decorative animation');
+    for (const animation of animations) for (const frame of animation.effect.getKeyframes()) {
+      if (Object.keys(frame).some((key) => !['offset', 'computedOffset', 'easing', 'composite', 'transform', 'opacity'].includes(key))) issues.push('non-compositor animation property');
+    }
+    return issues;
+  });
+  assert.deepEqual(result, []);
+}
+
+async function checkParticleSuspension(page) {
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'hidden', { configurable: true, value: true });
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await page.waitForSelector('[data-wedding-particles][data-paused="true"]', { state: 'attached' });
+  await page.locator('[data-wedding-particles]').evaluate((node) => Promise.all(node.getAnimations({ subtree: true }).map((animation) => animation.ready)));
+  const sample = () => page.locator('[data-wedding-particles]').evaluate((node) => node.getAnimations({ subtree: true }).map((animation) => ({ time: animation.currentTime, state: animation.playState })));
+  const before = await sample();
+  assert.ok(before.every((animation) => animation.state === 'paused'));
+  await page.waitForTimeout(150);
+  assert.deepEqual(await sample(), before, 'hidden-tab particle timelines stop advancing');
+  await page.evaluate(() => {
+    delete document.hidden;
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await page.waitForSelector('[data-wedding-particles][data-paused="false"]');
+}
+
+async function sampleParticleFrameTimes(page) {
+  const results = await page.evaluate(async () => {
+    const field = document.querySelector('[data-wedding-particles]');
+    async function sample(hidden) {
+      field.style.display = hidden ? 'none' : '';
+      const intervals = [];
+      let previous;
+      await new Promise((resolve) => {
+        function frame(time) {
+          if (previous !== undefined) intervals.push(time - previous);
+          previous = time;
+          if (intervals.length >= 45) resolve(); else requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      });
+      intervals.sort((a, b) => a - b);
+      return { median: intervals[22], p95: intervals[42] };
+    }
+    const without = await sample(true), withParticles = await sample(false);
+    return { without, withParticles };
+  });
+  console.log(`Local Chrome frame intervals, particles hidden/visible (ms): ${JSON.stringify(results)}.`);
 }
 
 try {
@@ -90,6 +162,7 @@ try {
     await page.waitForFunction((start) => document.querySelector('.frontCover').getBoundingClientRect().top < start - 40, startTop);
     if (theme === 'classic') await capture(page, 'desktop-rising');
     await page.waitForSelector('[data-cinematic-intro="walking"]');
+    await checkParticles(page);
     assert.equal(await page.locator('[data-wedding-scene]').getAttribute('data-characters'), 'ready');
     const startPositions = await page.locator('[data-character]').evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().left));
     await page.waitForFunction(([left, right]) => {
@@ -97,6 +170,10 @@ try {
       return nodes[0].getBoundingClientRect().left > left + 50 && nodes[1].getBoundingClientRect().left < right - 50;
     }, startPositions);
     if (theme === 'classic') await capture(page, 'desktop-walking');
+    if (theme === 'classic') {
+      await checkParticleSuspension(page);
+      await sampleParticleFrameTimes(page);
+    }
     await page.waitForSelector('[data-cinematic-intro="together"]');
     await checkCoupleSpace(page);
     const stopped = await page.locator('[data-character]').evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().left));
@@ -151,6 +228,7 @@ try {
       await page.waitForSelector('[data-cinematic-intro="opening"]');
       if (theme === 'classic') {
         await page.waitForSelector('[data-cinematic-intro="walking"]');
+        await checkParticles(page);
         const distance = await page.locator('[data-character="bride"]').evaluate((node) => Math.abs(new DOMMatrixReadOnly(getComputedStyle(node).transform).m41));
         assert.ok(distance < (width <= 680 ? 70 : 400), 'phone walking distance is automatically shortened');
         await page.waitForSelector('[data-cinematic-intro="together"]');
@@ -249,11 +327,27 @@ try {
   await complete(backgroundFallback);
   await backgroundFallback.context().close();
 
+  const resizing = await newPage({ viewport: { width: 1366, height: 900 } });
+  await ready(resizing);
+  await resizing.locator('[data-intro-open]').click();
+  await resizing.waitForSelector('[data-cinematic-intro="walking"]');
+  await checkParticles(resizing);
+  await resizing.setViewportSize({ width: 390, height: 844 });
+  await resizing.waitForSelector('[data-wedding-particles][data-compact="true"]');
+  await checkParticles(resizing);
+  await resizing.locator('[data-entrance-caption] h2').evaluate((node) => { node.textContent = 'One beautiful journey. Together with our families, we warmly welcome you.'; });
+  await resizing.waitForFunction(() => document.querySelector('[data-particle-lane]').getBoundingClientRect().top >= document.querySelector('[data-entrance-caption]').getBoundingClientRect().bottom + 23);
+  await checkParticles(resizing);
+  await resizing.emulateMedia({ reducedMotion: 'reduce' });
+  await complete(resizing);
+  await resizing.context().close();
+
   for (const language of ['bn', 'ne']) {
     const page = await newPage({ viewport: { width: 320, height: 480 } });
     await ready(page, `?lang=${language}`);
     await page.locator('[data-intro-open]').click();
     await page.waitForSelector('[data-cinematic-intro="together"]');
+    await checkParticles(page);
     await checkCoupleSpace(page);
     await capture(page, `together-320x480-${language}`);
     await complete(page);
@@ -269,7 +363,7 @@ try {
     await page.context().close();
   }
   assert.deepEqual(errors, []);
-  console.log('Passed six full theme sequences, 42 responsive envelope combinations, seven responsive walking scenes, keyboard/touch, skip at every phase, replay, deep links, reduced motion, missing/late character assets, background fallback and cleanup; no browser errors.');
+  console.log('Passed six full theme sequences, 42 responsive envelope combinations, seven responsive walking scenes, keyboard/touch, skip/replay, deep links, reduced motion, missing/late assets, particle density/center clearance, resize/text reflow, hidden-tab suspension and cleanup; no browser errors.');
 } finally {
   await browser?.close();
   server.closeAllConnections();
