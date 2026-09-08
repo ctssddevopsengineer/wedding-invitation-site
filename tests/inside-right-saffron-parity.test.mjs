@@ -143,18 +143,20 @@ test('inside-right parity loads after general typography and before later target
   const parityImport = "import './inside-right-saffron-parity.css';";
   const insideLeftImport = "import './inside-left-saffron-parity.css';";
   const frontSeparatorImport = "import './saffron-front-separator.css';";
+  const frontParityImport = "import './front-saffron-parity.css';";
 
-  assert.ok(layout.includes(generalImport));
-  assert.ok(layout.includes(parityImport));
-  assert.ok(layout.includes(insideLeftImport));
-  assert.ok(layout.includes(frontSeparatorImport));
+  for (const required of [generalImport, parityImport, insideLeftImport, frontSeparatorImport, frontParityImport]) {
+    assert.ok(layout.includes(required));
+  }
   assert.ok(layout.indexOf(parityImport) > layout.indexOf(generalImport));
   assert.ok(layout.indexOf(insideLeftImport) > layout.indexOf(parityImport));
   assert.ok(layout.indexOf(frontSeparatorImport) > layout.indexOf(insideLeftImport));
+  assert.ok(layout.indexOf(frontParityImport) > layout.indexOf(frontSeparatorImport));
 
   const importLines = layout.split('\n').filter((line) => line.startsWith("import './"));
-  assert.equal(importLines.at(-3), parityImport);
-  assert.equal(importLines.at(-2), insideLeftImport);
-  assert.equal(importLines.at(-1), frontSeparatorImport);
+  assert.equal(importLines.at(-4), parityImport);
+  assert.equal(importLines.at(-3), insideLeftImport);
+  assert.equal(importLines.at(-2), frontSeparatorImport);
+  assert.equal(importLines.at(-1), frontParityImport);
   assert.equal(count(css, '{'), count(css, '}'));
 });
