@@ -1,0 +1,107 @@
+/* ========================================================================== */
+/* BABY PINK — compact-phone visual polish                                    */
+/*                                                                            */
+/* Final, theme-scoped overrides for the supplied 360x640 reference.          */
+/* Keep artwork and typography intact while restoring full gold separators    */
+/* on Page 1 and reserving clear space above the Page 3 Location / Map crest. */
+/* ========================================================================== */
+
+/* Page 1 — the reference design uses a centred ornament with a thin gold rule
+   extending symmetrically on both sides. The markup already contains the
+   ornament; these pseudo-elements restore the missing line segments without
+   adding extra DOM or changing copy geometry. */
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(.28rem, 1.15cqw, .58rem);
+  width: 68% !important;
+  min-height: .9em;
+  color: var(--theme-gold);
+}
+
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule::before,
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule::after {
+  content: '';
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, currentColor 18%, currentColor 100%);
+  opacity: .78;
+}
+
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule::after {
+  background: linear-gradient(90deg, currentColor 0%, currentColor 82%, transparent 100%);
+}
+
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule > span {
+  flex: 0 0 auto;
+  display: block;
+  line-height: 1;
+  font-size: .78em;
+}
+
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNamesRule {
+  width: 72% !important;
+}
+
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontClosingRule {
+  width: 68% !important;
+}
+
+@media (max-width: 430px) {
+  /* Keep the dividers visually proportional to the narrower parchment. */
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule {
+    width: 64% !important;
+    gap: .24rem;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNamesRule {
+    width: 70% !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontClosingRule {
+    width: 66% !important;
+  }
+
+  /* Page 3 — reserve a protected lower boundary above the printed medallion.
+     The overlay becomes slightly shorter and distributes the existing detail
+     items through that safe region. No text is made smaller and the medallion
+     itself is not moved. */
+  .bookApp[data-invitation-theme="blush"] .receptionDetailsOverlay {
+    top: 22.2% !important;
+    height: 44.35% !important;
+    width: 51% !important;
+    justify-content: space-between;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .receptionDetailsOverlay > br {
+    display: none !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .receptionDetailDivider {
+    margin-block: 0 !important;
+    flex: 0 0 auto;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .receptionDetailItem {
+    flex: 0 0 auto;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .receptionCountdownItem {
+    transform: translateY(-.8cqw);
+  }
+}
+
+@media (max-width: 360px) {
+  /* 360x640 and legacy compact phones receive a little more clearance while
+     retaining the same top anchor and all approved font-size floors. */
+  .bookApp[data-invitation-theme="blush"] .receptionDetailsOverlay {
+    height: 43.9% !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .receptionCountdownItem {
+    transform: translateY(-1.1cqw);
+  }
+}
