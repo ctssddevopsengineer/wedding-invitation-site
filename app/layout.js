@@ -17,6 +17,7 @@ import './blush-compact-polish.css';
 import './language-dropdown.css';
 import './saffron-typography-parity.css';
 import './inside-right-saffron-parity.css';
+import './inside-left-saffron-parity.css';
 
 const bengali = localFont({ src: './fonts/noto-serif-bengali.ttf', variable: '--font-bengali', display: 'swap', preload: false });
 const devanagari = localFont({ src: './fonts/noto-serif-devanagari.ttf', variable: '--font-devanagari', display: 'swap', preload: false });
