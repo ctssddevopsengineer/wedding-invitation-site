@@ -2,21 +2,21 @@
 /* BABY PINK — compact-phone visual polish                                    */
 /*                                                                            */
 /* Final, theme-scoped overrides for the supplied 360x640 reference.          */
-/* Keep artwork and typography intact while restoring full gold separators    */
-/* on Page 1 and reserving clear space above the Page 3 Location / Map crest. */
+/* Keep artwork and typography intact while keeping Page 1 ornament scale     */
+/* consistent with the Inside Left family dividers and reserving clear space  */
+/* above the Page 3 Location / Map crest.                                     */
 /* ========================================================================== */
 
-/* Page 1 — the reference design uses a centred ornament with a thin gold rule
-   extending symmetrically on both sides. The markup already contains the
-   ornament; these pseudo-elements restore the missing line segments without
-   adding extra DOM or changing copy geometry. */
+/* Page 1 — use the same compact visual proportion as the Blush Inside Left
+   family dividers: short symmetric gold rules with a small centred ornament.
+   This changes only divider scale, not copy/monogram geometry. */
 .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule {
   display: flex !important;
   align-items: center;
   justify-content: center;
-  gap: clamp(.28rem, 1.15cqw, .58rem);
-  width: 68% !important;
-  min-height: .9em;
+  gap: clamp(.2rem, .82cqw, .42rem);
+  width: 46% !important;
+  min-height: .82em;
   color: var(--theme-gold);
 }
 
@@ -39,30 +39,25 @@
   flex: 0 0 auto;
   display: block;
   line-height: 1;
-  font-size: .78em;
+  font-size: .68em;
 }
 
-.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNamesRule {
-  width: 72% !important;
-}
-
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNamesRule,
 .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontClosingRule {
-  width: 68% !important;
+  width: 46% !important;
 }
 
 @media (max-width: 430px) {
-  /* Keep the dividers visually proportional to the narrower parchment. */
-  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule {
-    width: 64% !important;
-    gap: .24rem;
-  }
-
-  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNamesRule {
-    width: 70% !important;
-  }
-
+  /* Keep Page 1 dividers compact on phones rather than allowing them to span
+     most of the parchment width. */
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule,
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNamesRule,
   .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontClosingRule {
-    width: 66% !important;
+    width: 44% !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule {
+    gap: .18rem;
   }
 
   /* Page 3 — reserve a protected lower boundary above the printed medallion.
