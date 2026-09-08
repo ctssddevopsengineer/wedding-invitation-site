@@ -209,3 +209,14 @@
 @media (prefers-reduced-motion: reduce) {
   .overlay * { animation: none !important; transition: none !important; }
 }
+
+/* Keep both entry controls reachable on very short phones and landscape. */
+@media (max-height: 400px) {
+  .overlay { gap: 8px; padding: 64px 12px 8px; }
+  .heading { margin: 0; }
+  .heading h1 { font-size: 1rem; margin: 0; }
+  .heading .names, .eyebrow, .hint { display: none; }
+  .scene { width: min(60vw, 32svh); margin-top: 0; }
+  .footer { width: 100%; padding-bottom: 0; }
+  .open { max-width: 100%; gap: 8px; padding: 8px 12px; font-size: .8rem; }
+}

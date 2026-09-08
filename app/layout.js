@@ -7,10 +7,12 @@ import './blush-front.css';
 import './classic-front.css';
 import './device-hardening.css';
 import './mobile-overlap-fixes.css';
+import './compact-multilingual-back.css';
 import './royal-navy-mobile-monogram-fix.css';
 import './royal-plum-mobile-alignment.css';
 import './saffron-monogram.css';
 import './invitation-controls.css';
+import './viewport-validation-fixes.css';
 
 const bengali = localFont({ src: './fonts/noto-serif-bengali.ttf', variable: '--font-bengali', display: 'swap', preload: false });
 const devanagari = localFont({ src: './fonts/noto-serif-devanagari.ttf', variable: '--font-devanagari', display: 'swap', preload: false });
