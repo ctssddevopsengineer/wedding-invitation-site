@@ -8,7 +8,7 @@ import { THEMES, THEME_IDS } from '../lib/theme.mjs';
 test('optimized companions preserve image geometry and reduce aggregate artwork bytes by at least 70%', async () => {
   let originalBytes = 0, optimizedBytes = 0;
   for (const theme of Object.values(THEMES)) for (const src of Object.values(theme.assets)) {
-    if (!src.endsWith('.png')) continue;
+    if (!/\.(?:png|jpe?g)$/.test(src)) continue;
     const original = fs.readFileSync(new URL(`../public${src}`, import.meta.url));
     const optimized = fs.readFileSync(new URL(`../public${optimizedArtworkUrl(src)}`, import.meta.url));
     const a = await sharp(original).metadata(), b = await sharp(optimized).metadata();
