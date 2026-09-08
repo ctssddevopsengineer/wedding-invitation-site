@@ -129,7 +129,6 @@ function InvitationContent({ language, setLanguage }) {
     setPendingTheme(null);
   }, [pageIndex]);
 
-
   useEffect(() => {
     if (pageIndex !== 2 && locationDeepLinked) setLocationDeepLinked(false);
   }, [pageIndex, locationDeepLinked]);
@@ -237,26 +236,37 @@ function InvitationContent({ language, setLanguage }) {
       data-theme-ready={themeReady ? 'true' : 'false'}
     >
       {!introActive && <MusicControl />}
-      <div className={introStyles.chrome} inert={introActive} aria-hidden={introActive ? true : undefined}>
-        <LanguageSwitcher onLanguageChange={(value) => setLanguage(resolveLanguage(value))} />
-        <ThemeSwitcher
-          themeId={themeId}
-          pendingTheme={pendingTheme}
-          onThemeChange={changeTheme}
-          onThemeWarm={(id) => warmThemeAssets(id, pageIndex)}
-        />
-
-        <div className="phase2bExperienceTools">
-          <SmartSharePanel
+      {!introActive && (
+        <div className={introStyles.chrome}>
+          <LanguageSwitcher onLanguageChange={(value) => setLanguage(resolveLanguage(value))} />
+          <ThemeSwitcher
             themeId={themeId}
-            pageIndex={pageIndex}
-            locationOpen={locationDeepLinked && pageIndex === 2}
+            pendingTheme={pendingTheme}
+            onThemeChange={changeTheme}
+            onThemeWarm={(id) => warmThemeAssets(id, pageIndex)}
           />
-          <QrNfcPanel themeId={themeId} pageIndex={pageIndex} />
-        </div>
-      </div>
 
-      <CinematicIntro active={introActive} ready={themeReady} onComplete={finishIntro}>
+          <div className="phase2bExperienceTools">
+            <SmartSharePanel
+              themeId={themeId}
+              pageIndex={pageIndex}
+              locationOpen={locationDeepLinked && pageIndex === 2}
+            />
+            <QrNfcPanel themeId={themeId} pageIndex={pageIndex} />
+          </div>
+        </div>
+      )}
+
+      <CinematicIntro
+        active={introActive}
+        ready={themeReady}
+        onComplete={finishIntro}
+        language={language}
+        themeId={themeId}
+        pendingTheme={pendingTheme}
+        onLanguageChange={(value) => setLanguage(resolveLanguage(value))}
+        onThemeChange={changeTheme}
+      >
         <section
           className={`bookStage page-${INVITATION_PAGES[pageIndex]}`}
           tabIndex={-1}
@@ -271,48 +281,50 @@ function InvitationContent({ language, setLanguage }) {
         </section>
       </CinematicIntro>
 
-      <div className={introStyles.chrome} inert={introActive} aria-hidden={introActive ? true : undefined}>
-        <nav className="bookNav" aria-label={t("Invitation pages")}>
-          <button
-            type="button"
-            className="navArrow"
-            onClick={() => setPageIndex((current) => previousPageIndex(current))}
-            disabled={pageIndex === 0}
-            aria-label={t("Previous page")}
-          >
-            ‹
-          </button>
+      {!introActive && (
+        <div className={introStyles.chrome}>
+          <nav className="bookNav" aria-label={t("Invitation pages")}>
+            <button
+              type="button"
+              className="navArrow"
+              onClick={() => setPageIndex((current) => previousPageIndex(current))}
+              disabled={pageIndex === 0}
+              aria-label={t("Previous page")}
+            >
+              ‹
+            </button>
 
-          <div className="pageDots">
-            {PAGE_LABELS.map((label, index) => (
-              <button
-                type="button"
-                key={label}
-                className={index === pageIndex ? 'pageDot active' : 'pageDot'}
-                onClick={() => goTo(index)}
-                aria-label={t('Go to {page}', { page: t(label) })}
-                aria-current={index === pageIndex ? 'page' : undefined}
-                title={t(label)}
-              />
-            ))}
-          </div>
+            <div className="pageDots">
+              {PAGE_LABELS.map((label, index) => (
+                <button
+                  type="button"
+                  key={label}
+                  className={index === pageIndex ? 'pageDot active' : 'pageDot'}
+                  onClick={() => goTo(index)}
+                  aria-label={t('Go to {page}', { page: t(label) })}
+                  aria-current={index === pageIndex ? 'page' : undefined}
+                  title={t(label)}
+                />
+              ))}
+            </div>
 
-          <span className="pageLabel">{t(PAGE_LABELS[pageIndex])}</span>
+            <span className="pageLabel">{t(PAGE_LABELS[pageIndex])}</span>
 
-          <button
-            type="button"
-            className="navArrow"
-            onClick={() => setPageIndex((current) => nextPageIndex(current))}
-            disabled={pageIndex === INVITATION_PAGES.length - 1}
-            aria-label={t("Next page")}
-          >
-            ›
-          </button>
-        </nav>
+            <button
+              type="button"
+              className="navArrow"
+              onClick={() => setPageIndex((current) => nextPageIndex(current))}
+              disabled={pageIndex === INVITATION_PAGES.length - 1}
+              aria-label={t("Next page")}
+            >
+              ›
+            </button>
+          </nav>
 
-        <p className="swipeHint">{t("Swipe, use the arrows, or press \u2190 / \u2192 to explore the invitation")}</p>
-        <button className={introStyles.replay} type="button" data-intro-replay onClick={replayIntro}>{t('Replay Intro')}</button>
-      </div>
+          <p className="swipeHint">{t("Swipe, use the arrows, or press \u2190 / \u2192 to explore the invitation")}</p>
+          <button className={introStyles.replay} type="button" data-intro-replay onClick={replayIntro}>{t('Replay Intro')}</button>
+        </div>
+      )}
     </main>
     </MusicProvider>
   );

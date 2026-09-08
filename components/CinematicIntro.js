@@ -2,6 +2,8 @@
 
 import { useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
 import { useLanguage } from '@/components/LanguageProvider';
+import { LANGUAGES } from '@/lib/locale.mjs';
+import { THEMES, THEME_IDS } from '@/lib/theme.mjs';
 import { advanceIntro, ENTRANCE_PHASES, INTRO_PHASES } from '@/lib/intro.mjs';
 import WeddingEntrance from '@/components/WeddingEntrance';
 import { useMusic } from '@/components/MusicProvider';
@@ -28,7 +30,17 @@ function Alpona({ className }) {
   );
 }
 
-export default function CinematicIntro({ active, ready, onComplete, children }) {
+export default function CinematicIntro({
+  active,
+  ready,
+  onComplete,
+  language,
+  themeId,
+  pendingTheme,
+  onLanguageChange,
+  onThemeChange,
+  children
+}) {
   const { t, event: EVENT } = useLanguage();
   const music = useMusic();
   const [phase, dispatch] = useReducer(advanceIntro, 'closed');
@@ -100,11 +112,11 @@ export default function CinematicIntro({ active, ready, onComplete, children }) 
     if (!active) return;
     if (event.key === 'Escape') { event.preventDefault(); dispatch('skip'); }
     if (event.key !== 'Tab') return;
-    const buttons = [...root.current.querySelectorAll('button[data-intro-control]:not(:disabled)')];
-    const index = buttons.indexOf(document.activeElement);
-    if (!buttons.length) return;
+    const controls = [...root.current.querySelectorAll('[data-intro-control]:not(:disabled)')];
+    const index = controls.indexOf(document.activeElement);
+    if (!controls.length) return;
     event.preventDefault();
-    buttons[(index + (event.shiftKey ? -1 : 1) + buttons.length) % buttons.length].focus();
+    controls[(index + (event.shiftKey ? -1 : 1) + controls.length) % controls.length].focus();
   }
 
   return (
@@ -165,7 +177,37 @@ export default function CinematicIntro({ active, ready, onComplete, children }) 
 
       {active && (
         <footer className={styles.footer}>
-          <button ref={openButton} className={styles.open} type="button" data-intro-control data-intro-open disabled={!ready || phase !== 'closed'} onClick={open}>
+          {phase === 'closed' && (
+            <div className={styles.preferences} data-intro-preferences>
+              <label className={styles.preferenceField}>
+                <span>{t('Language')}</span>
+                <select
+                  data-intro-control
+                  data-intro-language
+                  value={language}
+                  onChange={(event) => onLanguageChange?.(event.target.value)}
+                  aria-label={t('Language')}
+                >
+                  {Object.entries(LANGUAGES).map(([id, label]) => <option key={id} value={id}>{label}</option>)}
+                </select>
+              </label>
+              <label className={styles.preferenceField}>
+                <span>{t('Colour Theme')}</span>
+                <select
+                  data-intro-control
+                  data-intro-theme
+                  value={themeId}
+                  onChange={(event) => onThemeChange?.(event.target.value)}
+                  aria-label={t('Choose invitation colour theme')}
+                  aria-busy={Boolean(pendingTheme)}
+                  disabled={Boolean(pendingTheme)}
+                >
+                  {THEME_IDS.map((id) => <option key={id} value={id}>{t(THEMES[id].shortLabel)}</option>)}
+                </select>
+              </label>
+            </div>
+          )}
+          <button ref={openButton} className={styles.open} type="button" data-intro-control data-intro-open disabled={!ready || phase !== 'closed' || Boolean(pendingTheme)} onClick={open}>
             {t('Open Invitation')} <span aria-hidden="true">→</span>
           </button>
           <p className={styles.hint} role="status">{phase === 'closed' ? t('An invitation sealed with love') : t('Your invitation awaits')}</p>
