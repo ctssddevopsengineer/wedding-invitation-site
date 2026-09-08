@@ -8,7 +8,8 @@
 /* ========================================================================== */
 
 .bookApp[data-invitation-theme="saffron"] .frontCover {
-  --saffron-front-separator-paper: color-mix(in srgb, var(--theme-soft) 88%, #f6e9cf 12%);
+  /* Match the exact parchment patch used by the existing Saffron separators. */
+  --saffron-front-separator-paper: #f6e9cf;
   --saffron-front-separator-gold: color-mix(in srgb, var(--theme-gold) 88%, #d4a347 12%);
 }
 
