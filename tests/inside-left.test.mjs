@@ -51,6 +51,6 @@ test('family headings remain highlighted and are not replaced by name overlays',
 });
 
 test('exact monogram artwork is included as a dedicated asset', () => {
-  assert.match(component, /getThemeAsset\(themeId, 'insideLeftMonogram'\)/);
+  assert.match(component, /<WeddingMonogram themeId=\{themeId\} page="insideLeft"/);
   assert.match(theme, /insideLeftMonogram:\s*insideLeftMonogram \? asset\(`\/themes\/\$\{themeId\}\/inside-left-monogram\.png`\) : ''/);
 });

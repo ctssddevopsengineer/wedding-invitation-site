@@ -25,9 +25,9 @@ test('current-page warmup includes required crests without fetching other pages'
   for (const theme of THEME_IDS) for (let page = 0; page < 4; page++) {
     const assets = getPageArtworkAssets(theme, page);
     assert.ok(assets.length >= 1 && assets.length <= 2);
-    assert.ok(assets.every((src) => src.startsWith(`/themes/${theme}/`)));
+    assert.ok(assets.every((src) => src.startsWith(`/themes/${theme}/`) || src === '/images/wedding-monogram.png'));
   }
-  assert.ok(getPageArtworkAssets('blush', 3).includes('/themes/blush/back-monogram.png'));
+  assert.ok(getPageArtworkAssets('blush', 3).includes('/images/wedding-monogram.png'));
 });
 
 test('loader deduplicates, promotes urgent requests, and waits for decoding', async () => {

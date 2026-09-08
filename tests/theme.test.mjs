@@ -116,10 +116,10 @@ test('theme artwork preserves approved card geometry while blank HD fronts may u
 test('all four invitation pages obtain artwork from the theme engine', () => {
   assert.match(front, /getThemeAsset\(themeId, 'front'\)/);
   assert.match(left, /getThemeAsset\(themeId, 'insideLeft'\)/);
-  assert.match(left, /getThemeAsset\(themeId, 'insideLeftMonogram'\)/);
+  assert.match(left, /<WeddingMonogram themeId=\{themeId\} page="insideLeft"/);
   assert.match(right, /getThemeAsset\(themeId, 'insideRight'\)/);
   assert.match(back, /getThemeAsset\(themeId, 'back'\)/);
-  assert.match(back, /getThemeAsset\(themeId, 'backMonogram'\)/);
+  assert.match(back, /<WeddingMonogram themeId=\{themeId\} page="back"/);
 });
 
 test('theme selector is accessible and renders every registered theme', () => {
@@ -175,7 +175,7 @@ test('blush uses matching monogram assets across pages 2, 3 and 4 while classic 
 
 test('InsideRight renders the optional theme monogram and dynamic title only when the theme provides one', () => {
   assert.match(right, /getThemeAsset\(themeId, 'insideRightMonogram'\)/);
-  assert.match(right, /insideRightThemeMonogram/);
+  assert.match(right, /<WeddingMonogram themeId=\{themeId\} page="insideRight"/);
   assert.match(right, /insideRightDynamicTitle/);
   assert.match(right, /Reception Details/);
   assert.match(css, /\.insideRightThemeMonogram\s*\{/);
@@ -226,9 +226,9 @@ test('Royal Navy uses embedded centred crests on pages 1, 2 and 4 and a dedicate
   const monogramPath = path.join(root, 'public', getThemeAsset('navy', 'insideRightMonogram').replace(/^\//, ''));
   assert.ok(fs.existsSync(monogramPath));
   assert.ok(fs.statSync(monogramPath).size > 50_000);
-  assert.match(left, /insideLeftMonogram &&/);
-  assert.match(back, /backMonogram &&/);
-  assert.match(front, /frontMonogram &&/);
+  assert.match(left, /WeddingMonogram/);
+  assert.match(back, /WeddingMonogram/);
+  assert.match(front, /WeddingMonogram/);
 });
 
 test('Royal Navy has dedicated layout guards for front text, centred page-3 monogram and readable back contacts', () => {
