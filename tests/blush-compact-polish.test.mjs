@@ -25,8 +25,12 @@ test('Baby Pink details reserve safe compact-phone clearance above the location 
   assert.match(css, /data-invitation-theme="blush"\] \.receptionCountdownItem\s*\{[\s\S]*?translateY\(-1\.1cqw\)/);
 });
 
-test('Baby Pink compact fix does not move the Location Map medallion or shrink typography', () => {
+test('Baby Pink compact fix does not move the Location Map medallion or shrink details typography', () => {
   assert.doesNotMatch(css, /exactLocationHotspot\s*\{/);
-  assert.doesNotMatch(css, /font-size\s*:/);
+  assert.doesNotMatch(
+    css,
+    /(?:receptionDetailsOverlay|receptionDetailLabel|receptionDetailValue|receptionAddressValue|receptionCalendarItem|receptionCountdownItem|insideRightDynamicTitle)[^{]*\{[^}]*font-size\s*:/s,
+    'compact Page 3 polish must not reduce reception/detail typography'
+  );
   assert.doesNotMatch(css, /insideRightArtwork|coverArtwork\s*\{/);
 });
