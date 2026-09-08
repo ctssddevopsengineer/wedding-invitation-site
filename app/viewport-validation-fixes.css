@@ -1,0 +1,68 @@
+/* Keep unconfigured event placeholders and long names inside their text zones. */
+html, body { min-width: 0; }
+:is(.dynamicFrontNames, .familyCoupleNames, .heritageCoupleNames) > span {
+  overflow-wrap: anywhere;
+  white-space: normal;
+  min-width: 0;
+}
+:is(.dynamicFrontNames, .familyCoupleNames, .heritageCoupleNames) {
+  line-height: 1.2;
+}
+.contactCard { min-width: 0; overflow-wrap: anywhere; }
+.contactCard :is(h3, p, a) { overflow-wrap: anywhere; white-space: normal; }
+
+@media (max-width: 680px) {
+  .bookApp[data-invitation-theme] .heritageBackIntro { top: 23%; }
+  .heritageBackIntro .heritageGoldRule { margin: .3cqw auto; }
+  .bookApp[data-invitation-theme] .heritageAssistance { width: 78%; }
+  .heritageAssistance .contactGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 319px) {
+  .themeOptions { grid-template-columns: 1fr; }
+}
+.heritageAssistance .contactCard :is(h3, p, a, p.muted) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+.familyBlessingsIntro p { line-height: 1.3; }
+.receptionCountdownItem > .muted { font-size: 1.5cqw; line-height: 1.3; margin: 0; }
+.bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .receptionDetailsOverlay {
+  height: 40% !important;
+}
+@media (max-width: 360px) {
+  .familyBlessingsIntro p { font-size: .54rem !important; }
+}
+/* At 240px the artwork and its text must scale together, including font floors. */
+@media (max-width: 319px) {
+  .bookStage .pageViewport { width: calc((100vw - 16px) / .7); max-width: none; zoom: .7; }
+}
+@media (max-width: 680px) {
+  .heritageAssistance .contactCard :is(h3, p, a, p.muted) { font-size: 6px !important; line-height: 1.35; }
+  .bookApp .familyBlessingsIntro p { font-size: min(.62rem, 2.4cqw) !important; }
+  .bookApp:is([lang="bn"], [lang="ne"]) .insideRightDynamicTitle { line-height: 1.5 !important; }
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNames { column-gap: 1cqw; }
+  .bookApp[data-invitation-theme="classic"] .receptionDetailsOverlay { gap: 0; }
+  .bookApp[data-invitation-theme="classic"] .receptionDetailItem p { margin-block: 0; }
+}
+@media (max-width: 319px) {
+  .bookStage .pageViewport { width: calc((100vw - 16px) / .7); margin: 0; }
+}
+@media (max-width: 680px) {
+  .bookApp .familyBlessingsIntro { width: 80%; }
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNames > span { flex: 1 1 0; }
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNames > b { flex: 0 0 auto; }
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="saffron"] .dynamicFrontHeading > em { font-size: .85rem !important; }
+  .bookApp[data-invitation-theme="classic"] .receptionDetailItem p { line-height: 1.6; }
+}
+/* Unconfigured dates use explanatory text in both calendar and countdown. */
+.receptionDetailsOverlay .muted { font-size: 1.5cqw; line-height: 1.5; margin: 0; }
+/* Grid tracks must shrink before long names can wrap within them. */
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNames {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNames > span { max-width: 100%; }
+.bookApp:is([lang="bn"], [lang="ne"]) .insideRightDynamicTitle { line-height: 1.5 !important; }
+.bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="saffron"] .dynamicFrontHeading > em {
+  font-size: clamp(.85rem, 3cqw, 2rem) !important;
+}

@@ -213,7 +213,7 @@ try {
   }
 
   // Touch, short landscape screens and every theme at each device size.
-  for (const [width, height] of [[320, 480], [320, 568], [390, 844], [768, 1024], [1366, 768], [1920, 1080], [844, 390]]) {
+  for (const [width, height] of [[240, 320], [640, 360], [320, 480], [320, 568], [390, 844], [768, 1024], [1366, 768], [1920, 1080], [844, 390]]) {
     for (const theme of THEME_IDS) {
       const page = await newPage({ viewport: { width, height }, hasTouch: true });
       const sceneRequests = [];

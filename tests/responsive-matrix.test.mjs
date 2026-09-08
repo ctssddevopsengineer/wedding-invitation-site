@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
-import { RESPONSIVE_VALIDATION_WIDTHS, viewportBucket } from '../lib/responsive.mjs';
+import { RESPONSIVE_VALIDATION_WIDTHS, RESPONSIVE_VALIDATION_VIEWPORTS, viewportBucket } from '../lib/responsive.mjs';
 
 const css = fs.readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8');
 const hardeningCss = fs.readFileSync(new URL('../app/device-hardening.css', import.meta.url), 'utf8');
@@ -60,4 +60,11 @@ test('theme picker stays outside page viewport geometry and scales independently
   assert.match(css, /\.themeOptions[\s\S]*?repeat\(auto-fit, minmax\(132px, 1fr\)\)/);
   assert.match(css, /\.pageViewport[\s\S]*?aspect-ratio:/);
   assert.match(css, /\.page-back \.pageViewport[\s\S]*?aspect-ratio:/);
+});
+
+test('exact viewport coverage includes short landscape, 240px phones and legacy widths without duplicates', () => {
+  const sizes = RESPONSIVE_VALIDATION_VIEWPORTS.map(({ width, height }) => `${width}x${height}`);
+  assert.equal(new Set(sizes).size, sizes.length);
+  for (const size of ['240x320', '640x360', '360x780', '412x915', '1024x768', '1920x1080']) assert.ok(sizes.includes(size));
+  for (const width of RESPONSIVE_VALIDATION_WIDTHS) assert.ok(sizes.includes(`${width}x1100`));
 });
