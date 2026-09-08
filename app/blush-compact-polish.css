@@ -2,21 +2,25 @@
 /* BABY PINK — compact-phone visual polish                                    */
 /*                                                                            */
 /* Final, theme-scoped overrides for the supplied 360x640 reference.          */
-/* Keep artwork and typography intact while keeping Page 1 ornament scale     */
-/* consistent with the Inside Left family dividers and reserving clear space  */
-/* above the Page 3 Location / Map crest.                                     */
+/* Keep artwork and typography intact while matching Page 1 ornament scale    */
+/* to the Inside Left family dividers and reserving clear space above the      */
+/* Page 3 Location / Map crest.                                               */
 /* ========================================================================== */
 
-/* Page 1 — use the same compact visual proportion as the Blush Inside Left
-   family dividers: short symmetric gold rules with a small centred ornament.
-   This changes only divider scale, not copy/monogram geometry. */
-.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule {
+/* Page 1 — mirror the actual Inside Left family divider visual system rather
+   than approximating it with broad percentage widths. The Inside Left divider
+   uses width:min(34%, 210px), a .45rem gap, a 1px tapered gold rule and a
+   clamp(.72rem, 1.6vw, 1rem) ornament. Reuse those same values on Page 1 so
+   the ornamentation reads consistently across the Blush invitation. */
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule,
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNamesRule,
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontClosingRule {
   display: flex !important;
   align-items: center;
   justify-content: center;
-  gap: clamp(.2rem, .82cqw, .42rem);
-  width: 46% !important;
-  min-height: .82em;
+  gap: .45rem;
+  width: min(34%, 210px) !important;
+  min-height: .9em;
   color: var(--theme-gold);
 }
 
@@ -27,37 +31,36 @@
   flex: 1 1 auto;
   min-width: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent 0%, currentColor 18%, currentColor 100%);
-  opacity: .78;
-}
-
-.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule::after {
-  background: linear-gradient(90deg, currentColor 0%, currentColor 82%, transparent 100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--theme-gold) 48%, transparent),
+    color-mix(in srgb, var(--theme-gold) 82%, var(--theme-accent) 18%),
+    color-mix(in srgb, var(--theme-gold) 48%, transparent),
+    transparent
+  );
 }
 
 .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule > span {
   flex: 0 0 auto;
   display: block;
   line-height: 1;
-  font-size: .68em;
-}
-
-.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNamesRule,
-.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontClosingRule {
-  width: 46% !important;
+  font-size: clamp(.72rem, 1.6vw, 1rem);
+  color: var(--theme-gold);
 }
 
 @media (max-width: 430px) {
-  /* Keep Page 1 dividers compact on phones rather than allowing them to span
-     most of the parchment width. */
+  /* Keep the same Inside Left proportion on compact phones. Only spacing is
+     tightened slightly; the divider width remains the shared min(34%,210px). */
   .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule,
   .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNamesRule,
   .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontClosingRule {
-    width: 44% !important;
+    gap: .35rem;
+    width: min(34%, 210px) !important;
   }
 
-  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule {
-    gap: .18rem;
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule > span {
+    font-size: clamp(.68rem, 1.55vw, .9rem);
   }
 
   /* Page 3 — reserve a protected lower boundary above the printed medallion.
