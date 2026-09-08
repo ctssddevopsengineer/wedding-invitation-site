@@ -43,7 +43,7 @@ test('separator styling is isolated to Saffron Gold and sits below Invitation', 
   assert.equal(
     css.includes('.bookApp[data-invitation-theme="classic"]'),
     false,
-    'separator enhancement must not alter another theme'
+    'separator positioning enhancement must not alter another theme'
   );
 });
 
@@ -100,11 +100,15 @@ test('Bengali and Nepali receive extra vertical clearance around the separator',
   );
 });
 
-test('front separator stylesheet is loaded last and contains balanced CSS blocks', () => {
+test('Saffron separator tuning loads before the final all-theme front parity layer', () => {
   const separatorImport = "import './saffron-front-separator.css';";
+  const frontParityImport = "import './front-saffron-parity.css';";
   assert.ok(layout.includes(separatorImport));
+  assert.ok(layout.includes(frontParityImport));
+  assert.ok(layout.indexOf(frontParityImport) > layout.indexOf(separatorImport));
 
   const importLines = layout.split('\n').filter((line) => line.startsWith("import './"));
-  assert.equal(importLines.at(-1), separatorImport);
+  assert.equal(importLines.at(-2), separatorImport);
+  assert.equal(importLines.at(-1), frontParityImport);
   assert.equal(count(css, '{'), count(css, '}'));
 });
