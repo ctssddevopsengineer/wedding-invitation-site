@@ -138,19 +138,23 @@ test('InsideRight continues to expose every styled semantic class', () => {
   ]) assert.ok(insideRight.includes(className), `InsideRight still exposes ${className}`);
 });
 
-test('inside-right parity loads after general typography and before inside-left specialization', () => {
+test('inside-right parity loads after general typography and before later targeted layers', () => {
   const generalImport = "import './saffron-typography-parity.css';";
   const parityImport = "import './inside-right-saffron-parity.css';";
   const insideLeftImport = "import './inside-left-saffron-parity.css';";
+  const frontSeparatorImport = "import './saffron-front-separator.css';";
 
   assert.ok(layout.includes(generalImport));
   assert.ok(layout.includes(parityImport));
   assert.ok(layout.includes(insideLeftImport));
+  assert.ok(layout.includes(frontSeparatorImport));
   assert.ok(layout.indexOf(parityImport) > layout.indexOf(generalImport));
   assert.ok(layout.indexOf(insideLeftImport) > layout.indexOf(parityImport));
+  assert.ok(layout.indexOf(frontSeparatorImport) > layout.indexOf(insideLeftImport));
 
   const importLines = layout.split('\n').filter((line) => line.startsWith("import './"));
-  assert.equal(importLines.at(-2), parityImport);
-  assert.equal(importLines.at(-1), insideLeftImport);
+  assert.equal(importLines.at(-3), parityImport);
+  assert.equal(importLines.at(-2), insideLeftImport);
+  assert.equal(importLines.at(-1), frontSeparatorImport);
   assert.equal(count(css, '{'), count(css, '}'));
 });
