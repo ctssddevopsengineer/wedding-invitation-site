@@ -106,7 +106,7 @@ test('responsive safeguards cover tablet, phone, very narrow phone and short lan
 test('inside-right visual parity never overwrites artwork geometry', () => {
   const declarations = css
     .replace(/\/\*[\s\S]*?\*\//g, '')
-    .split('\n')
+    .split(/\n/)
     .map((line) => line.trim());
 
   for (const forbidden of ['top:', 'left:', 'right:', 'bottom:', 'inset:', 'transform:', 'width:', 'height:', 'position:']) {
@@ -138,11 +138,19 @@ test('InsideRight continues to expose every styled semantic class', () => {
   ]) assert.ok(insideRight.includes(className), `InsideRight still exposes ${className}`);
 });
 
-test('inside-right parity stylesheet loads last and CSS blocks are balanced', () => {
+test('inside-right parity loads after general typography and before inside-left specialization', () => {
+  const generalImport = "import './saffron-typography-parity.css';";
   const parityImport = "import './inside-right-saffron-parity.css';";
+  const insideLeftImport = "import './inside-left-saffron-parity.css';";
+
+  assert.ok(layout.includes(generalImport));
   assert.ok(layout.includes(parityImport));
+  assert.ok(layout.includes(insideLeftImport));
+  assert.ok(layout.indexOf(parityImport) > layout.indexOf(generalImport));
+  assert.ok(layout.indexOf(insideLeftImport) > layout.indexOf(parityImport));
 
   const importLines = layout.split('\n').filter((line) => line.startsWith("import './"));
-  assert.equal(importLines.at(-1), parityImport);
+  assert.equal(importLines.at(-2), parityImport);
+  assert.equal(importLines.at(-1), insideLeftImport);
   assert.equal(count(css, '{'), count(css, '}'));
 });
