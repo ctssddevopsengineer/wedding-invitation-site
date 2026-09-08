@@ -5,10 +5,12 @@ import test from 'node:test';
 
 const ROOT = process.cwd();
 const cssPath = path.join(ROOT, 'app', 'saffron-front-separator.css');
+const globalsPath = path.join(ROOT, 'app', 'globals.css');
 const layoutPath = path.join(ROOT, 'app', 'layout.js');
 const frontCoverPath = path.join(ROOT, 'components', 'FrontCover.js');
 
 const css = fs.readFileSync(cssPath, 'utf8');
+const globals = fs.readFileSync(globalsPath, 'utf8');
 const layout = fs.readFileSync(layoutPath, 'utf8');
 const frontCover = fs.readFileSync(frontCoverPath, 'utf8');
 
@@ -42,6 +44,17 @@ test('separator styling is isolated to Saffron Gold and sits below Invitation', 
     css.includes('.bookApp[data-invitation-theme="classic"]'),
     false,
     'separator enhancement must not alter another theme'
+  );
+});
+
+test('new separator center patch matches the existing Saffron parchment tone', () => {
+  assert.match(globals, /\.bookApp\[data-invitation-theme="saffron"\] \.dynamicFrontRule span[\s\S]*?background:\s*#f6e9cf/);
+  assert.match(css, /--saffron-front-separator-paper:\s*#f6e9cf;/);
+  assert.match(css, /background:\s*var\(--saffron-front-separator-paper\);/);
+  assert.doesNotMatch(
+    css,
+    /--saffron-front-separator-paper:\s*color-mix\(/,
+    'center patch must not use a lighter mixed tone that appears white'
   );
 });
 
