@@ -7,6 +7,7 @@ import './blush-front.css';
 import './classic-front.css';
 import './device-hardening.css';
 import './mobile-overlap-fixes.css';
+import './compact-multilingual-back.css';
 import './royal-navy-mobile-monogram-fix.css';
 import './royal-plum-mobile-alignment.css';
 import './saffron-monogram.css';
