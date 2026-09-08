@@ -100,13 +100,18 @@ test('responsive parity protects narrow phones without changing template geometr
   assert.match(parityCss, /\.receptionDetailLabel[\s\S]*?letter-spacing:\s*\.035em/);
 });
 
-test('parity stylesheet is loaded last so earlier theme-specific geometry remains intact', () => {
+test('general Saffron typography loads after legacy theme CSS and before inside-right specialization', () => {
   const parityImport = "import './saffron-typography-parity.css';";
+  const insideRightImport = "import './inside-right-saffron-parity.css';";
+
   assert.ok(layout.includes(parityImport));
-  assert.ok(layout.trim().indexOf(parityImport) > layout.indexOf("import './language-dropdown.css';"));
+  assert.ok(layout.includes(insideRightImport));
+  assert.ok(layout.indexOf(parityImport) > layout.indexOf("import './language-dropdown.css';"));
+  assert.ok(layout.indexOf(insideRightImport) > layout.indexOf(parityImport));
 
   const importLines = layout.split('\n').filter((line) => line.startsWith("import './"));
-  assert.equal(importLines.at(-1), parityImport);
+  assert.equal(importLines.at(-2), parityImport);
+  assert.equal(importLines.at(-1), insideRightImport);
 });
 
 test('new stylesheet has balanced CSS blocks', () => {
