@@ -27,22 +27,36 @@ test('FrontCover renders the decorative rule between heading and cultural taglin
   assert.match(frontCover, /dynamicFrontRule[^\n]*aria-hidden="true"[^>]*><span>✥<\/span>/);
 });
 
-test('separator styling is isolated to Saffron Gold and only targets the heading-to-tagline rule', () => {
+test('separator styling is isolated to Saffron Gold and sits below Invitation', () => {
   const target = '.bookApp[data-invitation-theme="saffron"] .frontCover .dynamicFrontRule:not(.dynamicFrontNamesRule):not(.dynamicFrontClosingRule)';
 
   assert.ok(css.includes(target));
   assert.ok(css.includes('var(--theme-gold)'));
   assert.ok(css.includes('var(--theme-soft)'));
-  assert.match(css, /top:\s*33\.55%/);
+  assert.match(css, /top:\s*35\.0%/);
   assert.match(css, /width:\s*34%/);
   assert.match(css, /linear-gradient\(/);
-  assert.match(css, /\.dynamicFrontTagline[\s\S]*?top:\s*35\.85%/);
+  assert.match(css, /\.dynamicFrontTagline[\s\S]*?top:\s*37\.25%/);
 
   assert.equal(
     css.includes('.bookApp[data-invitation-theme="classic"]'),
     false,
     'separator enhancement must not alter another theme'
   );
+});
+
+test('separator and tagline maintain a protected vertical gap', () => {
+  const baseRuleTop = 35.0;
+  const baseTaglineTop = 37.25;
+  assert.ok(baseTaglineTop - baseRuleTop >= 2.0, 'base layout keeps at least 2% page-height clearance');
+
+  const phoneRuleTop = 35.2;
+  const phoneTaglineTop = 37.55;
+  assert.ok(phoneTaglineTop - phoneRuleTop >= 2.0, 'phone layout keeps at least 2% page-height clearance');
+
+  const multilingualRuleTop = 35.45;
+  const multilingualTaglineTop = 38.0;
+  assert.ok(multilingualTaglineTop - multilingualRuleTop >= 2.0, 'multilingual layout keeps extra clearance');
 });
 
 test('existing couple-name and closing separators remain independently addressed', () => {
@@ -57,18 +71,19 @@ test('separator spacing is hardened for tablet, phone, narrow phone and short la
   assert.match(css, /@media \(max-width: 360px\)/);
   assert.match(css, /@media \(orientation: landscape\) and \(max-height: 520px\)/);
 
-  assert.match(css, /@media \(max-width: 430px\)[\s\S]*?top:\s*33\.72%[\s\S]*?width:\s*37%/);
-  assert.match(css, /@media \(max-width: 360px\)[\s\S]*?width:\s*39%/);
+  assert.match(css, /@media \(max-width: 430px\)[\s\S]*?top:\s*35\.2%[\s\S]*?width:\s*37%/);
+  assert.match(css, /@media \(max-width: 360px\)[\s\S]*?top:\s*35\.3%[\s\S]*?width:\s*39%/);
+  assert.match(css, /@media \(orientation: landscape\) and \(max-height: 520px\)[\s\S]*?top:\s*34\.95%/);
 });
 
 test('Bengali and Nepali receive extra vertical clearance around the separator', () => {
   assert.match(
     css,
-    /\.bookApp:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="saffron"\][\s\S]*?dynamicFrontRule[\s\S]*?top:\s*34\.0%/
+    /\.bookApp:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="saffron"\][\s\S]*?dynamicFrontRule[\s\S]*?top:\s*35\.45%/
   );
   assert.match(
     css,
-    /\.bookApp:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="saffron"\][\s\S]*?dynamicFrontTagline[\s\S]*?top:\s*36\.45%/
+    /\.bookApp:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="saffron"\][\s\S]*?dynamicFrontTagline[\s\S]*?top:\s*38\.0%/
   );
 });
 
