@@ -104,18 +104,22 @@ test('general Saffron typography loads before page-specific parity layers', () =
   const parityImport = "import './saffron-typography-parity.css';";
   const insideRightImport = "import './inside-right-saffron-parity.css';";
   const insideLeftImport = "import './inside-left-saffron-parity.css';";
+  const frontSeparatorImport = "import './saffron-front-separator.css';";
 
   assert.ok(layout.includes(parityImport));
   assert.ok(layout.includes(insideRightImport));
   assert.ok(layout.includes(insideLeftImport));
+  assert.ok(layout.includes(frontSeparatorImport));
   assert.ok(layout.indexOf(parityImport) > layout.indexOf("import './language-dropdown.css';"));
   assert.ok(layout.indexOf(insideRightImport) > layout.indexOf(parityImport));
   assert.ok(layout.indexOf(insideLeftImport) > layout.indexOf(insideRightImport));
+  assert.ok(layout.indexOf(frontSeparatorImport) > layout.indexOf(insideLeftImport));
 
   const importLines = layout.split('\n').filter((line) => line.startsWith("import './"));
-  assert.equal(importLines.at(-3), parityImport);
-  assert.equal(importLines.at(-2), insideRightImport);
-  assert.equal(importLines.at(-1), insideLeftImport);
+  assert.equal(importLines.at(-4), parityImport);
+  assert.equal(importLines.at(-3), insideRightImport);
+  assert.equal(importLines.at(-2), insideLeftImport);
+  assert.equal(importLines.at(-1), frontSeparatorImport);
 });
 
 test('new stylesheet has balanced CSS blocks', () => {
