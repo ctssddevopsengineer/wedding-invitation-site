@@ -129,17 +129,21 @@ test('InsideLeft continues to expose every styled semantic class', () => {
   ]) assert.ok(insideLeft.includes(className), `InsideLeft still exposes ${className}`);
 });
 
-test('inside-left parity stylesheet is the final targeted visual layer and CSS is balanced', () => {
+test('inside-left parity loads before the final Saffron front separator layer and CSS is balanced', () => {
   const generalImport = "import './saffron-typography-parity.css';";
   const insideRightImport = "import './inside-right-saffron-parity.css';";
   const parityImport = "import './inside-left-saffron-parity.css';";
+  const frontSeparatorImport = "import './saffron-front-separator.css';";
 
   assert.ok(layout.includes(generalImport));
   assert.ok(layout.includes(insideRightImport));
   assert.ok(layout.includes(parityImport));
+  assert.ok(layout.includes(frontSeparatorImport));
   assert.ok(layout.indexOf(parityImport) > layout.indexOf(insideRightImport));
+  assert.ok(layout.indexOf(frontSeparatorImport) > layout.indexOf(parityImport));
 
   const importLines = layout.split('\n').filter((line) => line.startsWith("import './"));
-  assert.equal(importLines.at(-1), parityImport);
+  assert.equal(importLines.at(-2), parityImport);
+  assert.equal(importLines.at(-1), frontSeparatorImport);
   assert.equal(count(css, '{'), count(css, '}'));
 });
