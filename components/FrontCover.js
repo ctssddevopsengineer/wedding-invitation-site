@@ -20,7 +20,6 @@ export default function FrontCover({ onOpen, themeId }) {
         <section
           className={`dynamicFrontCopy ${!usesDynamicFrontCopy ? 'localizedPrintedFront' : ''}`}
           aria-label={t("Reception invitation cover text")}
-          tabIndex={0}
         >
           {frontMonogram && usesDynamicFrontCopy && (
             <Artwork

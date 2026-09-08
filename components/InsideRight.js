@@ -99,7 +99,7 @@ export default function InsideRight({ themeId, initialLocationOpen = false, onLo
       {language !== 'en' && themeId === 'classic' && <p className="localizedDetailsClosing">{t('We would be honored by your presence on this joyous evening.')}</p>}
       </div>
 
-      <section tabIndex={0} className="receptionDetailsOverlay" aria-label={t("Reception details")}>
+      <section className="receptionDetailsOverlay" aria-label={t("Reception details")}>
         <div className="receptionDetailItem">
           <p className="receptionDetailLabel">{t("Day & Date")}</p>
           <p className="receptionDetailValue">{EVENT.dateLabel}</p>

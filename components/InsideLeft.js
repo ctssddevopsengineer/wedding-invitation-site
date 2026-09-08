@@ -18,15 +18,15 @@ export default function InsideLeft({ themeId }) {
         alt={t("Ornate Bengali and Nepali family blessings invitation background")}
       />
 
-      {insideLeftMonogram && (
-        <Artwork
-          className="familyMonogramArtwork"
-          src={insideLeftMonogram}
-          alt={t('{couple} monogram', { couple: EVENT.couple })}
-        />
-      )}
+      <div className="familyBlessingsContent">
+        {insideLeftMonogram && (
+          <Artwork
+            className="familyMonogramArtwork"
+            src={insideLeftMonogram}
+            alt={t('{couple} monogram', { couple: EVENT.couple })}
+          />
+        )}
 
-      <div className="familyBlessingsContent" tabIndex={0} role="region" aria-labelledby="family-blessings-title">
         <section className="familyBlessingsIntro" aria-labelledby="family-blessings-title">
           <h2 id="family-blessings-title">{copy.heading}</h2>
           <div className="familyGoldDivider" aria-hidden="true"><span>✥</span></div>
