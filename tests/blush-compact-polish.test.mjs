@@ -12,11 +12,20 @@ test('Baby Pink compact polish loads after viewport validation fixes', () => {
   assert.ok(blushPolish > viewportFixes, 'Baby Pink polish must be the final targeted override');
 });
 
-test('Baby Pink front separators render symmetric gold lines around the ornament', () => {
+test('Baby Pink front separators match the compact Inside Left visual scale', () => {
   assert.match(css, /data-invitation-theme="blush"\] \.frontCover \.dynamicFrontRule\s*\{[\s\S]*?display:\s*flex\s*!important/);
   assert.match(css, /\.dynamicFrontRule::before,[\s\S]*?\.dynamicFrontRule::after\s*\{[\s\S]*?content:\s*''[\s\S]*?height:\s*1px/);
-  assert.match(css, /\.dynamicFrontNamesRule\s*\{[\s\S]*?width:\s*72%\s*!important/);
-  assert.match(css, /\.dynamicFrontClosingRule\s*\{[\s\S]*?width:\s*68%\s*!important/);
+  assert.match(css, /\.dynamicFrontRule\s*\{[\s\S]*?width:\s*46%\s*!important/);
+  assert.match(css, /\.dynamicFrontNamesRule,[\s\S]*?\.dynamicFrontClosingRule\s*\{[\s\S]*?width:\s*46%\s*!important/);
+  assert.match(css, /\.dynamicFrontRule > span\s*\{[\s\S]*?font-size:\s*\.68em/);
+  assert.doesNotMatch(css, /width:\s*(?:68|70|72)%\s*!important/, 'front divider must not return to the oversized width');
+});
+
+test('Baby Pink front separators stay compact on phone viewports', () => {
+  assert.match(
+    css,
+    /@media \(max-width: 430px\)[\s\S]*?\.dynamicFrontRule,[\s\S]*?\.dynamicFrontNamesRule,[\s\S]*?\.dynamicFrontClosingRule\s*\{[\s\S]*?width:\s*44%\s*!important/
+  );
 });
 
 test('Baby Pink details reserve safe compact-phone clearance above the location medallion', () => {
