@@ -14,6 +14,7 @@ import './saffron-monogram.css';
 import './invitation-controls.css';
 import './viewport-validation-fixes.css';
 import './blush-compact-polish.css';
+import './language-dropdown.css';
 
 const bengali = localFont({ src: './fonts/noto-serif-bengali.ttf', variable: '--font-bengali', display: 'swap', preload: false });
 const devanagari = localFont({ src: './fonts/noto-serif-devanagari.ttf', variable: '--font-devanagari', display: 'swap', preload: false });
