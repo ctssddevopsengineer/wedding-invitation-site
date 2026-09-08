@@ -18,7 +18,8 @@
     "assets:optimize": "node scripts/optimize-theme-assets.mjs",
     "test:browser": "node scripts/test-multilingual-browser.mjs",
     "test:intro": "node scripts/test-intro-browser.mjs",
-    "test:music": "node scripts/test-music-browser.mjs"
+    "test:music": "node scripts/test-music-browser.mjs",
+    "test:responsive": "node scripts/test-responsive-browser.mjs"
   },
   "dependencies": {
     "next": "^16.3.4",

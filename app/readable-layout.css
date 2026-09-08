@@ -1,0 +1,143 @@
+/* Preserve artwork proportions; let real invitation text wrap and scroll
+   instead of shrinking into fixed print-sized zones. The envelope miniature
+   is decorative/inert and deliberately keeps its original composition. */
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage {
+  --reading-size: max(14px, .875rem, 1.5cqw);
+}
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage :is(
+  .dynamicFrontTagline, .dynamicFrontClosing, .familyBlessingsIntro p,
+  .familyBlock p, .familyBlessingsClosing, .receptionDetailLabel,
+  .receptionDetailValue, .receptionAddressValue, .receptionCalendarItem .btn,
+  .heritageBackMessage, .heritageJourneyMessage, .heritageAssistance h3,
+  .heritageAssistance p, .heritageAssistance a, .heritageAssistance .label
+) {
+  font-size: var(--reading-size) !important;
+  line-height: 1.45;
+  white-space: normal;
+}
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage :is(
+  .dynamicFrontCopy, .familyBlessingsContent, .receptionDetailsOverlay, .heritageBackContent
+) {
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-gold) transparent;
+  pointer-events: auto;
+  scroll-padding-block: 12px;
+}
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .dynamicFrontCopy {
+  max-height: 48%;
+  min-height: 0;
+}
+/* The four crests printed into the cover stay visible above flowing text. */
+.bookApp:is([data-invitation-theme="magenta"], [data-invitation-theme="navy"], [data-invitation-theme="plum"], [data-invitation-theme="saffron"]) [data-cinematic-intro="complete"] .bookStage .dynamicFrontCopy {
+  top: 22%;
+  height: 38%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 2px 4px 12px;
+}
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .dynamicFrontCopy > :is(h1, p, .dynamicFrontRule) {
+  position: relative;
+  inset: auto;
+  transform: none;
+  height: auto;
+}
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .dynamicFrontRule { min-height: 1px; }
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .dynamicFrontCopy > * { flex-shrink: 0; }
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage :is(.dynamicFrontNames, .familyCoupleNames, .heritageCoupleNames) {
+  font-size: clamp(18px, 3.2cqw, 36px) !important;
+  line-height: 1.3;
+  flex-wrap: wrap;
+  white-space: normal;
+  overflow: visible;
+}
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage :is(.familyBlessingsContent, .heritageBackContent) {
+  inset: 28% 16% 8%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 0 4px 12px;
+}
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .heritageBackContent { inset: 26.6% 20% 5%; background: color-mix(in srgb, var(--theme-soft) 92%, transparent); border-radius: 6px; }
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage :is(.familyBlessingsContent, .heritageBackContent) > * {
+  position: relative;
+  inset: auto;
+  transform: none;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  flex: 0 0 auto;
+}
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage :is(.familyBlessingsIntro h2, .heritageBackIntro h2) {
+  font-size: clamp(18px, 2.8cqw, 32px) !important;
+  line-height: 1.3;
+  white-space: normal;
+}
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .familyBlock h3 { font-size: max(16px, 1rem) !important; line-height: 1.3; }
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage :is(.familyNamesDivider, .familyMiddleDivider, .familyClosingDivider, .heritageNamesRule) { width: 35%; }
+.bookApp[data-invitation-theme] .familyMonogramArtwork,
+.bookApp[data-invitation-theme] .heritageBackMonogram { z-index: 3; pointer-events: none; }
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .receptionDetailsOverlay {
+  gap: 12px;
+  justify-content: flex-start;
+  padding: 2px 6px 12px;
+}
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .receptionDetailsOverlay > * { flex-shrink: 0; }
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .receptionDetailsOverlay > br { display: none; }
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .receptionCalendarItem .actionRow { flex-wrap: wrap; gap: 8px; }
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .receptionCalendarItem .btn { min-height: 44px; white-space: normal; }
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .countdownUnit strong { font-size: 16px !important; }
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .countdownUnit span { font-size: 12px !important; line-height: 1.4; }
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .contactCard a { display: inline-flex; align-items: center; min-height: 44px; }
+.bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage :is(.dynamicFrontCopy, .familyBlessingsContent, .receptionDetailsOverlay, .heritageBackContent):focus-visible {
+  outline: 2px solid var(--theme-gold);
+  outline-offset: 2px;
+}
+
+/* Keep the visible dots, but give each a real 44px touch target. */
+.bookApp[data-invitation-theme] .pageDot {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border: 0;
+  background: transparent;
+  transform: none;
+  position: relative;
+  touch-action: manipulation;
+}
+.bookApp[data-invitation-theme] .pageDot::after {
+  content: '';
+  position: absolute;
+  inset: 17px;
+  border: 1px solid var(--theme-gold);
+  border-radius: 50%;
+}
+.bookApp[data-invitation-theme] .pageDot.active { background: transparent; }
+.bookApp[data-invitation-theme] .pageDot.active::after { background: var(--theme-gold); }
+.pageDots { gap: 0; }
+.bookNav { grid-template-columns: 44px minmax(0, 1fr) 44px; }
+.bookNav .pageDots { grid-column: 2; }
+.bookNav .pageLabel { position: static; grid-row: 2; grid-column: 1 / -1; text-align: center; white-space: normal; }
+.bookNav .navArrow:last-child { grid-column: 3; grid-row: 1; }
+.themeOption { grid-template-columns: 38px minmax(0, 1fr); position: relative; }
+.themeThumbnailFrame { width: 38px; }
+.themeCheck { position: absolute; right: 5px; top: 5px; }
+.bookApp .themeOption .themeOptionName { font-size: 14px; line-height: 1.35; white-space: normal; overflow: visible; overflow-wrap: anywhere; }
+.swipeHint, .pageLabel, .languageSwitcher, .themeSwitcherHint { font-size: 14px; line-height: 1.4; }
+/* Reserve room at the end of the document so the floating music control
+   cannot cover the last navigation/replay controls. */
+.bookApp { padding-bottom: max(88px, calc(env(safe-area-inset-bottom) + 72px)); }
+
+@media (max-width: 680px) {
+  .bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .dynamicFrontNames { display: flex !important; flex-direction: column; align-items: center; gap: 2px; }
+  .bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .dynamicFrontNames > span { max-width: 100%; width: auto; }
+  .bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .heritageBackContent { inset-inline: 12%; }
+  .bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .heritageAssistance .contactGrid { grid-template-columns: 1fr; gap: 12px; }
+  .bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .heritageAssistance .contactCard + .contactCard { border-left: 0; border-top: 1px dotted var(--theme-gold); padding-top: 12px; }
+  .bookApp[data-invitation-theme] [data-cinematic-intro="complete"] .bookStage .receptionCountdownItem .countdown { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

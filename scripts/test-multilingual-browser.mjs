@@ -59,8 +59,8 @@ try {
               if (box.width && (box.left < card.left - 2 || box.right > card.right + 2 || box.bottom > card.bottom + 2)) issues.push(node.className || node.tagName);
             }
             for (const image of document.querySelectorAll('.invitePage picture img')) {
-              // Classic/Blush intentionally use approved JPEG front templates.
-              const expected = image.src.endsWith('.png') ? image.src.replace(/\.png$/, '.webp') : image.src;
+              // Every approved template has a same-geometry WebP companion.
+              const expected = /\/themes\//.test(image.src) ? image.src.replace(/\.(?:png|jpe?g)$/, '.webp') : image.src;
               if (image.currentSrc !== expected || !image.naturalWidth) issues.push('artwork not optimized/loaded');
             }
             // New typography guards apply to translations; approved English geometry is preserved.

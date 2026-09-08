@@ -15,6 +15,7 @@ export default function WeddingEntrance({ phase, onStatusChange }) {
   const [entered, setEntered] = useState(false);
   const mounted = useRef(false);
   const captionRef = useRef(null);
+  const sceneRef = useRef(null);
   const status = failed ? 'failed' : loaded.groom && loaded.bride ? 'ready' : 'pending';
   const visible = ['scene', 'walking', 'together', 'revealing'].includes(phase);
 
@@ -25,6 +26,16 @@ export default function WeddingEntrance({ phase, onStatusChange }) {
 
   useEffect(() => { onStatusChange(status); }, [status, onStatusChange]);
   useLayoutEffect(() => { if (phase === 'walking') setEntered(true); }, [phase]);
+
+  useLayoutEffect(() => {
+    // Reserve the caption's actual height, including wrapped names and fonts.
+    const measure = () => sceneRef.current?.style.setProperty('--caption-bottom', `${Math.ceil(captionRef.current.getBoundingClientRect().bottom)}px`);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(captionRef.current);
+    window.addEventListener('resize', measure);
+    return () => { observer.disconnect(); window.removeEventListener('resize', measure); };
+  }, []);
 
   async function characterLoaded(event, name) {
     const image = event.currentTarget;
@@ -37,7 +48,7 @@ export default function WeddingEntrance({ phase, onStatusChange }) {
   }
 
   return (
-    <div className={styles.weddingScene} data-wedding-scene data-visible={visible} data-phase={phase} data-characters={status} data-entered={entered} aria-hidden="true">
+    <div ref={sceneRef} className={styles.weddingScene} data-wedding-scene data-visible={visible} data-phase={phase} data-characters={status} data-entered={entered} aria-hidden="true">
       {!backgroundFailed && (
         <picture>
           <source media="(max-width: 680px)" srcSet={withBasePath('/intro/wedding-scene-mobile.webp')} />

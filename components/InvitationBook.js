@@ -17,7 +17,7 @@ import MusicControl from '@/components/MusicControl';
 import introStyles from '@/components/CinematicIntro.module.css';
 import { INTRO_STORAGE_KEY, shouldShowIntro } from '@/lib/intro.mjs';
 import { INVITATION_PAGES, nextPageIndex, previousPageIndex } from '@/lib/navigation.mjs';
-import { DEFAULT_THEME_ID, THEME_IDS, getTheme, resolveThemeId, THEME_STORAGE_KEY } from '@/lib/theme.mjs';
+import { DEFAULT_THEME_ID, getTheme, resolveThemeId, THEME_STORAGE_KEY } from '@/lib/theme.mjs';
 import { createArtworkLoader, getPageArtworkAssets } from '@/lib/artwork.mjs';
 import { getThemeWarmupAssets } from '@/lib/theme-preload.mjs';
 import { getInitialThemeId, getThemeIdFromSearch } from '@/lib/theme-url.mjs';
@@ -40,6 +40,7 @@ function InvitationContent({ language, setLanguage }) {
   const [introActive, setIntroActive] = useState(true);
   const [locationDeepLinked, setLocationDeepLinked] = useState(false);
   const touchStartX = useRef(null);
+  const touchStartY = useRef(null);
   const artworkLoader = useRef(null);
   const selectionRequest = useRef(0);
   const [pendingTheme, setPendingTheme] = useState(null);
@@ -128,18 +129,6 @@ function InvitationContent({ language, setLanguage }) {
     setPendingTheme(null);
   }, [pageIndex]);
 
-  useEffect(() => {
-    if (!themeReady || introActive || navigator.connection?.saveData || /(^|-)2g$/.test(navigator.connection?.effectiveType || '')) return;
-    let cancelled = false;
-    const timer = window.setTimeout(async () => {
-      await warmThemeAssets(themeId, pageIndex, true);
-      for (const id of THEME_IDS) {
-        if (cancelled) return;
-        if (id !== themeId) await warmThemeAssets(id, pageIndex, true);
-      }
-    }, 300);
-    return () => { cancelled = true; window.clearTimeout(timer); };
-  }, [themeReady, introActive, themeId, pageIndex, warmThemeAssets]);
 
   useEffect(() => {
     if (pageIndex !== 2 && locationDeepLinked) setLocationDeepLinked(false);
@@ -202,6 +191,7 @@ function InvitationContent({ language, setLanguage }) {
   function handleTouchStart(event) {
     if (introActive) return;
     touchStartX.current = event.changedTouches[0]?.clientX ?? null;
+    touchStartY.current = event.changedTouches[0]?.clientY ?? null;
   }
 
   function handleTouchEnd(event) {
@@ -209,8 +199,9 @@ function InvitationContent({ language, setLanguage }) {
     if (touchStartX.current == null) return;
     const endX = event.changedTouches[0]?.clientX ?? touchStartX.current;
     const delta = endX - touchStartX.current;
+    const deltaY = (event.changedTouches[0]?.clientY ?? touchStartY.current) - touchStartY.current;
     touchStartX.current = null;
-    if (Math.abs(delta) < SWIPE_THRESHOLD) return;
+    if (Math.abs(delta) < SWIPE_THRESHOLD || Math.abs(delta) <= Math.abs(deltaY)) return;
     setPageIndex((current) => delta < 0 ? nextPageIndex(current) : previousPageIndex(current));
   }
 

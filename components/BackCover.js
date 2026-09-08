@@ -19,15 +19,15 @@ export default function BackCover({ themeId }) {
         alt={t("Bengali riverside temple and boats blending into Himalayan mountains and a Nepali pagoda")}
       />
 
-      <div className="heritageBackContent">
-        {backMonogram && (
-          <Artwork
-            className="heritageBackMonogram"
-            src={backMonogram}
-            alt={t('{couple} monogram', { couple: EVENT.couple })}
-          />
-        )}
+      {backMonogram && (
+        <Artwork
+          className="heritageBackMonogram"
+          src={backMonogram}
+          alt={t('{couple} monogram', { couple: EVENT.couple })}
+        />
+      )}
 
+      <div className="heritageBackContent" tabIndex={0} role="region" aria-labelledby="back-gratitude-title">
         <section className="heritageBackIntro" aria-labelledby="back-gratitude-title">
           <h2 id="back-gratitude-title">{copy.heading}</h2>
           <div className="heritageGoldRule" aria-hidden="true"><span>✥</span></div>
