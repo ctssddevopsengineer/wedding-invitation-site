@@ -53,7 +53,7 @@ try {
           await page.evaluate(async () => { await document.fonts.ready; await Promise.all(document.getAnimations().filter(a => a.effect?.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))); });
           await page.locator('.invitePage img').evaluateAll((images) => Promise.all(images.map((image) => image.decode())));
           assert.equal(await page.locator('html').getAttribute('lang'), language);
-          assert.equal(await page.locator('#invitation-language').inputValue(), language);
+          assert.equal(await page.locator('#invitation-language-value').getAttribute('lang'), language);
           const issues = await page.evaluate(() => {
             const issues = [];
             if (document.documentElement.scrollWidth > innerWidth + 1) issues.push('horizontal page overflow: ' + [...document.querySelectorAll('body *')].filter(n => n.getBoundingClientRect().right > innerWidth + 2).slice(0, 5).map(n => n.className).join('/'));
@@ -64,7 +64,7 @@ try {
             }
             for (const image of document.querySelectorAll('.invitePage picture img')) {
               // Every approved template has a same-geometry WebP companion.
-              const expected = /\/themes\//.test(image.src) ? image.src.replace(/\.(?:png|jpe?g)$/, '.webp') : image.src;
+              const expected = /(?:\/themes\/|\/images\/wedding-monogram\.png$)/.test(image.src) ? image.src.replace(/\.(?:png|jpe?g)$/, '.webp') : image.src;
               if (image.currentSrc !== expected || !image.naturalWidth) issues.push('artwork not optimized/loaded');
             }
             // New typography guards apply to translations; approved English geometry is preserved.
@@ -119,7 +119,8 @@ try {
     }
     await page.goto(`${url}?theme=blush&page=details&lang=bn`);
     await page.waitForSelector('main[lang="bn"]');
-    await page.selectOption('#invitation-language', 'ne');
+    await page.locator('.languageDropdownTrigger').click();
+    await page.locator('[role="option"][lang="ne"]').click();
     await page.waitForURL(/lang=ne/);
     assert.match(page.url(), /theme=blush/); assert.match(page.url(), /page=details/);
     await page.reload(); await page.waitForSelector('main[lang="ne"]');
@@ -174,7 +175,8 @@ try {
   await fallbackPage.waitForSelector('main[lang="bn"][data-theme-ready="true"]');
   await fallbackPage.waitForFunction(() => [...document.querySelectorAll('.invitePage picture img')].every((image) => image.complete && image.naturalWidth && image.currentSrc.endsWith('.png')));
   await fallbackPage.locator('.exactLocationHotspot').click();
-  await fallbackPage.selectOption('#invitation-language', 'ne');
+  await fallbackPage.locator('.languageDropdownTrigger').click();
+  await fallbackPage.locator('[role="option"][lang="ne"]').click();
   await fallbackPage.waitForURL(/lang=ne/);
   assert.equal(new URL(fallbackPage.url()).searchParams.get('page'), 'location');
   assert.equal(await fallbackPage.locator('.exactLocationHotspot').getAttribute('aria-expanded'), 'true');

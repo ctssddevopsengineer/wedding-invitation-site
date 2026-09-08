@@ -1,3 +1,4 @@
+import WeddingMonogram from '@/components/WeddingMonogram';
 import Artwork from '@/components/Artwork';
 import { useLanguage } from '@/components/LanguageProvider';
 import { getThemeAsset } from '@/lib/theme.mjs';
@@ -5,7 +6,6 @@ import { getThemeAsset } from '@/lib/theme.mjs';
 export default function InsideLeft({ themeId }) {
   const { language, t, event: EVENT } = useLanguage();
   const copy = EVENT.insideLeft;
-  const insideLeftMonogram = getThemeAsset(themeId, 'insideLeftMonogram');
 
   return (
     <article
@@ -17,15 +17,9 @@ export default function InsideLeft({ themeId }) {
         src={getThemeAsset(themeId, 'insideLeft')}
         alt={t("Ornate Bengali and Nepali family blessings invitation background")}
       />
+      <WeddingMonogram themeId={themeId} page="insideLeft" />
 
       <div className="familyBlessingsContent">
-        {insideLeftMonogram && (
-          <Artwork
-            className="familyMonogramArtwork"
-            src={insideLeftMonogram}
-            alt={t('{couple} monogram', { couple: EVENT.couple })}
-          />
-        )}
 
         <section className="familyBlessingsIntro" aria-labelledby="family-blessings-title">
           <h2 id="family-blessings-title">{copy.heading}</h2>

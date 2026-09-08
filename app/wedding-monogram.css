@@ -1,0 +1,57 @@
+/* One full-color transparent wedding emblem, placed in page coordinates.
+   Keep it outside the copy containers to avoid language-dependent movement. */
+.bookApp .weddingMonogram {
+  position: absolute;
+  z-index: 2;
+  top: 3.5%;
+  left: 50%;
+  width: 20%;
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.bookApp .weddingMonogram img {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.bookApp .weddingMonogram--insideRight { top: 2.2%; width: 13%; }
+.bookApp .weddingMonogram--back { top: 2.5%; width: 15%; }
+.bookApp .weddingMonogramParchment {
+  position: absolute;
+  inset: -8% -18%;
+  overflow: hidden;
+  mask-image: radial-gradient(ellipse, #000 58%, transparent 73%);
+}
+/* These two covers use normal-flow headings, so reserve their emblem's space. */
+.bookApp:is([data-invitation-theme="classic"], [data-invitation-theme="blush"]) .weddingMonogramSpacer {
+  display: block;
+  height: 32cqw;
+  flex-shrink: 0;
+}
+.bookApp:is([data-invitation-theme="classic"], [data-invitation-theme="blush"]) .weddingMonogram--front {
+  top: 7%; width: 17%;
+}
+
+.bookApp .weddingMonogram--front .weddingMonogramParchment,
+.bookApp .weddingMonogram--insideLeft .weddingMonogramParchment {
+  inset: -8% -25% -65%;
+  mask-image: radial-gradient(ellipse, #000 62%, transparent 76%);
+}
+@media (max-width: 680px) {
+  /* The compact back cover is landscape, with its heading close to the arch. */
+  .bookApp .weddingMonogram--back { top: 1%; width: 12%; }
+  .bookApp .weddingMonogram--back .weddingMonogramParchment { inset: -2% -35% -28%; }
+}
+
+.bookApp .weddingMonogramParchment img {
+  position: absolute;
+  width: 450%;
+  height: 750%;
+  max-width: none;
+  left: -175%;
+  top: -195%;
+  object-fit: fill;
+}

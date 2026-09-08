@@ -49,7 +49,7 @@ test('critical back-cover text zones are separated vertically', () => {
 });
 
 test('back-cover monogram uses dedicated high-resolution transparent artwork', () => {
-  assert.match(component, /getThemeAsset\(themeId, 'backMonogram'\)/);
+  assert.match(component, /<WeddingMonogram themeId=\{themeId\} page="back"/);
   assert.match(theme, /backMonogram:\s*backMonogram \? asset\(`\/themes\/\$\{themeId\}\/back-monogram\.png`\) : ''/);
   assert.match(css, /\.heritageBackMonogram[\s\S]*?opacity:\s*1/);
   assert.doesNotMatch(css.match(/\.heritageBackMonogram\s*\{[\s\S]*?\}/)?.[0] ?? '', /mix-blend-mode|mask-image/);

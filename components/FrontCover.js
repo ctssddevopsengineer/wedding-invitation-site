@@ -1,3 +1,4 @@
+import WeddingMonogram from '@/components/WeddingMonogram';
 import Artwork from '@/components/Artwork';
 import { useLanguage } from '@/components/LanguageProvider';
 import { getTheme, getThemeAsset } from '@/lib/theme.mjs';
@@ -5,7 +6,6 @@ import { getTheme, getThemeAsset } from '@/lib/theme.mjs';
 export default function FrontCover({ onOpen, themeId }) {
   const { language, t, event: EVENT } = useLanguage();
   const theme = getTheme(themeId);
-  const frontMonogram = getThemeAsset(themeId, 'insideLeftMonogram');
   const usesDynamicFrontCopy = theme.dynamicFront || theme.blankFront;
 
   return (
@@ -15,19 +15,14 @@ export default function FrontCover({ onOpen, themeId }) {
         src={getThemeAsset(themeId, 'front')}
         alt={t('{couple} reception invitation artwork', { couple: EVENT.couple })}
       />
+      <WeddingMonogram themeId={themeId} page="front" />
 
       {(usesDynamicFrontCopy || language !== 'en') && (
         <section
           className={`dynamicFrontCopy ${!usesDynamicFrontCopy ? 'localizedPrintedFront' : ''}`}
           aria-label={t("Reception invitation cover text")}
         >
-          {frontMonogram && usesDynamicFrontCopy && (
-            <Artwork
-              className="dynamicFrontMonogram"
-              src={frontMonogram}
-              alt={t('{couple} monogram', { couple: EVENT.couple })}
-            />
-          )}
+          {theme.blankFront && <div className="weddingMonogramSpacer" aria-hidden="true" />}
           <h1 className="dynamicFrontHeading">
             <span>{EVENT.frontCover.heading}</span>
             <em>{EVENT.frontCover.subheading}</em>
