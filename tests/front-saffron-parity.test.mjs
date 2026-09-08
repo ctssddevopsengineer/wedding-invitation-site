@@ -105,18 +105,18 @@ test('shared front parity preserves artwork-specific vertical geometry', () => {
 
 test('FrontCover exposes the complete Saffron-style semantic sequence', () => {
   const sequence = [
-    'dynamicFrontHeading',
+    'className="dynamicFrontHeading"',
     'className="dynamicFrontRule"',
-    'dynamicFrontTagline',
-    'dynamicFrontNamesRule',
-    'dynamicFrontNames',
-    'dynamicFrontClosingRule',
-    'dynamicFrontClosing'
+    'className="dynamicFrontTagline"',
+    'className="dynamicFrontRule dynamicFrontNamesRule"',
+    'className="dynamicFrontNames"',
+    'className="dynamicFrontRule dynamicFrontClosingRule"',
+    'className="dynamicFrontClosing"'
   ];
 
   let previous = -1;
   for (const token of sequence) {
-    const current = frontCover.indexOf(token);
+    const current = frontCover.indexOf(token, previous + 1);
     assert.ok(current > previous, `${token} follows the previous front element`);
     previous = current;
   }
