@@ -210,13 +210,13 @@
 .passthrough, .revealedCard, .chrome { display: contents; }
 .chrome[inert] { visibility: hidden; }
 
-.overlay[data-cinematic-intro='opening'] .flap { animation: flapOpen 1s cubic-bezier(.4, 0, .2, 1) both; }
+.overlay[data-cinematic-intro='opening'] .flap { animation: flapOpen 1.4s cubic-bezier(.4, 0, .2, 1) both; }
 .overlay:not([data-cinematic-intro='closed']) .heading { opacity: 0; }
 .overlay[data-cinematic-intro='opening'] .seal { opacity: 0; transition: opacity .25s; }
 .overlay[data-cinematic-intro='opening'] .card { visibility: visible; }
 .overlay:is([data-cinematic-intro='rising'], [data-cinematic-intro='scene'], [data-cinematic-intro='walking'], [data-cinematic-intro='together'], [data-cinematic-intro='revealing']) .flap { transform: rotateX(-180deg); z-index: 0; }
 .overlay:is([data-cinematic-intro='rising'], [data-cinematic-intro='scene'], [data-cinematic-intro='walking'], [data-cinematic-intro='together'], [data-cinematic-intro='revealing']) .seal { visibility: hidden; }
-.overlay[data-cinematic-intro='rising'] .card { visibility: visible; animation: cardRise 1.5s cubic-bezier(.22, .7, .25, 1) both; }
+.overlay[data-cinematic-intro='rising'] .card { visibility: visible; animation: cardRise 4.6s cubic-bezier(.22, .7, .25, 1) both; }
 .overlay:is([data-cinematic-intro='scene'], [data-cinematic-intro='walking'], [data-cinematic-intro='together'], [data-cinematic-intro='revealing']) .card { visibility: visible; transform: translateY(-65%); clip-path: inset(0); }
 .scene, .footer { transition: opacity .7s ease; }
 .overlay:is([data-cinematic-intro='scene'], [data-cinematic-intro='walking'], [data-cinematic-intro='together'], [data-cinematic-intro='revealing']) :is(.scene, .footer) { opacity: 0; }
