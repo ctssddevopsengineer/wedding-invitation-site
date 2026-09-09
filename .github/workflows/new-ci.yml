@@ -22,143 +22,92 @@ concurrency:
 
 env:
   NODE_VERSION: '24'
-
-  # GitHub Pages compatible build path.
   NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
 
-  # ---------------------------------------------------------------------------
-  # CI-only fixture invitation data.
-  #
-  # CI must verify that config rendering works without depending on production
-  # guest/family data or production environment variables.
-  # ---------------------------------------------------------------------------
-
 jobs:
-
-  # ===========================================================================
-  # 1. Resolve deployment/environment semantics
-  # ===========================================================================
   context:
     name: Resolve CI Context
     runs-on: ubuntu-latest
-
     outputs:
       environment: ${{ steps.environment.outputs.environment }}
-
     steps:
       - name: Resolve target environment
         id: environment
         shell: bash
         run: |
           set -euo pipefail
-
           BASE_BRANCH="${{ github.base_ref }}"
-
-          # workflow_dispatch does not provide github.base_ref.
           if [[ -z "${BASE_BRANCH}" ]]; then
             BASE_BRANCH="${{ github.ref_name }}"
           fi
-
           case "${BASE_BRANCH}" in
-            development)
-              ENVIRONMENT="unt"
-              ;;
-            master)
-              ENVIRONMENT="prd"
-              ;;
-            release/*)
-              ENVIRONMENT="uat"
-              ;;
+            development) ENVIRONMENT="unt" ;;
+            master) ENVIRONMENT="prd" ;;
+            release/*) ENVIRONMENT="uat" ;;
             *)
               echo "::error::Unsupported target branch: ${BASE_BRANCH}"
               exit 1
               ;;
           esac
-
           echo "environment=${ENVIRONMENT}" >> "${GITHUB_OUTPUT}"
-
           echo "Target branch : ${BASE_BRANCH}"
           echo "Environment   : ${ENVIRONMENT}"
 
-
-  # ===========================================================================
-  # 2. Source / unit / configuration validation
-  # ===========================================================================
   quality:
     name: Unit and Configuration Validation
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: context
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
-
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-
       - name: Install dependencies
         run: npm ci
-
       - name: Unit regression tests
         env:
           NEXT_PUBLIC_BASE_PATH: ''
         run: npm test
-
       - name: Phase 2A responsive / UX tests
         env:
           NEXT_PUBLIC_BASE_PATH: ''
         run: npm run test:phase2a
-
       - name: Phase 2B sharing / hosting tests
         env:
           NEXT_PUBLIC_BASE_PATH: ''
         run: npm run test:phase2b
-
       - name: Validate clean working tree after tests
         shell: bash
         run: |
           set -euo pipefail
-
           if [[ -n "$(git status --porcelain)" ]]; then
             echo "::error::Tests modified tracked repository content."
             git status --short
             exit 1
           fi
 
-
-  # ===========================================================================
-  # 3. Production-equivalent static build
-  #
-  # Render config -> build -> validate -> artifact.
-  # Every browser job below tests THIS exact artifact.
-  # ===========================================================================
   build:
     name: Production Static Export
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: ${{ needs.context.outputs.environment }}
-
     needs:
       - context
       - quality
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
-
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-
       - name: Install dependencies
         run: npm ci
-
       - name: Render CI invitation configuration
         env:
           EVENT_TIMEZONE: ${{ vars.EVENT_TIMEZONE }}
@@ -179,24 +128,18 @@ jobs:
           BRIDE_FAMILY_CONTACT_NAME: ${{ vars.BRIDE_FAMILY_CONTACT_NAME }}
           BRIDE_FAMILY_PHONE_NUMBER: ${{ vars.BRIDE_FAMILY_PHONE_NUMBER }}
         run: npm run config:render
-
       - name: Build GitHub Pages-compatible static export
         run: npm run build
-
       - name: Validate exported website
         run: npm run validate:export
-
       - name: Verify static export exists
         shell: bash
         run: |
           set -euo pipefail
-
           test -d out
           test -f out/index.html
-
           echo "Static export successfully produced."
           du -sh out
-
       - name: Upload tested static artifact
         uses: actions/upload-artifact@v7
         with:
@@ -205,70 +148,38 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
-
-  # ===========================================================================
-  # 4. Browser regression
-  #
-  # This is your major viewport protection layer.
-  #
-  # Current script covers:
-  #   6 themes
-  # x 4 pages
-  # x 3 languages
-  # x RESPONSIVE_VALIDATION_VIEWPORTS
-  #
-  # and checks:
-  # - text collisions
-  # - content outside card
-  # - horizontal overflow
-  # - artwork loading
-  # - language persistence
-  # - navigation state
-  # - QR/share state
-  # - image fallback
-  # - responsive layout
-  # ===========================================================================
   responsive-browser-regression:
     name: Full Responsive Browser Regression
     runs-on: ubuntu-latest
     timeout-minutes: 45
-
     needs:
       - build
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
-
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-
       - name: Install dependencies
         run: npm ci
-
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
-
       - name: Download tested static artifact
         uses: actions/download-artifact@v8
         with:
           name: wedding-site-static-export
           path: out
-
       - name: Create browser result directories
         run: |
           mkdir -p artifacts/responsive/screenshots
           mkdir -p artifacts/responsive/reports
-
       - name: Run complete responsive browser matrix
         env:
           SCREENSHOT_DIR: artifacts/responsive/screenshots
           REPORT_PATH: artifacts/responsive/reports/browser-regression.json
         run: npm run test:browser
-
       - name: Upload responsive regression evidence
         if: always()
         uses: actions/upload-artifact@v7
@@ -278,48 +189,35 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
 
-
-  # ===========================================================================
-  # 5. Cinematic intro browser regression
-  # ===========================================================================
   intro-browser-regression:
     name: Cinematic Intro Regression
     runs-on: ubuntu-latest
     timeout-minutes: 30
-
     needs:
       - build
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
-
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-
       - name: Install dependencies
         run: npm ci
-
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
-
       - name: Download tested static artifact
         uses: actions/download-artifact@v8
         with:
           name: wedding-site-static-export
           path: out
-
       - name: Create intro screenshot directory
         run: mkdir -p artifacts/intro
-
       - name: Test cinematic intro
         env:
           SCREENSHOT_DIR: artifacts/intro
         run: npm run test:intro
-
       - name: Upload intro regression evidence
         if: always()
         uses: actions/upload-artifact@v7
@@ -329,85 +227,61 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
 
-
-  # ===========================================================================
-  # 6. Music browser regression
-  # ===========================================================================
   music-browser-regression:
     name: Music Regression
     runs-on: ubuntu-latest
     timeout-minutes: 25
-
     needs:
       - build
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
-
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-
       - name: Install dependencies
         run: npm ci
-
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
-
       - name: Download tested static artifact
         uses: actions/download-artifact@v8
         with:
           name: wedding-site-static-export
           path: out
-
       - name: Run music browser regression
         run: npm run test:music
 
-
-  # ===========================================================================
-  # 7. Monogram browser regression
-  # ===========================================================================
   monogram-browser-regression:
     name: Monogram Regression
     runs-on: ubuntu-latest
     timeout-minutes: 25
-
     needs:
       - build
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
-
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-
       - name: Install dependencies
         run: npm ci
-
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
-
       - name: Download tested static artifact
         uses: actions/download-artifact@v8
         with:
           name: wedding-site-static-export
           path: out
-
       - name: Create monogram artifact directory
         run: mkdir -p artifacts/monogram
-
       - name: Run monogram browser regression
         env:
           SCREENSHOT_DIR: artifacts/monogram
         run: npm run test:monogram
-
       - name: Upload monogram regression evidence
         if: always()
         uses: actions/upload-artifact@v7
@@ -417,18 +291,73 @@ jobs:
           retention-days: 1
           if-no-files-found: warn
 
+  visual-regression:
+    name: Pixel Visual Regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs:
+      - quality
+    env:
+      NEXT_PUBLIC_BASE_PATH: /wedding-invitation-site
+      EVENT_TIMEZONE: Asia/Kolkata
+      EVENT_TIMEZONE_OFFSET: '+05:30'
+      EVENT_START_DATE: '2027-01-18'
+      EVENT_START_TIME: '18:30'
+      GOOGLE_MAPS_URL: 'https://maps.google.com/?q=Kolkata'
+      VENUE_NAME: 'Royal Celebration Hall'
+      VENUE_ADDRESS: '123 Celebration Avenue, Kolkata, India'
+      GROOM_NAME: 'Soukarya'
+      BRIDE_NAME: 'Diksha'
+      GROOM_FATHER_NAME: 'Groom Father'
+      GROOM_MOTHER_NAME: 'Groom Mother'
+      BRIDE_FATHER_NAME: 'Bride Father'
+      BRIDE_MOTHER_NAME: 'Bride Mother'
+      GROOM_FAMILY_CONTACT_NAME: 'Groom Family'
+      GROOM_FAMILY_PHONE_NUMBER: '+919999999991'
+      BRIDE_FAMILY_CONTACT_NAME: 'Bride Family'
+      BRIDE_FAMILY_PHONE_NUMBER: '+919999999992'
+      GROOM_NAME_BN: 'সৌকার্য'
+      BRIDE_NAME_BN: 'দীক্ষা'
+      VENUE_NAME_BN: 'রয়্যাল সেলিব্রেশন হল'
+      VENUE_ADDRESS_BN: '১২৩ সেলিব্রেশন অ্যাভিনিউ, কলকাতা, ভারত'
+      GROOM_NAME_NE: 'सौकार्य'
+      BRIDE_NAME_NE: 'दीक्षा'
+      VENUE_NAME_NE: 'रोयल सेलिब्रेसन हल'
+      VENUE_ADDRESS_NE: '१२३ सेलिब्रेसन एभिन्यु, कोलकाता, भारत'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Render deterministic visual-test configuration
+        run: npm run config:render
+      - name: Build deterministic visual-test export
+        run: npm run build
+      - name: Record candidate visual baselines
+        env:
+          VISUAL_UPDATE_BASELINES: 'true'
+          VISUAL_OUTPUT_DIR: artifacts/visual
+        run: npm run test:visual
+      - name: Upload visual baseline evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: pixel-visual-regression
+          path: artifacts/visual/
+          retention-days: 14
+          if-no-files-found: error
 
-  # ===========================================================================
-  # 8. Final CI gate
-  #
-  # Gives branch protection ONE stable required check instead of requiring
-  # every internal job individually.
-  # ===========================================================================
   ci-gate:
     name: CI Gate
     runs-on: ubuntu-latest
     if: always()
-
     needs:
       - context
       - quality
@@ -437,13 +366,12 @@ jobs:
       - intro-browser-regression
       - music-browser-regression
       - monogram-browser-regression
-
+      - visual-regression
     steps:
       - name: Verify required CI jobs
         shell: bash
         run: |
           set -euo pipefail
-
           echo "Context:     ${{ needs.context.result }}"
           echo "Quality:     ${{ needs.quality.result }}"
           echo "Build:       ${{ needs.build.result }}"
@@ -451,17 +379,16 @@ jobs:
           echo "Intro:       ${{ needs.intro-browser-regression.result }}"
           echo "Music:       ${{ needs.music-browser-regression.result }}"
           echo "Monogram:    ${{ needs.monogram-browser-regression.result }}"
-
+          echo "Visual:      ${{ needs.visual-regression.result }}"
           if [[ "${{ needs.context.result }}" != "success" ]] ||
              [[ "${{ needs.quality.result }}" != "success" ]] ||
              [[ "${{ needs.build.result }}" != "success" ]] ||
              [[ "${{ needs.responsive-browser-regression.result }}" != "success" ]] ||
              [[ "${{ needs.intro-browser-regression.result }}" != "success" ]] ||
              [[ "${{ needs.music-browser-regression.result }}" != "success" ]] ||
-             [[ "${{ needs.monogram-browser-regression.result }}" != "success" ]]; then
-
+             [[ "${{ needs.monogram-browser-regression.result }}" != "success" ]] ||
+             [[ "${{ needs.visual-regression.result }}" != "success" ]]; then
             echo "::error::One or more required CI validations failed."
             exit 1
           fi
-
           echo "All production CI validations passed."
