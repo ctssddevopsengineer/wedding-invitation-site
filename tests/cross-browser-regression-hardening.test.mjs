@@ -16,6 +16,11 @@ test('front-page collision detection uses semantic element boxes across browser 
   assert.match(source, /const semanticZones = '[^']*\.dynamicFrontHeading[^']*\.dynamicFrontTagline[^']*\.dynamicFrontNames/);
 });
 
+test('countdown collision detection measures painted countdown content, not its flex allocation box', () => {
+  assert.match(source, /\['\.receptionCountdownItem \.countdown', '\.localizedDetailsClosing'\]/);
+  assert.doesNotMatch(source, /\['\.receptionCountdownItem', '\.localizedDetailsClosing'\]/);
+});
+
 test('cross-browser matrix still fails on real semantic overlaps', () => {
   assert.match(source, /a\.bottom > b\.top \+ 2/);
   assert.match(source, /issues\.push\(`overlap: \$\{first\}\/\$\{second\}`\)/);
