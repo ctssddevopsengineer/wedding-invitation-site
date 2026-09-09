@@ -26,8 +26,8 @@ test('intro preference changes use the same invitation state handlers', () => {
   assert.match(introSource, /onThemeChange\?\.\(event\.target\.value\)/);
 });
 
-test('opening waits for a pending theme preload and keyboard trap includes selects', () => {
-  assert.match(introSource, /disabled=\{!ready \|\| phase !== 'closed' \|\| Boolean\(pendingTheme\)\}/);
+test('opening remains available during initialization and theme preload; keyboard trap includes selects', () => {
+  assert.match(introSource, /data-intro-open disabled=\{phase !== 'closed'\}/);
   assert.match(introSource, /\[data-intro-control\]:not\(:disabled\)/);
   assert.match(introSource, /aria-busy=\{Boolean\(pendingTheme\)\}/);
 });

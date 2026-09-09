@@ -25,6 +25,8 @@ try {
  const issues=await page.evaluate(()=>{
  const image=document.querySelector('.weddingMonogram > picture > img'); const r=image.getBoundingClientRect();const card=document.querySelector('.invitePage').getBoundingClientRect();const issues=[];
  if(!image.naturalWidth||!image.currentSrc.endsWith('/images/wedding-monogram.webp')) issues.push('wrong or missing image');
+ const axis = document.querySelector('.weddingMonogram--insideRight') ? ({magenta: .516, navy: .52, plum: .52, saffron: .515}[document.querySelector('main').dataset.invitationTheme] ?? .5) : .5;
+ if(Math.abs((r.left+r.right)/2 - (card.left+card.width*axis))>1) issues.push('off ornament center');
  if(Math.abs(r.width-r.height)>1) issues.push('distorted');
  if(r.left<card.left||r.right>card.right||r.top<card.top||r.bottom>card.bottom) issues.push('outside card');
  for(const heading of document.querySelectorAll('.invitePage h1,.invitePage h2')) {const h=heading.getBoundingClientRect();if(r.left<h.right&&r.right>h.left&&r.top<h.bottom&&r.bottom>h.top) issues.push('heading overlap: '+heading.className);}

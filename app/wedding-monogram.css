@@ -55,3 +55,9 @@
   top: -195%;
   object-fit: fill;
 }
+
+/* The printed arches are not centered on the canvas. Anchor the shared
+   emblem to their ornament axis, independent of the emblem's width. */
+.bookApp[data-invitation-theme="magenta"] .weddingMonogram--insideRight { left: 51.6%; }
+.bookApp:is([data-invitation-theme="navy"], [data-invitation-theme="plum"]) .weddingMonogram--insideRight { left: 52%; }
+.bookApp[data-invitation-theme="saffron"] .weddingMonogram--insideRight { left: 51.5%; }

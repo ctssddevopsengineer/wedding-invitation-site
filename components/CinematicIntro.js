@@ -102,7 +102,9 @@ export default function CinematicIntro({
   }, [active, phase, entranceStatus]);
 
   function open() {
-    if (!ready || phase !== 'closed') return;
+    // Opening can be queued during hydration or an artwork download.
+    // Phase timers still wait for initialization through `ready`.
+    if (phase !== 'closed') return;
     skipButton.current?.focus({ preventScroll: true });
     dispatch(reducedMotion.current ? 'reduce-motion' : 'open');
     music.openIntro();
@@ -207,7 +209,7 @@ export default function CinematicIntro({
               </label>
             </div>
           )}
-          <button ref={openButton} className={styles.open} type="button" data-intro-control data-intro-open disabled={!ready || phase !== 'closed' || Boolean(pendingTheme)} onClick={open}>
+          <button ref={openButton} className={styles.open} type="button" data-intro-control data-intro-open disabled={phase !== 'closed'} onClick={open}>
             {t('Open Invitation')} <span aria-hidden="true">→</span>
           </button>
           <p className={styles.hint} role="status">{phase === 'closed' ? t('An invitation sealed with love') : t('Your invitation awaits')}</p>
