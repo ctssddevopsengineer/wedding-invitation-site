@@ -149,7 +149,8 @@ try {
   await cold.waitForSelector('main[data-theme-ready="true"]');
   const artworkHeld = [];
   await cold.route('**/themes/navy/**', route => { artworkHeld.push(route); });
-  await cold.locator('[data-intro-theme]').selectOption('navy');
+  await cold.locator('[data-intro-theme]').click();
+  await cold.getByRole('option', { name: 'Royal Navy', exact: true }).click();
   await cold.waitForSelector('[data-intro-theme][aria-busy="true"]');
   assert.equal(await cold.locator('[data-intro-open]').isDisabled(), false, 'pending artwork does not block opening');
   await cold.locator('[data-intro-open]').click();
@@ -158,6 +159,36 @@ try {
   await cold.unroute('**/themes/navy/**');
   await cold.waitForSelector('main[data-invitation-theme="navy"]');
   await cold.context().close();
+
+  // Menus stay attached to their fields at desktop and phone sizes.
+  for (const viewport of [{ width: 390, height: 844 }, { width: 240, height: 320 }, { width: 1366, height: 900 }]) {
+    const page = await newPage({ viewport });
+    await ready(page, '?lang=en');
+    for (const selector of ['[data-intro-language]', '[data-intro-theme]']) {
+      const trigger = page.locator(selector);
+      await trigger.click();
+      const menu = page.getByRole('listbox');
+      const fieldBox = await trigger.boundingBox();
+      const menuBox = await menu.boundingBox();
+      assert.ok(Math.abs(fieldBox.x - menuBox.x) < 2, 'menu aligns with field');
+      assert.ok(Math.min(Math.abs(menuBox.y - fieldBox.y - fieldBox.height), Math.abs(fieldBox.y - menuBox.y - menuBox.height)) < 8, 'menu stays next to field');
+      assert.ok(menuBox.y >= 0 && menuBox.y + menuBox.height <= viewport.height, 'menu stays within viewport');
+      await page.keyboard.press('ArrowDown');
+      assert.equal(await page.locator(':focus').getAttribute('role'), 'option');
+      await page.keyboard.press('Escape');
+      assert.equal(await menu.count(), 0);
+      assert.equal(await page.locator('[data-cinematic-intro="closed"]').count(), 1, 'Escape does not skip the intro');
+      await trigger.click();
+      await page.keyboard.press('Tab');
+      assert.equal(await menu.count(), 0);
+      const next = selector.includes('language') ? '[data-intro-theme]' : '[data-intro-open]';
+      assert.equal(await page.locator(next).evaluate(node => node === document.activeElement), true);
+    }
+    await page.locator('[data-intro-language]').click();
+    await page.getByRole('option', { name: 'বাংলা', exact: true }).click();
+    await page.waitForFunction(() => document.documentElement.lang === 'bn');
+    await page.context().close();
+  }
 
   // Full sequence for every theme: the exact same FrontCover DOM node survives.
   for (const theme of THEME_IDS) {
