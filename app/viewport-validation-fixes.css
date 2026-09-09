@@ -64,14 +64,6 @@ html, body { min-width: 0; }
     top: 47% !important;
   }
 
-  /* At the same ultra-narrow viewport the translated Deep Red countdown is
-     materially taller in WebKit. Move only the independent closing blessing
-     far enough below that semantic zone; 320px-and-up retains the approved
-     73.4% placement and the location medallion still has clear space below. */
-  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .localizedDetailsClosing {
-    top: 77.2% !important;
-  }
-
   /* Saffron's English tagline wraps to three lines at 240px on WebKit. The
      couple names need a little more vertical separation, but the following
      closing separator still has ample room at 49.2%. */
