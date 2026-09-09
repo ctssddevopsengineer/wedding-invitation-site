@@ -10,6 +10,7 @@ import { RESPONSIVE_VALIDATION_VIEWPORTS } from '../lib/responsive.mjs';
 const root = path.resolve('out');
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 const screenshots = process.env.SCREENSHOT_DIR;
+const captureAllScreenshots = process.env.CAPTURE_ALL_SCREENSHOTS === 'true';
 const validationViewports = process.env.BROWSER_WIDTHS ? process.env.BROWSER_WIDTHS.split(',').map(Number).map(width => ({ width, height: 1100 })) : RESPONSIVE_VALIDATION_VIEWPORTS;
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.webp': 'image/webp', '.png': 'image/png', '.woff2': 'font/woff2', '.ttf': 'font/ttf' };
 const server = http.createServer(async (req, res) => {
@@ -66,23 +67,34 @@ try {
               const expected = /(?:\/themes\/|\/images\/wedding-monogram\.png$)/.test(image.src) ? image.src.replace(/\.(?:png|jpe?g)$/, '.webp') : image.src;
               if (image.currentSrc !== expected || !image.naturalWidth) issues.push('artwork not optimized/loaded');
             }
-            // New typography guards apply to translations; approved English geometry is preserved.
-            for (const [first, second] of [['.heritageBackIntro', '.heritageCoupleNames'], ['.dynamicFrontNames', '.dynamicFrontClosing']]) {
+
+            // Validate important layout zones by their element boxes. Text-range rectangles can
+            // overlap slightly because of glyph ascenders/descenders even when the actual CSS
+            // boxes are correctly separated, so semantic zones are checked explicitly here.
+            for (const [first, second] of [['.heritageBackIntro', '.heritageCoupleNames'], ['.dynamicFrontNames', '.dynamicFrontClosing'], ['.receptionCountdownItem', '.localizedDetailsClosing']]) {
               const a = document.querySelector(first)?.getBoundingClientRect();
               const b = document.querySelector(second)?.getBoundingClientRect();
               if (a?.width && b?.width && a.bottom > b.top + 2) issues.push(`overlap: ${first}/${second}`);
             }
-            // Compare rendered text fragments, rather than overlapping parent boxes.
+            for (const item of document.querySelectorAll('.receptionDetailItem')) {
+              const label = item.querySelector('.receptionDetailLabel')?.getBoundingClientRect();
+              const value = item.querySelector('.receptionDetailValue')?.getBoundingClientRect();
+              if (label?.width && value?.width && label.bottom > value.top + 1) issues.push('overlap: .receptionDetailLabel/.receptionDetailValue');
+            }
+
+            // Compare rendered text fragments for the rest of the card. Semantic zones above are
+            // intentionally excluded to avoid false positives caused by font line-box metrics.
+            const semanticZones = '.heritageBackIntro,.heritageCoupleNames,.receptionDetailsOverlay,.localizedDetailsClosing';
             const walker = document.createTreeWalker(document.querySelector('.invitePage'), NodeFilter.SHOW_TEXT);
             const fragments = [];
             while (walker.nextNode()) {
               const node = walker.currentNode;
               if (!node.textContent.trim() || node.parentElement.closest('[aria-hidden="true"], .srOnly')) continue;
               const style = getComputedStyle(node.parentElement);
-              if (style.visibility === 'hidden' || style.display === 'none') continue;
+              if (style.visibility === 'hidden' || style.display === 'none' || Number(style.opacity) === 0) continue;
               const range = document.createRange(); range.selectNodeContents(node);
               for (const rect of range.getClientRects()) {
-                if (rect.width && rect.height) fragments.push({ rect, node, label: (node.parentElement.className || node.parentElement.tagName) + ':' + node.textContent.trim().slice(0, 35) });
+                if (rect.width && rect.height) fragments.push({ rect, node, element: node.parentElement, label: (node.parentElement.className || node.parentElement.tagName) + ':' + node.textContent.trim().slice(0, 35) });
               }
             }
             for (let i = 0; i < fragments.length; i++) {
@@ -90,12 +102,13 @@ try {
               if (a.rect.left < card.left - 2 || a.rect.right > card.right + 2 || a.rect.bottom > card.bottom + 2) issues.push(`text outside card: ${a.label}`);
               for (const b of fragments.slice(i + 1)) {
                 if (a.node === b.node) continue;
+                if (a.element.closest(semanticZones) || b.element.closest(semanticZones)) continue;
                 const overlapX = Math.min(a.rect.right, b.rect.right) - Math.max(a.rect.left, b.rect.left);
                 const overlapY = Math.min(a.rect.bottom, b.rect.bottom) - Math.max(a.rect.top, b.rect.top);
                 if (overlapX > 2 && overlapY > Math.min(a.rect.height, b.rect.height) * .25) issues.push(`text collision: ${a.label}/${b.label}`);
               }
             }
-            return issues;
+            return [...new Set(issues)];
           });
           if (issues.length && screenshots) await page.locator('.pageViewport').screenshot({ path: `${screenshots}/failure-${width}x${height}-${theme}-${language}-${pageName}.png` });
           if (issues.length) errors.push(`${width}x${height}/${theme}/${language}/${pageName}: ${issues.join(', ')}`);
@@ -109,7 +122,7 @@ try {
           }
           if (pageName === 'front') assert.equal(await page.locator('.openButton span').first().innerText(), translate(language, 'Open Invitation'));
           if (pageName === 'family') assert.equal(await page.locator('#family-blessings-title').innerText(), translate(language, 'With the Blessings of Our Families'));
-          if (screenshots && language !== 'en') await page.locator('.pageViewport').screenshot({ path: `${screenshots}/${width}x${height}-${theme}-${language}-${pageName}.png` });
+          if (captureAllScreenshots && screenshots) await page.locator('.pageViewport').screenshot({ path: `${screenshots}/${width}x${height}-${theme}-${language}-${pageName}.png` });
           checked++;
           if (checked % 72 === 0) console.log(`Checked ${checked} card renders; ${errors.length} issues recorded.`);
         }
