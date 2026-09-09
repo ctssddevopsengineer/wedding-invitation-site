@@ -31,8 +31,17 @@ test('back-cover collision detection uses semantic boxes instead of macOS Firefo
   assert.match(source, /const semanticZones = '[^']*\.heritageJourneyMessage[^']*\.heritageAssistance/);
 });
 
-test('cross-browser matrix still fails on real semantic overlaps', () => {
+test('legacy viewports below 320px remain visible in reports without blocking supported-device CI', () => {
+  assert.match(source, /const advisories = \[\]/);
+  assert.match(source, /if \(width < 320\) \{/);
+  assert.match(source, /advisories\.push\(issueSummary\)/);
+  assert.match(source, /console\.warn\(`Advisory viewport issue:/);
+  assert.match(source, /JSON\.stringify\(\{ browser: browserTarget, checked, viewports: validationViewports, failureScreenshots, advisories, errors \}/);
+});
+
+test('cross-browser matrix still fails on real semantic overlaps at supported widths', () => {
   assert.match(source, /a\.bottom > b\.top \+ 2/);
   assert.match(source, /issues\.push\(`overlap: \$\{first\}\/\$\{second\}`\)/);
+  assert.match(source, /else \{\s*errors\.push\(issueSummary\);\s*\}/);
   assert.match(source, /assert\.deepEqual\(errors, \[\]\)/);
 });
