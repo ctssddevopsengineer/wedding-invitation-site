@@ -1,9 +1,10 @@
-// Build first. Run with BROWSER_CHANNEL=chrome to use an installed Chrome.
+// Build first. Use BROWSER_ENGINE=chromium|firefox|webkit and optional BROWSER_CHANNEL=chrome|msedge.
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import http from 'node:http';
 import path from 'node:path';
-import { chromium } from 'playwright';
+import { chromium, firefox, webkit } from 'playwright';
+import { resolveBrowserTarget } from '../lib/browser-regression.mjs';
 import { translate } from '../lib/locale.mjs';
 import { RESPONSIVE_VALIDATION_VIEWPORTS } from '../lib/responsive.mjs';
 
@@ -11,7 +12,10 @@ const root = path.resolve('out');
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 const screenshots = process.env.SCREENSHOT_DIR;
 const captureAllScreenshots = process.env.CAPTURE_ALL_SCREENSHOTS === 'true';
+const maxFailureScreenshots = Math.max(0, Number.parseInt(process.env.MAX_FAILURE_SCREENSHOTS || '50', 10) || 0);
 const validationViewports = process.env.BROWSER_WIDTHS ? process.env.BROWSER_WIDTHS.split(',').map(Number).map(width => ({ width, height: 1100 })) : RESPONSIVE_VALIDATION_VIEWPORTS;
+const browserTarget = resolveBrowserTarget();
+const browserTypes = { chromium, firefox, webkit };
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.webp': 'image/webp', '.png': 'image/png', '.woff2': 'font/woff2', '.ttf': 'font/ttf' };
 const server = http.createServer(async (req, res) => {
   try {
@@ -28,11 +32,16 @@ await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 const url = `http://127.0.0.1:${server.address().port}${basePath}/`;
 let browser;
 try {
-  browser = await chromium.launch({ headless: true, ...(process.env.BROWSER_CHANNEL ? { channel: process.env.BROWSER_CHANNEL } : {}) });
+  browser = await browserTypes[browserTarget.engine].launch({
+    headless: true,
+    ...(browserTarget.channel ? { channel: browserTarget.channel } : {})
+  });
   const errors = [];
   let checked = 0;
+  let failureScreenshots = 0;
   const cachedSwitchTimes = [];
   if (screenshots) await fs.mkdir(screenshots, { recursive: true });
+  console.log(`Running full responsive regression on ${browserTarget.label}.`);
   for (const { width, height } of validationViewports) {
     const context = await browser.newContext({ viewport: { width, height } });
     // The existing QR service is external; only first-party requests are needed.
@@ -110,7 +119,10 @@ try {
             }
             return [...new Set(issues)];
           });
-          if (issues.length && screenshots) await page.locator('.pageViewport').screenshot({ path: `${screenshots}/failure-${width}x${height}-${theme}-${language}-${pageName}.png` });
+          if (issues.length && screenshots && failureScreenshots < maxFailureScreenshots) {
+            await page.locator('.pageViewport').screenshot({ path: `${screenshots}/failure-${width}x${height}-${theme}-${language}-${pageName}.png` });
+            failureScreenshots++;
+          }
           if (issues.length) errors.push(`${width}x${height}/${theme}/${language}/${pageName}: ${issues.join(', ')}`);
           if (pageName === 'details' && language !== 'en') {
             // Browser regression validates the already-rendered static artifact. A production-style
@@ -124,7 +136,7 @@ try {
           if (pageName === 'family') assert.equal(await page.locator('#family-blessings-title').innerText(), translate(language, 'With the Blessings of Our Families'));
           if (captureAllScreenshots && screenshots) await page.locator('.pageViewport').screenshot({ path: `${screenshots}/${width}x${height}-${theme}-${language}-${pageName}.png` });
           checked++;
-          if (checked % 72 === 0) console.log(`Checked ${checked} card renders; ${errors.length} issues recorded.`);
+          if (checked % 72 === 0) console.log(`Checked ${checked} card renders on ${browserTarget.label}; ${errors.length} issues recorded.`);
         }
       }
     }
@@ -170,7 +182,7 @@ try {
         if (round === 1) cachedSwitchTimes.push(elapsed);
       }
     }
-    if (process.env.REPORT_PATH) await fs.writeFile(process.env.REPORT_PATH, JSON.stringify({ checked, viewports: validationViewports, errors }, null, 2));
+    if (process.env.REPORT_PATH) await fs.writeFile(process.env.REPORT_PATH, JSON.stringify({ browser: browserTarget, checked, viewports: validationViewports, failureScreenshots, errors }, null, 2));
     await context.close();
   }
   const fallbackContext = await browser.newContext();
@@ -194,11 +206,11 @@ try {
   await fallbackPage.keyboard.press('Escape');
   assert.equal(await fallbackPage.locator('.exactLocationHotspot').getAttribute('aria-expanded'), 'false');
   await fallbackContext.close();
-  if (process.env.REPORT_PATH) await fs.writeFile(process.env.REPORT_PATH, JSON.stringify({ checked, viewports: validationViewports, errors }, null, 2));
+  if (process.env.REPORT_PATH) await fs.writeFile(process.env.REPORT_PATH, JSON.stringify({ browser: browserTarget, checked, viewports: validationViewports, failureScreenshots, errors }, null, 2));
   assert.deepEqual(errors, []);
   cachedSwitchTimes.sort((a, b) => a - b);
-  console.log(`Cached theme selection median: ${cachedSwitchTimes[Math.floor(cachedSwitchTimes.length / 2)].toFixed(1)} ms (local Chrome; excludes the existing decorative transition).`);
-  console.log(`Passed ${checked} theme/page/language/viewport renders, persistence, copy/QR links, browser history, rapid theme switching, blocked storage, image fallback and location state; no browser errors.`);
+  console.log(`Cached theme selection median: ${cachedSwitchTimes[Math.floor(cachedSwitchTimes.length / 2)].toFixed(1)} ms (${browserTarget.label}; excludes the existing decorative transition).`);
+  console.log(`Passed ${checked} theme/page/language/viewport renders on ${browserTarget.label}, persistence, copy/QR links, browser history, rapid theme switching, blocked storage, image fallback and location state; no browser errors.`);
 } finally {
   await browser?.close();
   server.closeAllConnections();
