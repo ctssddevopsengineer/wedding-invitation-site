@@ -137,6 +137,28 @@ try {
   if (screenshots) await fs.mkdir(screenshots, { recursive: true });
   browser = await chromium.launch({ headless: true, args: ['--mute-audio'], ...(process.env.BROWSER_CHANNEL ? { channel: process.env.BROWSER_CHANNEL } : {}) });
 
+  // A cold visitor can queue opening before hydration, and theme downloads
+  // must not disable the primary action after hydration either.
+  const cold = await newPage({ reducedMotion: 'reduce' });
+  const scriptsHeld = [];
+  await cold.route('**/*.js', route => { scriptsHeld.push(route); });
+  await cold.goto(url, { waitUntil: 'domcontentloaded' });
+  assert.equal(await cold.locator('[data-intro-open]').isDisabled(), false, 'server-rendered opening action is enabled');
+  await Promise.all(scriptsHeld.map(route => route.continue()));
+  await cold.unroute('**/*.js');
+  await cold.waitForSelector('main[data-theme-ready="true"]');
+  const artworkHeld = [];
+  await cold.route('**/themes/navy/**', route => { artworkHeld.push(route); });
+  await cold.locator('[data-intro-theme]').selectOption('navy');
+  await cold.waitForSelector('[data-intro-theme][aria-busy="true"]');
+  assert.equal(await cold.locator('[data-intro-open]').isDisabled(), false, 'pending artwork does not block opening');
+  await cold.locator('[data-intro-open]').click();
+  await complete(cold);
+  await Promise.all(artworkHeld.map(route => route.continue()));
+  await cold.unroute('**/themes/navy/**');
+  await cold.waitForSelector('main[data-invitation-theme="navy"]');
+  await cold.context().close();
+
   // Full sequence for every theme: the exact same FrontCover DOM node survives.
   for (const theme of THEME_IDS) {
     const page = await newPage({ viewport: { width: 1366, height: 900 } });
@@ -148,7 +170,7 @@ try {
     await page.evaluate(() => { window.originalFrontCover = document.querySelector('.frontCover'); });
     assert.equal(await page.locator('[data-intro-open]').evaluate((node) => node === document.activeElement), true);
     await page.keyboard.press('Shift+Tab');
-    assert.equal(await page.locator('[data-intro-skip]').evaluate((node) => node === document.activeElement), true);
+    assert.equal(await page.locator('[data-intro-theme]').evaluate((node) => node === document.activeElement), true);
     await page.keyboard.press('Tab');
     assert.equal(await page.locator('[data-intro-open]').evaluate((node) => node === document.activeElement), true);
     await page.keyboard.press('End');
@@ -371,7 +393,7 @@ try {
     await page.context().close();
   }
   assert.deepEqual(errors, []);
-  console.log('Passed six full theme sequences, 42 responsive envelope combinations, seven responsive walking scenes, keyboard/touch, skip/replay, deep links, reduced motion, missing/late assets, particle density/center clearance, resize/text reflow, hidden-tab suspension and cleanup; no browser errors.');
+  console.log('Passed six full theme sequences, 54 responsive envelope combinations, seven responsive walking scenes, keyboard/touch, skip/replay, deep links, reduced motion, missing/late assets, particle density/center clearance, resize/text reflow, hidden-tab suspension and cleanup; no browser errors.');
 } finally {
   await browser?.close();
   server.closeAllConnections();
