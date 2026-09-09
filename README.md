@@ -16,6 +16,37 @@ This project includes:
 
 The application entry point is `app/page.js`, which renders `InvitationBook` from `components/InvitationBook.js`.
 
+## Background music
+
+`lib/music.mjs` is the single track configuration: `introMusic`, the six-entry
+`themeMusic` map, volume and fade/loop timings. The supplied MP3s live in
+`public/audio/`; paths automatically include the GitHub Pages base path.
+
+Music does not fetch, create an audio context or play before interaction.
+**Open Invitation** enables the intro track; completion crossfades to the theme
+track. Skip before opening, repeat visits and deep links remain silent until
+**Play music** is pressed. The closed-envelope music button only sets the mute
+preference. **Replay Intro** fades down until the envelope is opened again.
+
+`MusicProvider` owns one `lib/music-player.mjs` player outside the invitation
+pages. Page navigation never restarts a track. Theme changes crossfade, and
+superseded downloads cannot start playback. Mute is stored in `sessionStorage`;
+playback authorization is deliberately not restored after a reload. Blocked
+storage falls back to the current page's in-memory preference.
+
+Web Audio gain ramps handle fades (including on mobile). Decoded buffers loop on
+the audio clock with a short tail/head blend to avoid restart gaps and clicks;
+the original MP3s are unchanged. Only the current track and a pending transition
+are loaded, rather than preloading the entire collection. Mute and hidden tabs
+fade down then suspend the audio clock, preserving position. Page departure
+pauses immediately; return resumes only previously enabled, unmuted playback.
+Unavailable audio or browser playback restrictions leave a retry control and
+never block the invitation. No AI music selection is involved.
+
+After `npm run build`, run `npm run test:music` (optionally with
+`BROWSER_CHANNEL=chrome`) for real MP3, gesture, navigation, loop, lifecycle and
+failure checks. Browser tests mute hardware output while exercising Web Audio.
+
 ## Tech stack
 
 - Next.js `^16.3.4`
@@ -215,3 +246,87 @@ depend on the guest's network; instantaneous cold downloads cannot be guaranteed
 
 The existing `ci.yml` and `cd.yml` are unchanged. Their `npm test` step includes the
 new unit tests; the browser matrix can be run locally using the command above.
+
+## Cinematic intro — Phases 1, 2 and 3
+
+A red-and-gold Bengali wedding envelope with an S&D seal precedes the front cover.
+Select **Open Invitation** to open the flap and lift the card. A Bengal-to-Himalaya
+wedding scene then appears, followed by a Bengali groom from the left and a bride
+in compatible red-and-gold wedding styling from the right. They approach slowly,
+pause together, then reveal the website, in approximately 11.5 seconds overall.
+The rising card is the existing `FrontCover`
+inside the existing book stage: there is no second invitation or copied cover.
+Envelope line art and animation are isolated in `CinematicIntro.module.css` and
+`CinematicIntro.js`; approved page components, theme assets and workflow files
+are unchanged. The entrance is isolated in `WeddingEntrance.js` and its CSS module.
+No music is included. Phase 3 adds the restrained side particles described below.
+
+The groom and bride are transparent WebP cutouts with real alpha channels, not
+rectangular pictures. New art lives only in `public/intro/`; `ASSETS.md` records
+the image-generation prompts and provenance. A portrait backdrop preserves both
+architectural traditions on phones without downloading the desktop backdrop.
+Character movement uses transform
+and opacity, with restrained walking cadence and a 400ms stagger. Small screens
+use a much shorter travel distance. Invitation text fades before the characters
+enter; scene text stays in a separate upper region, above their heads.
+
+Decorative assets start loading only after opening. Both character images must
+load and decode before the walking phase; if either fails or is still unavailable
+after the bounded scene transition, the intro proceeds to the real invitation.
+A missing backdrop uses the warm gradient fallback. Nothing waits indefinitely
+for an image, and no character can appear late halfway through a walk.
+
+**Skip Intro** and Escape immediately reveal the invitation at any phase.
+**Replay Intro**, below the invitation navigation, restarts the closed envelope
+at the front cover with the current theme and language. The intro is shown once
+per tab session; completion or skipping records `sd-invitation-intro-seen-v1` in
+session storage. If storage is blocked, opening, skipping and replay still work.
+Direct links to family, details, location or back bypass the automatic intro.
+The existing reload-to-front behavior is preserved, and browser-history
+navigation dismisses an active intro to show its requested page.
+
+Keyboard focus stays within the intro controls while the book is inert; after
+dismissal, focus and scrolling move to the actual invitation stage. Reduced-motion
+visitors still see the closed envelope, but opening reveals the invitation without
+the flap/card/character choreography, without downloading the new scene assets.
+Changing the motion preference during playback also
+finishes immediately. Timers and scroll locks are cleaned up on dismissal.
+Other-theme background preloading pauses during the intro. Slow or missing
+artwork never prevents skipping or completing the sequence.
+
+After building, run `BROWSER_CHANNEL=chrome npm run test:intro` (or omit the channel
+to use Playwright Chromium). It verifies the full sequence across six themes,
+42 theme/device combinations from 320px phones to 1920px desktops and short
+landscape screens, seven responsive walking scenes, single-cover DOM identity,
+focus, touch, navigation, replay, skip at every phase, reduced motion, blocked
+storage, failed/late characters and missing-background fallback. Unit tests also
+verify transparent borders, sufficient asset resolution and transfer budgets. Set
+`SCREENSHOT_DIR` to save previews and `NEXT_PUBLIC_BASE_PATH` to match the build.
+Run `npm test` and `npm run test:browser` for the existing regression suites.
+
+### Subtle wedding particles
+
+During the couple's entrance and pause, CSS rose petals, small gold sparkles and
+occasional inline floral marks fall along the left and right edges. The layer uses
+20 particles on desktop and 8 at widths of 680px or less. The side lanes are
+clipped to at most 16% of each desktop edge (220px maximum), or 10% on mobile,
+keeping at least the middle 68% clear on desktop and 80% on mobile.
+Falls start at least 24px below the scene caption;
+a ResizeObserver updates this boundary when translated text wraps or fonts load.
+No particles appear over the emerging card or the actual invitation pages.
+
+Only transform and opacity animate; there is no JavaScript animation loop,
+particle spawning timer, image download or animation library. Tiny floral marks
+take 14 seconds per fall, with shorter, staggered petal/sparkle cycles. The layer
+sits behind the text and characters and never intercepts clicks or focus.
+
+The particle layer is removed before the final reveal, and on Skip or reduced
+motion. All observers and event listeners are cleaned up. A visibilitychange
+listener hides and pauses the CSS timelines while the tab is hidden. Returning
+resumes them only if the intro is still active; a completed intro has no particle
+elements left to resume. CSS also disables the layer for prefers-reduced-motion.
+
+`npm run test:intro` checks desktop/mobile particle budgets, side clipping, text
+clearance after resize/reflow, animated-property limits, hidden-tab suspension,
+reduced motion and removal. It also reports a short local Chrome frame-interval
+comparison with the particle layer hidden and visible.

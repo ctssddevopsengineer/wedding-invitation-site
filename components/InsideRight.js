@@ -1,5 +1,7 @@
 'use client';
 
+import WeddingMonogram from '@/components/WeddingMonogram';
+
 import Artwork from '@/components/Artwork';
 import { useLanguage } from '@/components/LanguageProvider';
 
@@ -83,13 +85,7 @@ export default function InsideRight({ themeId, initialLocationOpen = false, onLo
 
       {insideRightMonogram && (
         <>
-          <Artwork
-            className="insideRightThemeMonogram"
-            // The shared crest has the same lettering and geometry, with enough
-            // source contrast for Saffron's warm brown/gold color treatment.
-            src={themeId === 'saffron' ? getThemeAsset('navy', 'insideRightMonogram') : insideRightMonogram}
-            alt={t('{couple} monogram', { couple: EVENT.couple })}
-          />
+          <WeddingMonogram themeId={themeId} page="insideRight" />
           <h2 className="insideRightDynamicTitle">{language === 'en' ? <>&ensp;Reception<br />Details</> : <>{t('Reception')}<br />{t('Details')}</>}</h2>
         </>
       )}

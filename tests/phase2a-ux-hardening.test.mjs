@@ -84,7 +84,7 @@ test('adjacent-page warmup only returns current and neighboring assets', () => {
   assert.ok(rightAssets.some((item) => item.endsWith('/inside-left.png')));
   assert.ok(rightAssets.some((item) => item.endsWith('/inside-right.png')));
   assert.ok(rightAssets.some((item) => item.endsWith('/back.png')));
-  assert.ok(rightAssets.some((item) => item.endsWith('/inside-right-monogram.png')));
+  assert.ok(rightAssets.some((item) => item.endsWith('/images/wedding-monogram.png')));
 });
 
 test('hover/focus warming and lightweight crossfade are wired without mounting all four pages', () => {

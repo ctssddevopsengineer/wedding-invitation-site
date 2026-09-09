@@ -6,7 +6,14 @@ const css = fs.readFileSync(new URL('../app/royal-navy-mobile-monogram-fix.css',
 const layout = fs.readFileSync(new URL('../app/layout.js', import.meta.url), 'utf8');
 
 test('Royal Navy mobile monogram override loads after overlap fixes', () => {
-  assert.match(layout, /import '\.\/mobile-overlap-fixes\.css';\s*\nimport '\.\/royal-navy-mobile-monogram-fix\.css';/);
+  const overlapImport = "import './mobile-overlap-fixes.css';";
+  const navyImport = "import './royal-navy-mobile-monogram-fix.css';";
+  const overlapIndex = layout.indexOf(overlapImport);
+  const navyIndex = layout.indexOf(navyImport);
+
+  assert.ok(overlapIndex >= 0, 'mobile overlap stylesheet must be imported');
+  assert.ok(navyIndex >= 0, 'Royal Navy mobile monogram override must be imported');
+  assert.ok(navyIndex > overlapIndex, 'Royal Navy mobile monogram override must load after mobile overlap fixes');
 });
 
 test('Royal Navy mobile ampersand aligns with the lotus and the lowered crest keeps clearance', () => {

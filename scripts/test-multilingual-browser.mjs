@@ -5,10 +5,13 @@ import http from 'node:http';
 import path from 'node:path';
 import { chromium } from 'playwright';
 import { translate } from '../lib/locale.mjs';
+import { RESPONSIVE_VALIDATION_VIEWPORTS } from '../lib/responsive.mjs';
+import { EVENT } from '../lib/event.mjs';
 
 const root = path.resolve('out');
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 const screenshots = process.env.SCREENSHOT_DIR;
+const validationViewports = process.env.BROWSER_WIDTHS ? process.env.BROWSER_WIDTHS.split(',').map(Number).map(width => ({ width, height: 1100 })) : RESPONSIVE_VALIDATION_VIEWPORTS;
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.webp': 'image/webp', '.png': 'image/png', '.woff2': 'font/woff2', '.ttf': 'font/ttf' };
 const server = http.createServer(async (req, res) => {
   try {
@@ -30,60 +33,94 @@ try {
   let checked = 0;
   const cachedSwitchTimes = [];
   if (screenshots) await fs.mkdir(screenshots, { recursive: true });
-  for (const width of (process.env.BROWSER_WIDTHS || '320,375,768,1280').split(',').map(Number)) {
-    const context = await browser.newContext({ viewport: { width, height: 1100 } });
+  for (const { width, height } of validationViewports) {
+    const context = await browser.newContext({ viewport: { width, height } });
     // The existing QR service is external; only first-party requests are needed.
     await context.route('https://**', (route) => route.abort());
     const page = await context.newPage();
     page.on('pageerror', (error) => errors.push(error.message));
     await page.goto(url);
     await page.waitForSelector('main[data-theme-ready="true"]');
+    await page.locator('[data-intro-skip]').click();
+    await page.waitForSelector('[data-cinematic-intro="complete"]');
+    await page.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; }' });
     for (const theme of (process.env.BROWSER_THEMES || 'classic,blush,magenta,navy,plum,saffron').split(',')) {
       for (const language of ['en', 'bn', 'ne']) {
         for (const pageName of ['front', 'family', 'details', 'back']) {
           await page.evaluate((search) => { history.pushState({}, '', search); dispatchEvent(new PopStateEvent('popstate')); }, `?theme=${theme}&page=${pageName}&lang=${language}`);
           await page.waitForSelector(`main[data-theme-ready="true"][data-invitation-theme="${theme}"][lang="${language}"]`);
-          await page.evaluate(() => document.fonts.ready);
+          await page.waitForSelector(`.bookStage.page-${({ family: 'inside-left', details: 'inside-right' })[pageName] || pageName}`);
+          await page.evaluate(async () => { await document.fonts.ready; await Promise.all(document.getAnimations().filter(a => a.effect?.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))); });
           await page.locator('.invitePage img').evaluateAll((images) => Promise.all(images.map((image) => image.decode())));
           assert.equal(await page.locator('html').getAttribute('lang'), language);
-          assert.equal(await page.locator('#invitation-language').inputValue(), language);
+          assert.equal(await page.locator('#invitation-language-value').getAttribute('lang'), language);
           const issues = await page.evaluate(() => {
             const issues = [];
-            if (document.documentElement.scrollWidth > innerWidth + 1) issues.push('horizontal page overflow');
+            if (document.documentElement.scrollWidth > innerWidth + 1) issues.push('horizontal page overflow: ' + [...document.querySelectorAll('body *')].filter(n => n.getBoundingClientRect().right > innerWidth + 2).slice(0, 5).map(n => n.className).join('/'));
             const card = document.querySelector('.invitePage').getBoundingClientRect();
             for (const node of document.querySelectorAll('.invitePage h1,.invitePage h2,.familyBlock,.heritageAssistance,.receptionDetailsOverlay')) {
               const box = node.getBoundingClientRect();
               if (box.width && (box.left < card.left - 2 || box.right > card.right + 2 || box.bottom > card.bottom + 2)) issues.push(node.className || node.tagName);
             }
             for (const image of document.querySelectorAll('.invitePage picture img')) {
-              if (!image.currentSrc.endsWith('.webp') || !image.naturalWidth) issues.push('artwork not optimized/loaded');
+              // Every approved template has a same-geometry WebP companion.
+              const expected = /(?:\/themes\/|\/images\/wedding-monogram\.png$)/.test(image.src) ? image.src.replace(/\.(?:png|jpe?g)$/, '.webp') : image.src;
+              if (image.currentSrc !== expected || !image.naturalWidth) issues.push('artwork not optimized/loaded');
             }
             // New typography guards apply to translations; approved English geometry is preserved.
             for (const [first, second] of [['.heritageBackIntro', '.heritageCoupleNames'], ['.dynamicFrontNames', '.dynamicFrontClosing']]) {
               const a = document.querySelector(first)?.getBoundingClientRect();
               const b = document.querySelector(second)?.getBoundingClientRect();
-              if (document.documentElement.lang !== 'en' && a?.width && b?.width && a.bottom > b.top + 2) issues.push(`overlap: ${first}/${second}`);
+              if (a?.width && b?.width && a.bottom > b.top + 2) issues.push(`overlap: ${first}/${second}`);
+            }
+            // Compare rendered text fragments, rather than overlapping parent boxes.
+            const walker = document.createTreeWalker(document.querySelector('.invitePage'), NodeFilter.SHOW_TEXT);
+            const fragments = [];
+            while (walker.nextNode()) {
+              const node = walker.currentNode;
+              if (!node.textContent.trim() || node.parentElement.closest('[aria-hidden="true"], .srOnly')) continue;
+              const style = getComputedStyle(node.parentElement);
+              if (style.visibility === 'hidden' || style.display === 'none') continue;
+              const range = document.createRange(); range.selectNodeContents(node);
+              for (const rect of range.getClientRects()) {
+                if (rect.width && rect.height) fragments.push({ rect, node, label: (node.parentElement.className || node.parentElement.tagName) + ':' + node.textContent.trim().slice(0, 35) });
+              }
+            }
+            for (let i = 0; i < fragments.length; i++) {
+              const a = fragments[i];
+              if (a.rect.left < card.left - 2 || a.rect.right > card.right + 2 || a.rect.bottom > card.bottom + 2) issues.push(`text outside card: ${a.label}`);
+              for (const b of fragments.slice(i + 1)) {
+                if (a.node === b.node) continue;
+                const overlapX = Math.min(a.rect.right, b.rect.right) - Math.max(a.rect.left, b.rect.left);
+                const overlapY = Math.min(a.rect.bottom, b.rect.bottom) - Math.max(a.rect.top, b.rect.top);
+                if (overlapX > 2 && overlapY > Math.min(a.rect.height, b.rect.height) * .25) issues.push(`text collision: ${a.label}/${b.label}`);
+              }
             }
             return issues;
           });
-          if (issues.length && screenshots) await page.locator('.pageViewport').screenshot({ path: `${screenshots}/failure-${width}-${theme}-${language}-${pageName}.png` });
-          assert.deepEqual(issues, [], `${width}/${theme}/${language}/${pageName}`);
+          if (issues.length && screenshots) await page.locator('.pageViewport').screenshot({ path: `${screenshots}/failure-${width}x${height}-${theme}-${language}-${pageName}.png` });
+          if (issues.length) errors.push(`${width}x${height}/${theme}/${language}/${pageName}: ${issues.join(', ')}`);
           if (pageName === 'details' && language !== 'en') {
             const dateText = await page.locator('.receptionDetailValue').first().innerText();
-            assert.match(dateText, language === 'bn' ? /[০-৯]/ : /[०-९]/);
+            if (Number.isFinite(EVENT.start.getTime())) {
+              assert.match(dateText, language === 'bn' ? /[০-৯]/ : /[०-९]/);
+            } else {
+              assert.equal(dateText, translate(language, 'Reception date will be announced soon.'));
+            }
             assert.doesNotMatch(dateText, /Sunday|February|January|Monday/);
           }
           if (pageName === 'front') assert.equal(await page.locator('.openButton span').first().innerText(), translate(language, 'Open Invitation'));
           if (pageName === 'family') assert.equal(await page.locator('#family-blessings-title').innerText(), translate(language, 'With the Blessings of Our Families'));
-          if (screenshots && language !== 'en') await page.locator('.pageViewport').screenshot({ path: `${screenshots}/${width}-${theme}-${language}-${pageName}.png` });
+          if (screenshots && language !== 'en') await page.locator('.pageViewport').screenshot({ path: `${screenshots}/${width}x${height}-${theme}-${language}-${pageName}.png` });
           checked++;
-          if (checked % 72 === 0) console.log(`Verified ${checked} card renders.`);
+          if (checked % 72 === 0) console.log(`Checked ${checked} card renders; ${errors.length} issues recorded.`);
         }
       }
     }
     await page.goto(`${url}?theme=blush&page=details&lang=bn`);
     await page.waitForSelector('main[lang="bn"]');
-    await page.selectOption('#invitation-language', 'ne');
+    await page.locator('.languageDropdownTrigger').click();
+    await page.locator('[role="option"][lang="ne"]').click();
     await page.waitForURL(/lang=ne/);
     assert.match(page.url(), /theme=blush/); assert.match(page.url(), /page=details/);
     await page.reload(); await page.waitForSelector('main[lang="ne"]');
@@ -122,6 +159,7 @@ try {
         if (round === 1) cachedSwitchTimes.push(elapsed);
       }
     }
+    if (process.env.REPORT_PATH) await fs.writeFile(process.env.REPORT_PATH, JSON.stringify({ checked, viewports: validationViewports, errors }, null, 2));
     await context.close();
   }
   const fallbackContext = await browser.newContext();
@@ -137,13 +175,15 @@ try {
   await fallbackPage.waitForSelector('main[lang="bn"][data-theme-ready="true"]');
   await fallbackPage.waitForFunction(() => [...document.querySelectorAll('.invitePage picture img')].every((image) => image.complete && image.naturalWidth && image.currentSrc.endsWith('.png')));
   await fallbackPage.locator('.exactLocationHotspot').click();
-  await fallbackPage.selectOption('#invitation-language', 'ne');
+  await fallbackPage.locator('.languageDropdownTrigger').click();
+  await fallbackPage.locator('[role="option"][lang="ne"]').click();
   await fallbackPage.waitForURL(/lang=ne/);
   assert.equal(new URL(fallbackPage.url()).searchParams.get('page'), 'location');
   assert.equal(await fallbackPage.locator('.exactLocationHotspot').getAttribute('aria-expanded'), 'true');
   await fallbackPage.keyboard.press('Escape');
   assert.equal(await fallbackPage.locator('.exactLocationHotspot').getAttribute('aria-expanded'), 'false');
   await fallbackContext.close();
+  if (process.env.REPORT_PATH) await fs.writeFile(process.env.REPORT_PATH, JSON.stringify({ checked, viewports: validationViewports, errors }, null, 2));
   assert.deepEqual(errors, []);
   cachedSwitchTimes.sort((a, b) => a - b);
   console.log(`Cached theme selection median: ${cachedSwitchTimes[Math.floor(cachedSwitchTimes.length / 2)].toFixed(1)} ms (local Chrome; excludes the existing decorative transition).`);

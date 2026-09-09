@@ -16,7 +16,10 @@
     "test:phase2a": "node --test tests/phase2a-ux-hardening.test.mjs tests/theme-assets-integrity.test.mjs tests/long-text-stress.test.mjs tests/responsive-matrix.test.mjs",
     "test:phase2b": "node --test tests/phase2b-smart-sharing.test.mjs tests/hosting-paths.test.mjs",
     "assets:optimize": "node scripts/optimize-theme-assets.mjs",
-    "test:browser": "node scripts/test-multilingual-browser.mjs"
+    "test:browser": "node scripts/test-multilingual-browser.mjs",
+    "test:intro": "node scripts/test-intro-browser.mjs",
+    "test:music": "node scripts/test-music-browser.mjs",
+    "test:monogram": "node scripts/test-monogram-browser.mjs"
   },
   "dependencies": {
     "next": "^16.3.4",

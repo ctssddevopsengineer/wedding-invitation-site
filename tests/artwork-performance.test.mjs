@@ -8,7 +8,7 @@ import { THEMES, THEME_IDS } from '../lib/theme.mjs';
 test('optimized companions preserve image geometry and reduce aggregate artwork bytes by at least 70%', async () => {
   let originalBytes = 0, optimizedBytes = 0;
   for (const theme of Object.values(THEMES)) for (const src of Object.values(theme.assets)) {
-    if (!src.endsWith('.png')) continue;
+    if (!/\.(?:png|jpe?g)$/.test(src)) continue;
     const original = fs.readFileSync(new URL(`../public${src}`, import.meta.url));
     const optimized = fs.readFileSync(new URL(`../public${optimizedArtworkUrl(src)}`, import.meta.url));
     const a = await sharp(original).metadata(), b = await sharp(optimized).metadata();
@@ -25,9 +25,9 @@ test('current-page warmup includes required crests without fetching other pages'
   for (const theme of THEME_IDS) for (let page = 0; page < 4; page++) {
     const assets = getPageArtworkAssets(theme, page);
     assert.ok(assets.length >= 1 && assets.length <= 2);
-    assert.ok(assets.every((src) => src.startsWith(`/themes/${theme}/`)));
+    assert.ok(assets.every((src) => src.startsWith(`/themes/${theme}/`) || src === '/images/wedding-monogram.png'));
   }
-  assert.ok(getPageArtworkAssets('blush', 3).includes('/themes/blush/back-monogram.png'));
+  assert.ok(getPageArtworkAssets('blush', 3).includes('/images/wedding-monogram.png'));
 });
 
 test('loader deduplicates, promotes urgent requests, and waits for decoding', async () => {

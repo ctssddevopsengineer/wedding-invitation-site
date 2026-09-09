@@ -1,0 +1,304 @@
+/* ========================================================================== */
+/* SAFFRON TYPOGRAPHY PARITY                                                   */
+/*                                                                            */
+/* Saffron Gold is the visual typography reference for every invitation theme. */
+/* This layer intentionally changes typography/treatment only — not page       */
+/* coordinates — because each approved artwork has a different safe writing    */
+/* zone. Theme colours continue to come from the active theme variables.        */
+/* ========================================================================== */
+
+.bookApp[data-invitation-theme] {
+  --invitation-serif: Georgia, 'Times New Roman', 'Palatino Linotype', serif;
+  --invitation-script: 'Brush Script MT', 'Segoe Script', 'Snell Roundhand', 'Apple Chancery', cursive;
+  --invitation-paper-highlight: color-mix(in srgb, var(--theme-soft) 88%, white 12%);
+  --invitation-copy-shadow: 0 1px 0 color-mix(in srgb, var(--invitation-paper-highlight) 82%, transparent);
+}
+
+/* -------------------------------------------------------------------------- */
+/* FRONT — mirror Saffron's hierarchy while retaining every theme's palette.  */
+/* -------------------------------------------------------------------------- */
+.bookApp[data-invitation-theme] .dynamicFrontHeading {
+  color: var(--theme-accent);
+  font-family: var(--invitation-serif);
+  text-shadow: var(--invitation-copy-shadow);
+}
+
+.bookApp[data-invitation-theme] .dynamicFrontHeading > span {
+  display: block;
+  color: var(--theme-gold);
+  font-size: clamp(.95rem, 2.6cqw, 1.7rem);
+  font-weight: 700;
+  letter-spacing: .14em;
+  line-height: 1.08;
+  text-transform: uppercase;
+}
+
+.bookApp[data-invitation-theme] .dynamicFrontHeading > em {
+  display: block;
+  margin-top: .38em;
+  color: var(--theme-accent);
+  font-size: clamp(.92rem, 2.35cqw, 1.56rem);
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: .05em;
+  line-height: 1.12;
+}
+
+.bookApp[data-invitation-theme] .dynamicFrontRule {
+  background: color-mix(in srgb, var(--theme-gold) 74%, transparent);
+  color: var(--theme-gold);
+}
+
+.bookApp[data-invitation-theme] .dynamicFrontRule span {
+  font-family: var(--invitation-serif);
+  font-size: clamp(.55rem, 1.3cqw, .9rem);
+  color: var(--theme-gold);
+}
+
+.bookApp[data-invitation-theme] .dynamicFrontTagline {
+  color: var(--theme-ink);
+  font-family: var(--invitation-serif);
+  font-size: clamp(.76rem, 2.05cqw, 1.3rem);
+  font-weight: 400;
+  line-height: 1.25;
+  text-shadow: var(--invitation-copy-shadow);
+}
+
+.bookApp[lang="en"][data-invitation-theme] .dynamicFrontNames {
+  color: var(--theme-accent);
+  font-family: var(--invitation-script);
+  font-size: clamp(1.42rem, 4.45cqw, 3rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1;
+  letter-spacing: 0;
+  text-shadow: var(--invitation-copy-shadow);
+}
+
+.bookApp[data-invitation-theme] .dynamicFrontNames b {
+  color: var(--theme-gold);
+  font-family: var(--invitation-serif);
+  font-size: .72em;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.bookApp[data-invitation-theme] .dynamicFrontClosing {
+  color: var(--theme-ink);
+  font-family: var(--invitation-serif);
+  font-size: clamp(.64rem, 1.72cqw, 1.04rem);
+  line-height: 1.33;
+  text-shadow: var(--invitation-copy-shadow);
+}
+
+/* -------------------------------------------------------------------------- */
+/* INSIDE LEFT — same ceremonial serif + script-name relationship.            */
+/* -------------------------------------------------------------------------- */
+.bookApp[data-invitation-theme] .familyBlessingsIntro h2,
+.bookApp[data-invitation-theme] .familyBlock h3 {
+  color: var(--theme-accent);
+  font-family: var(--invitation-serif);
+  font-weight: 600;
+  letter-spacing: .035em;
+  text-shadow: var(--invitation-copy-shadow);
+}
+
+.bookApp[data-invitation-theme] .familyBlessingsIntro p,
+.bookApp[data-invitation-theme] .familyBlock p,
+.bookApp[data-invitation-theme] .familyBlessingsClosing {
+  color: var(--theme-ink);
+  font-family: var(--invitation-serif);
+  font-weight: 400;
+  text-shadow: var(--invitation-copy-shadow);
+}
+
+.bookApp[lang="en"][data-invitation-theme] .familyCoupleNames {
+  color: var(--theme-accent);
+  font-family: var(--invitation-script);
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0;
+  text-shadow: var(--invitation-copy-shadow);
+}
+
+.bookApp[data-invitation-theme] .familyCoupleNames b {
+  color: var(--theme-gold);
+  font-family: var(--invitation-serif);
+  font-style: normal;
+  font-weight: 400;
+}
+
+/* -------------------------------------------------------------------------- */
+/* INSIDE RIGHT — Saffron's formal reception-details treatment everywhere.    */
+/* -------------------------------------------------------------------------- */
+.bookApp[data-invitation-theme] .insideRightDynamicTitle {
+  color: var(--theme-accent);
+  font-family: var(--invitation-serif);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: .005em;
+  text-shadow: var(--invitation-copy-shadow);
+}
+
+.bookApp[data-invitation-theme] .receptionDetailLabel {
+  color: var(--theme-accent);
+  font-family: var(--invitation-serif);
+  font-weight: 700;
+  letter-spacing: .055em;
+  text-shadow: var(--invitation-copy-shadow);
+}
+
+.bookApp[data-invitation-theme] .receptionDetailValue,
+.bookApp[data-invitation-theme] .countdownUnit,
+.bookApp[data-invitation-theme] .locationPopoverCopy {
+  color: var(--theme-ink);
+  font-family: var(--invitation-serif);
+}
+
+.bookApp[data-invitation-theme] .insideRightDynamicLocationLabel,
+.bookApp[data-invitation-theme] .locationPopoverHeader p,
+.bookApp[data-invitation-theme] .locationVenueName {
+  color: var(--theme-accent-dark);
+  font-family: var(--invitation-serif);
+  font-weight: 700;
+}
+
+/* -------------------------------------------------------------------------- */
+/* BACK — keep the same elegant hierarchy through the closing page.           */
+/* -------------------------------------------------------------------------- */
+.bookApp[data-invitation-theme] .heritageBackIntro h2,
+.bookApp[data-invitation-theme] .heritageAssistance h3,
+.bookApp[data-invitation-theme] .heritageAssistance .contactCard .eyebrow,
+.bookApp[data-invitation-theme] .heritageAssistance .contactCard h3 {
+  color: var(--theme-accent);
+  font-family: var(--invitation-serif);
+  font-weight: 600;
+  letter-spacing: .035em;
+  text-shadow: var(--invitation-copy-shadow);
+}
+
+.bookApp[data-invitation-theme] .heritageBackMessage,
+.bookApp[data-invitation-theme] .heritageJourneyMessage,
+.bookApp[data-invitation-theme] .heritageAssistance .contactCard p {
+  color: var(--theme-ink);
+  font-family: var(--invitation-serif);
+  text-shadow: var(--invitation-copy-shadow);
+}
+
+.bookApp[lang="en"][data-invitation-theme] .heritageCoupleNames {
+  color: var(--theme-accent);
+  font-family: var(--invitation-script);
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0;
+  text-shadow: var(--invitation-copy-shadow);
+}
+
+.bookApp[data-invitation-theme] .heritageCoupleNames b {
+  color: var(--theme-gold);
+  font-family: var(--invitation-serif);
+  font-style: normal;
+  font-weight: 400;
+}
+
+.bookApp[data-invitation-theme] .heritageAssistance .contactCard a {
+  color: var(--theme-accent-dark);
+  font-family: var(--invitation-serif);
+  font-weight: 600;
+}
+
+/* Bengali and Nepali need their dedicated Unicode fonts rather than Latin     */
+/* script faces. The hierarchy remains Saffron-like through size/weight/case. */
+.bookApp[lang="bn"][data-invitation-theme] :is(
+  .dynamicFrontHeading,
+  .dynamicFrontTagline,
+  .dynamicFrontNames,
+  .dynamicFrontClosing,
+  .familyBlessingsIntro h2,
+  .familyBlessingsIntro p,
+  .familyCoupleNames,
+  .familyBlock h3,
+  .familyBlock p,
+  .familyBlessingsClosing,
+  .insideRightDynamicTitle,
+  .receptionDetailLabel,
+  .receptionDetailValue,
+  .insideRightDynamicLocationLabel,
+  .heritageBackIntro h2,
+  .heritageBackMessage,
+  .heritageCoupleNames,
+  .heritageJourneyMessage,
+  .heritageAssistance,
+  .contactCard
+) {
+  font-family: var(--font-bengali), Georgia, serif;
+}
+
+.bookApp[lang="ne"][data-invitation-theme] :is(
+  .dynamicFrontHeading,
+  .dynamicFrontTagline,
+  .dynamicFrontNames,
+  .dynamicFrontClosing,
+  .familyBlessingsIntro h2,
+  .familyBlessingsIntro p,
+  .familyCoupleNames,
+  .familyBlock h3,
+  .familyBlock p,
+  .familyBlessingsClosing,
+  .insideRightDynamicTitle,
+  .receptionDetailLabel,
+  .receptionDetailValue,
+  .insideRightDynamicLocationLabel,
+  .heritageBackIntro h2,
+  .heritageBackMessage,
+  .heritageCoupleNames,
+  .heritageJourneyMessage,
+  .heritageAssistance,
+  .contactCard
+) {
+  font-family: var(--font-devanagari), Georgia, serif;
+}
+
+.bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme] :is(
+  .dynamicFrontNames,
+  .familyCoupleNames,
+  .heritageCoupleNames
+) {
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1.18;
+}
+
+/* Keep the Saffron hierarchy compact on narrow screens without touching the   */
+/* template coordinates that are already individually hardened per theme.     */
+@media (max-width: 430px) {
+  .bookApp[data-invitation-theme] .dynamicFrontHeading > span {
+    font-size: clamp(.78rem, 2.6cqw, 1.22rem);
+    letter-spacing: .11em;
+  }
+
+  .bookApp[data-invitation-theme] .dynamicFrontHeading > em {
+    font-size: clamp(.76rem, 2.35cqw, 1.14rem);
+  }
+
+  .bookApp[lang="en"][data-invitation-theme] .dynamicFrontNames {
+    font-size: clamp(1.18rem, 4.45cqw, 2.25rem);
+  }
+
+  .bookApp[data-invitation-theme] .receptionDetailLabel {
+    letter-spacing: .035em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bookApp[data-invitation-theme] :is(
+    .dynamicFrontHeading,
+    .dynamicFrontTagline,
+    .dynamicFrontNames,
+    .familyBlessingsContent,
+    .receptionDetailsOverlay,
+    .heritageBackContent
+  ) {
+    text-rendering: optimizeLegibility;
+  }
+}

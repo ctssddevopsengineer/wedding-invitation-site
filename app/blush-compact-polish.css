@@ -1,0 +1,105 @@
+/* ========================================================================== */
+/* BABY PINK — compact-phone visual polish                                    */
+/*                                                                            */
+/* Final, theme-scoped overrides for the supplied 360x640 reference.          */
+/* Keep artwork and typography intact while matching Page 1 ornament scale    */
+/* to the Inside Left family dividers and reserving clear space above the      */
+/* Page 3 Location / Map crest.                                               */
+/* ========================================================================== */
+
+/* Page 1 — mirror the actual Inside Left family divider visual system rather
+   than approximating it with broad percentage widths. The Inside Left divider
+   uses width:min(34%, 210px), a .45rem gap, a 1px tapered gold rule and a
+   clamp(.72rem, 1.6vw, 1rem) ornament. Reuse those same values on Page 1 so
+   the ornamentation reads consistently across the Blush invitation. */
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule,
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNamesRule,
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontClosingRule {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  width: min(34%, 210px) !important;
+  min-height: .9em;
+  color: var(--theme-gold);
+}
+
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule::before,
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule::after {
+  content: '';
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--theme-gold) 48%, transparent),
+    color-mix(in srgb, var(--theme-gold) 82%, var(--theme-accent) 18%),
+    color-mix(in srgb, var(--theme-gold) 48%, transparent),
+    transparent
+  );
+}
+
+.bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule > span {
+  flex: 0 0 auto;
+  display: block;
+  line-height: 1;
+  font-size: clamp(.72rem, 1.6vw, 1rem);
+  color: var(--theme-gold);
+}
+
+@media (max-width: 430px) {
+  /* Keep the same Inside Left proportion on compact phones. Only spacing is
+     tightened slightly; the divider width remains the shared min(34%,210px). */
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule,
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontNamesRule,
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontClosingRule {
+    gap: .35rem;
+    width: min(34%, 210px) !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule > span {
+    font-size: clamp(.68rem, 1.55vw, .9rem);
+  }
+
+  /* Page 3 — reserve a protected lower boundary above the printed medallion.
+     The overlay becomes slightly shorter and distributes the existing detail
+     items through that safe region. No text is made smaller and the medallion
+     itself is not moved. */
+  .bookApp[data-invitation-theme="blush"] .receptionDetailsOverlay {
+    top: 22.2% !important;
+    height: 44.35% !important;
+    width: 51% !important;
+    justify-content: space-between;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .receptionDetailsOverlay > br {
+    display: none !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .receptionDetailDivider {
+    margin-block: 0 !important;
+    flex: 0 0 auto;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .receptionDetailItem {
+    flex: 0 0 auto;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .receptionCountdownItem {
+    transform: translateY(-.8cqw);
+  }
+}
+
+@media (max-width: 360px) {
+  /* 360x640 and legacy compact phones receive a little more clearance while
+     retaining the same top anchor and all approved font-size floors. */
+  .bookApp[data-invitation-theme="blush"] .receptionDetailsOverlay {
+    height: 43.9% !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .receptionCountdownItem {
+    transform: translateY(-1.1cqw);
+  }
+}

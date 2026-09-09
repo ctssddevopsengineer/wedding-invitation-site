@@ -1,0 +1,56 @@
+.field {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  user-select: none;
+  animation: petalsAppear .6s ease .25s both;
+}
+.lane {
+  position: absolute;
+  top: var(--particles-top);
+  bottom: 0;
+  width: min(16vw, 220px);
+  overflow: hidden;
+  contain: layout paint;
+}
+.left { left: 0; }
+.right { right: 0; }
+.particle {
+  position: absolute;
+  top: -20px;
+  display: block;
+  width: var(--size);
+  height: var(--size);
+  opacity: 0;
+  animation: edgeFall var(--duration) linear var(--delay) infinite both;
+}
+.petal, .spark, .flower { display: block; width: 100%; height: 100%; }
+.petal {
+  border-radius: 80% 12% 65% 35%;
+  background: linear-gradient(135deg, #f2a7a2, #ba465c 65%, #852d48);
+}
+.spark { border-radius: 50%; background: #ffe2a2; box-shadow: 0 0 4px #f9d28290; animation: glimmer 2.3s ease-in-out var(--delay) infinite; }
+.flower { color: #edd0a0; }
+.flower svg { display: block; width: 100%; height: 100%; fill: currentColor; }
+.flower circle { fill: #c89a50; }
+.particle[data-particle='flower'] { --intensity: .38; }
+.particle[data-particle='spark'] { --intensity: .65; }
+.particle[data-particle='petal'] { --intensity: .55; }
+
+/* The clipping lanes are a hard boundary: nothing can drift into the center.
+   All animated properties are compositor-friendly transform and opacity. */
+@keyframes petalsAppear { from { opacity: 0; } to { opacity: 1; } }
+@keyframes edgeFall {
+  0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(var(--rotation)); }
+  12%, 76% { opacity: var(--intensity); }
+  45% { transform: translate3d(var(--drift), calc((100dvh - var(--particles-top) + 40px) * .45), 0) rotate(calc(var(--rotation) + 60deg)); }
+  100% { opacity: 0; transform: translate3d(0, calc(100dvh - var(--particles-top) + 40px), 0) rotate(calc(var(--rotation) + 135deg)); }
+}
+@keyframes glimmer { 0%, 100% { opacity: .4; } 50% { opacity: 1; } }
+.field[data-paused='true'] { visibility: hidden; }
+.field[data-paused='true'], .field[data-paused='true'] * { animation-play-state: paused !important; }
+@media (max-width: 680px) { .lane { width: 10vw; } }
+@media (prefers-reduced-motion: reduce) {
+  .field { display: none; }
+  .field * { animation: none !important; }
+}

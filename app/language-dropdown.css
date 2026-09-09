@@ -1,0 +1,187 @@
+/* ========================================================================== */
+/* LANGUAGE DROPDOWN — viewport-stable anchored menu                           */
+/*                                                                            */
+/* Replaces the browser-native select popup with an in-document dropdown so   */
+/* the menu always opens directly below its trigger instead of being placed by */
+/* the browser/OS outside the visible invitation chrome in DevTools or narrow  */
+/* viewports. This file is loaded last and is intentionally language-control   */
+/* scoped only.                                                               */
+/* ========================================================================== */
+
+.languageSwitcher {
+  width: min(100%, 1120px);
+  margin: 0 auto .65rem;
+  padding-inline: clamp(.75rem, 2vw, 1.25rem);
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 176px;
+  align-items: center;
+  column-gap: .65rem;
+  color: #f7ead0;
+  font-size: .85rem;
+}
+
+.languageSwitcherLabel {
+  justify-self: end;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: .35rem;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.languageDropdown {
+  position: relative;
+  width: 176px;
+  max-width: 100%;
+  min-width: 0;
+  justify-self: end;
+}
+
+.languageDropdownTrigger {
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: .45rem .72rem .45rem .86rem;
+  border: 1px solid var(--theme-gold);
+  border-radius: 999px;
+  background: var(--theme-soft);
+  color: var(--theme-accent-dark);
+  box-shadow: 0 3px 12px #00000008;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .7rem;
+  font: inherit;
+  font-weight: 600;
+  line-height: 1.15;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.languageDropdownTrigger:focus-visible {
+  outline: 3px solid var(--theme-accent);
+  outline-offset: 3px;
+}
+
+.languageDropdownChevron {
+  flex: 0 0 auto;
+  font-size: 1rem;
+  line-height: 1;
+  transform: translateY(-.05em);
+}
+
+.languageDropdownMenu {
+  position: absolute;
+  z-index: 1000;
+  top: calc(100% + 7px);
+  right: 0;
+  left: auto;
+  width: 100%;
+  min-width: 100%;
+  max-width: calc(100vw - 24px);
+  padding: .35rem;
+  margin: 0;
+  border: 1px solid color-mix(in srgb, var(--theme-gold) 70%, #5a3218 30%);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--theme-soft) 96%, white 4%);
+  color: var(--theme-accent-dark);
+  box-shadow: 0 14px 32px rgba(32, 12, 11, .28);
+  overflow: hidden;
+  box-sizing: border-box;
+  transform-origin: top right;
+}
+
+.languageDropdownOption {
+  width: 100%;
+  min-height: 42px;
+  margin: 0;
+  padding: .48rem .62rem;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: inherit;
+  display: grid;
+  grid-template-columns: 1.15rem minmax(0, 1fr);
+  align-items: center;
+  gap: .35rem;
+  font: inherit;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+}
+
+.languageDropdownOption:hover,
+.languageDropdownOption:focus-visible {
+  background: color-mix(in srgb, var(--theme-accent) 16%, transparent);
+  outline: none;
+}
+
+.languageDropdownOption.active {
+  background: color-mix(in srgb, var(--theme-accent) 22%, var(--theme-soft) 78%);
+}
+
+.languageDropdownCheck {
+  width: 1.15rem;
+  min-width: 1.15rem;
+  text-align: center;
+  color: var(--theme-accent-dark);
+  font-weight: 800;
+}
+
+/* The dropdown remains anchored to the same right edge on tablets and phones.
+   Only the fixed trigger width is reduced; the menu itself never participates
+   in layout, so opening it cannot push or reposition the theme controls. */
+@media (max-width: 680px) {
+  .languageSwitcher {
+    grid-template-columns: minmax(0, 1fr) 164px;
+    column-gap: .5rem;
+    padding-inline: .75rem;
+  }
+
+  .languageDropdown {
+    width: 164px;
+  }
+}
+
+@media (max-width: 430px) {
+  .languageSwitcher {
+    grid-template-columns: minmax(0, 1fr) 150px;
+    column-gap: .42rem;
+    padding-inline: .6rem;
+    font-size: .8rem;
+  }
+
+  .languageDropdown {
+    width: 150px;
+  }
+
+  .languageDropdownTrigger {
+    padding-inline: .74rem .58rem;
+  }
+
+  .languageDropdownMenu {
+    max-width: calc(100vw - 18px);
+  }
+}
+
+@media (max-width: 340px) {
+  .languageSwitcher {
+    grid-template-columns: minmax(0, 1fr) 136px;
+    column-gap: .32rem;
+    padding-inline: .45rem;
+    font-size: .76rem;
+  }
+
+  .languageDropdown {
+    width: 136px;
+  }
+
+  .languageSwitcherLabel {
+    gap: .22rem;
+  }
+}

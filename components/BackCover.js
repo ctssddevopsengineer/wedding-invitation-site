@@ -1,3 +1,4 @@
+import WeddingMonogram from '@/components/WeddingMonogram';
 import Artwork from '@/components/Artwork';
 import { useLanguage } from '@/components/LanguageProvider';
 import ContactDetails from '@/components/ContactDetails';
@@ -6,7 +7,6 @@ import { getThemeAsset } from '@/lib/theme.mjs';
 export default function BackCover({ themeId }) {
   const { language, t, event: EVENT } = useLanguage();
   const copy = EVENT.backCover;
-  const backMonogram = getThemeAsset(themeId, 'backMonogram');
 
   return (
     <article
@@ -18,15 +18,9 @@ export default function BackCover({ themeId }) {
         src={getThemeAsset(themeId, 'back')}
         alt={t("Bengali riverside temple and boats blending into Himalayan mountains and a Nepali pagoda")}
       />
+      <WeddingMonogram themeId={themeId} page="back" />
 
       <div className="heritageBackContent">
-        {backMonogram && (
-          <Artwork
-            className="heritageBackMonogram"
-            src={backMonogram}
-            alt={t('{couple} monogram', { couple: EVENT.couple })}
-          />
-        )}
 
         <section className="heritageBackIntro" aria-labelledby="back-gratitude-title">
           <h2 id="back-gratitude-title">{copy.heading}</h2>

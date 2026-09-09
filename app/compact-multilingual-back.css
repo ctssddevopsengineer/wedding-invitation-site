@@ -1,0 +1,71 @@
+/* Compact multilingual back-cover hardening.
+   Scope is intentionally narrow: Deep Red / Classic, Bengali and Nepali,
+   at very small phone widths only. The approved artwork, card proportions,
+   desktop/tablet geometry and all other themes/pages remain untouched. */
+
+@media (max-width: 360px) {
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .heritageBackIntro {
+    top: 22.8% !important;
+    width: 54% !important;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .heritageBackIntro h2 {
+    line-height: 1.22 !important;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .heritageBackMessage {
+    line-height: 1.22 !important;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .heritageCoupleNames {
+    top: 46.8% !important;
+    width: 58% !important;
+    line-height: 1.04 !important;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .heritageNamesRule {
+    top: 54.8% !important;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .heritageJourneyMessage {
+    top: 58.6% !important;
+    width: 42% !important;
+    line-height: 1.32 !important;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .heritageLotusMark {
+    top: 65.4% !important;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .heritageAssistance {
+    top: 70.7% !important;
+    width: 50% !important;
+  }
+}
+
+/* 320–340 CSS-pixel phones are the tightest supported band. Give the gratitude
+   copy a little more horizontal room and preserve an explicit visual gap before
+   the couple names rather than shrinking Bengali/Devanagari text further. */
+@media (max-width: 340px) {
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .heritageBackIntro {
+    top: 22.2% !important;
+    width: 57% !important;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .heritageCoupleNames {
+    top: 47.2% !important;
+    width: 60% !important;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .heritageNamesRule {
+    top: 55.1% !important;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .heritageJourneyMessage {
+    top: 58.9% !important;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .heritageAssistance {
+    top: 70.9% !important;
+  }
+}

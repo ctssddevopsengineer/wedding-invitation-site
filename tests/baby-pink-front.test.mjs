@@ -55,7 +55,7 @@ test('FrontCover preserves multilingual support and writes Baby Pink copy direct
   assert.match(frontSource, /useLanguage/);
   assert.match(frontSource, /theme\.dynamicFront \|\| theme\.blankFront/);
   assert.match(frontSource, /usesDynamicFrontCopy \|\| language !== 'en'/);
-  assert.match(frontSource, /frontMonogram && usesDynamicFrontCopy/);
+  assert.match(frontSource, /<WeddingMonogram themeId=\{themeId\} page="front"/);
   assert.match(frontSource, /EVENT\.frontCover\.heading/);
   assert.match(frontSource, /EVENT\.groomName/);
   assert.match(frontSource, /EVENT\.brideName/);
