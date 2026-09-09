@@ -32,6 +32,13 @@ html, body { min-width: 0; }
 }
 @media (max-width: 360px) {
   .familyBlessingsIntro p { font-size: .54rem !important; }
+
+  /* Deep Red's translated closing blessing is a separate parchment overlay.
+     At 320px the countdown is taller in Bengali/Nepali, so keep the blessing
+     below the countdown instead of allowing the two semantic zones to stack. */
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .localizedDetailsClosing {
+    top: 71.2% !important;
+  }
 }
 /* At 240px the artwork and its text must scale together, including font floors. */
 @media (max-width: 319px) {
