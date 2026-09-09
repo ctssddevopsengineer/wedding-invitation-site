@@ -1,0 +1,74 @@
+/* Samsung Internet / mobile Blink hardening.
+   Keep the invitation artwork in its authored light palette even when the
+   browser applies dark-page assistance, and prevent mobile text autosizing
+   from changing the carefully validated card typography. */
+html,
+body {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.invitePage {
+  color-scheme: only light;
+}
+
+/* Samsung Internet can apply a WebKit text-fill override while its dark-page
+   feature is active. Explicitly bind painted glyphs to the authored CSS color
+   for invitation copy only; controls outside the card retain normal browser
+   accessibility behavior. */
+.invitePage :is(
+  h1, h2, h3, p, span, strong, em, a, button, label,
+  .dynamicFrontHeading,
+  .dynamicFrontTagline,
+  .dynamicFrontNames,
+  .dynamicFrontClosing,
+  .familyBlessingsIntro,
+  .familyCoupleNames,
+  .familyBlock,
+  .familyBlessingsClosing,
+  .receptionDetailLabel,
+  .receptionDetailValue,
+  .insideRightDynamicTitle,
+  .localizedDetailsClosing,
+  .heritageBackIntro,
+  .heritageCoupleNames,
+  .heritageJourneyMessage,
+  .heritageAssistance,
+  .contactCard
+) {
+  -webkit-text-fill-color: currentColor;
+}
+
+/* Container-query units are used throughout the production design. Older
+   Samsung Internet builds that do not understand cqw must still receive
+   readable, stable typography rather than falling back to tiny browser
+   defaults. These rules activate only when cqw itself is unsupported. */
+@supports not (font-size: 1cqw) {
+  .dynamicFrontHeading > span { font-size: clamp(1.22rem, 5.4vw, 2.8rem) !important; }
+  .dynamicFrontHeading > em { font-size: clamp(1.02rem, 4.4vw, 2.3rem) !important; }
+  .dynamicFrontTagline,
+  .dynamicFrontClosing { font-size: clamp(.64rem, 1.9vw, .94rem) !important; }
+  .dynamicFrontNames { font-size: clamp(1rem, 4.25vw, 2.25rem) !important; }
+
+  .familyBlessingsIntro h2 { font-size: clamp(.82rem, 3.1vw, 2.2rem) !important; }
+  .familyBlessingsIntro p,
+  .familyBlock p,
+  .familyBlessingsClosing { font-size: clamp(.62rem, 1.6vw, .88rem) !important; }
+  .familyCoupleNames { font-size: clamp(.95rem, 4.1vw, 2.2rem) !important; }
+  .familyBlock h3 { font-size: clamp(.74rem, 2.1vw, 1.5rem) !important; }
+
+  .receptionDetailLabel { font-size: clamp(.62rem, 1.75vw, .98rem) !important; }
+  .receptionDetailValue { font-size: clamp(.58rem, 1.45vw, .84rem) !important; }
+  .receptionAddressValue { font-size: clamp(.54rem, 1.24vw, .74rem) !important; }
+  .receptionCountdownItem .countdownUnit strong { font-size: clamp(.56rem, 1.15vw, .88rem) !important; }
+  .receptionCountdownItem .countdownUnit span { font-size: clamp(.46rem, .64vw, .52rem) !important; }
+
+  .heritageBackIntro h2 { font-size: clamp(11px, 2.25vw, 32px) !important; }
+  .heritageBackMessage,
+  .heritageJourneyMessage { font-size: clamp(7px, 1.05vw, 16px) !important; }
+  .heritageCoupleNames { font-size: clamp(11px, 3.1vw, 42px) !important; }
+  .heritageAssistance > h3 { font-size: clamp(9px, 1.3vw, 20px) !important; }
+  .heritageAssistance .contactCard :is(h3, p, a, p.muted) {
+    font-size: clamp(7px, .9vw, 14px) !important;
+  }
+}
