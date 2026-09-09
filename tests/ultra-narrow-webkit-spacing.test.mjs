@@ -14,10 +14,11 @@ test('240px WebKit spacing keeps Bengali family names below the blessing copy', 
   assert.match(block, /\.bookApp\[lang="bn"\] \.familyCoupleNames\s*\{[\s\S]*?top:\s*47%\s*!important/);
 });
 
-test('240px keeps the approved Classic translated closing placement instead of moving the blessing lower', () => {
+test('240px gives Classic Bengali/Nepali closing copy dedicated painted-countdown clearance', () => {
   const block = ultraNarrowBlock();
-  assert.doesNotMatch(block, /data-invitation-theme="classic"[^{}]*\.localizedDetailsClosing\s*\{/);
+  assert.match(block, /\.bookApp:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="classic"\] \.localizedDetailsClosing\s*\{[\s\S]*?top:\s*77\.2%\s*!important/);
   assert.match(css, /@media \(max-width: 360px\)[\s\S]*?data-invitation-theme="classic"[^{}]*\.localizedDetailsClosing\s*\{\s*top:\s*73\.4%\s*!important/);
+  assert.doesNotMatch(block, /data-invitation-theme="(?:blush|magenta|navy|plum|saffron)"[^{}]*\.localizedDetailsClosing/);
 });
 
 test('240px compacts only the Classic Bengali/Nepali painted countdown cards', () => {
