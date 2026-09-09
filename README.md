@@ -302,6 +302,10 @@ focus, touch, navigation, replay, skip at every phase, reduced motion, blocked
 storage, failed/late characters and missing-background fallback. Unit tests also
 verify transparent borders, sufficient asset resolution and transfer budgets. Set
 `SCREENSHOT_DIR` to save previews and `NEXT_PUBLIC_BASE_PATH` to match the build.
+Run `npm run test:envelope` after building for 216 pixel-based animation checks
+across all six themes and six viewport sizes (including iPhone 16 at 393×852).
+These verify that the card never leaks below the envelope and remains visible
+above it during the rise. The intro CI job runs this regression too.
 Run `npm test` and `npm run test:browser` for the existing regression suites.
 
 ### Subtle wedding particles

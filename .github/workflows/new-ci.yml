@@ -218,6 +218,8 @@ jobs:
         env:
           SCREENSHOT_DIR: artifacts/intro
         run: npm run test:intro
+      - name: Test envelope card clipping
+        run: npm run test:envelope
       - name: Upload intro regression evidence
         if: always()
         uses: actions/upload-artifact@v7
