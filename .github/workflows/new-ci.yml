@@ -340,12 +340,11 @@ jobs:
         run: npm run config:render
       - name: Build deterministic visual-test export
         run: npm run build
-      - name: Record candidate visual baselines
+      - name: Compare against approved pixel baselines
         env:
-          VISUAL_UPDATE_BASELINES: 'true'
           VISUAL_OUTPUT_DIR: artifacts/visual
         run: npm run test:visual
-      - name: Upload visual baseline evidence
+      - name: Upload visual regression evidence
         if: always()
         uses: actions/upload-artifact@v7
         with:
