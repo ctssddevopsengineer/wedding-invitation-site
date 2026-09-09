@@ -14,10 +14,20 @@ test('240px WebKit spacing keeps Bengali family names below the blessing copy', 
   assert.match(block, /\.bookApp\[lang="bn"\] \.familyCoupleNames\s*\{[\s\S]*?top:\s*47%\s*!important/);
 });
 
-test('240px keeps the approved Classic translated closing placement instead of adding a second override', () => {
+test('240px keeps the approved Classic translated closing placement instead of moving the blessing lower', () => {
   const block = ultraNarrowBlock();
   assert.doesNotMatch(block, /data-invitation-theme="classic"[^{}]*\.localizedDetailsClosing\s*\{/);
   assert.match(css, /@media \(max-width: 360px\)[\s\S]*?data-invitation-theme="classic"[^{}]*\.localizedDetailsClosing\s*\{\s*top:\s*73\.4%\s*!important/);
+});
+
+test('240px compacts only the Classic Bengali/Nepali painted countdown cards', () => {
+  const block = ultraNarrowBlock();
+  const prefix = '\\.bookApp:is\\(\\[lang="bn"\\], \\[lang="ne"\\]\\)\\[data-invitation-theme="classic"\\] \\.receptionCountdownItem';
+  assert.match(block, new RegExp(`${prefix} \\.countdown\\s*\\{[\\s\\S]*?gap:\\s*\\.08rem\\s*!important`));
+  assert.match(block, new RegExp(`${prefix} \\.countdownUnit\\s*\\{[\\s\\S]*?padding:\\s*\\.08rem \\.03rem\\s*!important`));
+  assert.match(block, new RegExp(`${prefix} \\.countdownUnit strong\\s*\\{[\\s\\S]*?font-size:\\s*7px\\s*!important[\\s\\S]*?line-height:\\s*1\\s*!important`));
+  assert.match(block, new RegExp(`${prefix} \\.countdownUnit span\\s*\\{[\\s\\S]*?font-size:\\s*5px\\s*!important[\\s\\S]*?line-height:\\s*1\\s*!important`));
+  assert.doesNotMatch(block, /data-invitation-theme="(?:blush|magenta|navy|plum|saffron)"[^{}]*\.receptionCountdownItem \.countdownUnit/);
 });
 
 test('240px WebKit spacing separates Saffron English tagline and couple names', () => {
