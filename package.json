@@ -19,7 +19,8 @@
     "test:browser": "node scripts/test-multilingual-browser.mjs",
     "test:intro": "node scripts/test-intro-browser.mjs",
     "test:music": "node scripts/test-music-browser.mjs",
-    "test:monogram": "node scripts/test-monogram-browser.mjs"
+    "test:monogram": "node scripts/test-monogram-browser.mjs",
+    "test:visual": "node scripts/test-visual-regression.mjs"
   },
   "dependencies": {
     "next": "^16.3.4",
