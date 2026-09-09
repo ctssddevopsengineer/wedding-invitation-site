@@ -19,7 +19,6 @@ const types = {
 
 async function normalizedPixelHash(png) {
   const { data, info } = await sharp(png).removeAlpha().raw().toBuffer({ resolveWithObject: true });
-  // Keep pixel-level sensitivity while absorbing tiny hosted-runner anti-aliasing noise.
   for (let i = 0; i < data.length; i++) data[i] &= 0xfc;
   return {
     hash: crypto.createHash('sha256').update(data).digest('hex'),
@@ -41,18 +40,18 @@ async function readBaselines() {
 }
 
 async function waitForStableArtwork(page) {
-  await page.evaluate(async () => {
-    await document.fonts.ready;
-    await Promise.all([...document.images].map(async (image) => {
-      if (!image.complete) {
-        await new Promise((resolve) => {
-          image.addEventListener('load', resolve, { once: true });
-          image.addEventListener('error', resolve, { once: true });
-        });
-      }
-      try { await image.decode(); } catch {}
-    }));
-  });
+  await page.evaluate(async () => { await document.fonts.ready; });
+  await page.locator('.invitePage img').evaluateAll((images) => Promise.all(images.map(async (image) => {
+    if (!image.complete) {
+      await new Promise((resolve) => {
+        const done = () => resolve();
+        image.addEventListener('load', done, { once: true });
+        image.addEventListener('error', done, { once: true });
+        setTimeout(done, 5000);
+      });
+    }
+    try { await image.decode(); } catch {}
+  })));
 }
 
 await fs.mkdir(outputDir, { recursive: true });
