@@ -112,6 +112,8 @@ try {
             // bottom-most painted content and therefore the correct boundary against closing copy.
             for (const [first, second] of [
               ['.heritageBackIntro', '.heritageCoupleNames'],
+              ['.heritageCoupleNames', '.heritageJourneyMessage'],
+              ['.heritageJourneyMessage', '.heritageAssistance'],
               ['.dynamicFrontHeading > span', '.dynamicFrontHeading > em'],
               ['.dynamicFrontTagline', '.dynamicFrontNames'],
               ['.dynamicFrontNames', '.dynamicFrontClosing'],
@@ -121,6 +123,27 @@ try {
               const b = document.querySelector(second)?.getBoundingClientRect();
               if (a?.width && b?.width && a.bottom > b.top + 2) issues.push(`overlap: ${first}/${second}`);
             }
+
+            // Back-cover copy uses deliberate stacked semantic blocks. Firefox on macOS reports
+            // taller glyph-range rectangles for Bengali/Devanagari, so compare those blocks by
+            // their actual element boxes rather than by font-engine-specific text ranges.
+            const journeyLines = [...document.querySelectorAll('.heritageJourneyMessage > span')];
+            for (let index = 0; index < journeyLines.length - 1; index++) {
+              const a = journeyLines[index].getBoundingClientRect();
+              const b = journeyLines[index + 1].getBoundingClientRect();
+              if (a.width && b.width && a.bottom > b.top + 2) issues.push('overlap: .heritageJourneyMessage lines');
+            }
+            const assistanceHeading = document.querySelector('.heritageAssistance > h3')?.getBoundingClientRect();
+            const contactGrid = document.querySelector('.heritageAssistance .contactGrid')?.getBoundingClientRect();
+            if (assistanceHeading?.width && contactGrid?.width && assistanceHeading.bottom > contactGrid.top + 2) issues.push('overlap: .heritageAssistance heading/.contactGrid');
+            for (const contactCard of document.querySelectorAll('.heritageAssistance .contactCard')) {
+              const label = contactCard.querySelector('.label')?.getBoundingClientRect();
+              const name = contactCard.querySelector('h3')?.getBoundingClientRect();
+              const phone = contactCard.querySelector('a,.muted')?.getBoundingClientRect();
+              if (label?.width && name?.width && label.bottom > name.top + 2) issues.push('overlap: .contactCard .label/h3');
+              if (name?.width && phone?.width && name.bottom > phone.top + 2) issues.push('overlap: .contactCard h3/phone');
+            }
+
             for (const item of document.querySelectorAll('.receptionDetailItem')) {
               const label = item.querySelector('.receptionDetailLabel')?.getBoundingClientRect();
               const value = item.querySelector('.receptionDetailValue')?.getBoundingClientRect();
@@ -130,7 +153,7 @@ try {
             // Compare rendered text fragments for the rest of the card. Semantic zones above are
             // intentionally excluded because their element boxes are the cross-engine source of
             // truth; raw glyph-range metrics differ between Linux, Windows and macOS.
-            const semanticZones = '.dynamicFrontHeading,.dynamicFrontTagline,.dynamicFrontNames,.heritageBackIntro,.heritageCoupleNames,.receptionDetailsOverlay,.localizedDetailsClosing';
+            const semanticZones = '.dynamicFrontHeading,.dynamicFrontTagline,.dynamicFrontNames,.heritageBackIntro,.heritageCoupleNames,.heritageJourneyMessage,.heritageAssistance,.receptionDetailsOverlay,.localizedDetailsClosing';
             const walker = document.createTreeWalker(document.querySelector('.invitePage'), NodeFilter.SHOW_TEXT);
             const fragments = [];
             while (walker.nextNode()) {
