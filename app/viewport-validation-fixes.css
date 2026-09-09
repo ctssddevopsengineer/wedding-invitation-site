@@ -55,6 +55,44 @@ html, body { min-width: 0; }
 }
 @media (max-width: 319px) {
   .bookStage .pageViewport { width: calc((100vw - 16px) / .7); margin: 0; }
+
+  /* WebKit on macOS renders Bengali glyphs with a slightly taller line box at
+     the 240x320 validation viewport. Keep the couple-name zone comfortably
+     below the blessing copy while preserving the large gap before the family
+     blocks. This rule never affects the supported 320px-and-up layouts. */
+  .bookApp[lang="bn"] .familyCoupleNames {
+    top: 47% !important;
+  }
+
+  /* The 240px card has substantially less vertical room than the supported
+     320px-and-up layouts. Keep the already-compacted translated countdown and
+     move only the independent closing blessing below the actual painted cards.
+     The medallion begins much lower, so this preserves a clear visual gap on
+     both sides without changing any normal phone/tablet/desktop geometry. */
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .localizedDetailsClosing {
+    top: 77.2% !important;
+  }
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .receptionCountdownItem .countdown {
+    gap: .08rem !important;
+  }
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .receptionCountdownItem .countdownUnit {
+    padding: .08rem .03rem !important;
+  }
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .receptionCountdownItem .countdownUnit strong {
+    font-size: 7px !important;
+    line-height: 1 !important;
+  }
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .receptionCountdownItem .countdownUnit span {
+    font-size: 5px !important;
+    line-height: 1 !important;
+  }
+
+  /* Saffron's English tagline wraps to three lines at 240px on WebKit. The
+     couple names need a little more vertical separation, but the following
+     closing separator still has ample room at 49.2%. */
+  .bookApp[lang="en"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames {
+    top: 44.3% !important;
+  }
 }
 @media (max-width: 680px) {
   .bookApp .familyBlessingsIntro { width: 80%; }

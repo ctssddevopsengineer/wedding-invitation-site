@@ -1,9 +1,10 @@
-// Build first. Run with BROWSER_CHANNEL=chrome to use an installed Chrome.
+// Build first. Use BROWSER_ENGINE=chromium|firefox|webkit and optional BROWSER_CHANNEL=chrome|msedge.
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import http from 'node:http';
 import path from 'node:path';
-import { chromium } from 'playwright';
+import { chromium, firefox, webkit } from 'playwright';
+import { resolveBrowserTarget } from '../lib/browser-regression.mjs';
 import { translate } from '../lib/locale.mjs';
 import { RESPONSIVE_VALIDATION_VIEWPORTS } from '../lib/responsive.mjs';
 
@@ -11,7 +12,10 @@ const root = path.resolve('out');
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 const screenshots = process.env.SCREENSHOT_DIR;
 const captureAllScreenshots = process.env.CAPTURE_ALL_SCREENSHOTS === 'true';
+const maxFailureScreenshots = Math.max(0, Number.parseInt(process.env.MAX_FAILURE_SCREENSHOTS || '50', 10) || 0);
 const validationViewports = process.env.BROWSER_WIDTHS ? process.env.BROWSER_WIDTHS.split(',').map(Number).map(width => ({ width, height: 1100 })) : RESPONSIVE_VALIDATION_VIEWPORTS;
+const browserTarget = resolveBrowserTarget();
+const browserTypes = { chromium, firefox, webkit };
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.webp': 'image/webp', '.png': 'image/png', '.woff2': 'font/woff2', '.ttf': 'font/ttf' };
 const server = http.createServer(async (req, res) => {
   try {
@@ -26,13 +30,19 @@ const server = http.createServer(async (req, res) => {
 });
 await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 const url = `http://127.0.0.1:${server.address().port}${basePath}/`;
+const animationFreezeCss = '*, *::before, *::after { animation: none !important; transition: none !important; }';
 let browser;
 try {
-  browser = await chromium.launch({ headless: true, ...(process.env.BROWSER_CHANNEL ? { channel: process.env.BROWSER_CHANNEL } : {}) });
+  browser = await browserTypes[browserTarget.engine].launch({
+    headless: true,
+    ...(browserTarget.channel ? { channel: browserTarget.channel } : {})
+  });
   const errors = [];
   let checked = 0;
+  let failureScreenshots = 0;
   const cachedSwitchTimes = [];
   if (screenshots) await fs.mkdir(screenshots, { recursive: true });
+  console.log(`Running full responsive regression on ${browserTarget.label}.`);
   for (const { width, height } of validationViewports) {
     const context = await browser.newContext({ viewport: { width, height } });
     // The existing QR service is external; only first-party requests are needed.
@@ -43,11 +53,39 @@ try {
     await page.waitForSelector('main[data-theme-ready="true"]');
     await page.locator('[data-intro-skip]').click();
     await page.waitForSelector('[data-cinematic-intro="complete"]');
-    await page.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; }' });
+    await page.addStyleTag({ content: animationFreezeCss });
+
+    // WebKit intentionally rate-limits History API mutations. The app itself may also update
+    // history after a synthetic popstate, so periodically start a fresh document before Safari's
+    // 100-history-operations-per-10-seconds safety limit can be reached. This preserves the same
+    // 4,032 rendered states without weakening the assertions or sleeping thousands of times.
+    let webkitHistoryOps = 0;
+    const navigateMatrixState = async (theme, pageName, language) => {
+      const search = `?theme=${theme}&page=${pageName}&lang=${language}`;
+      if (browserTarget.engine === 'webkit' && webkitHistoryOps >= 32) {
+        await page.goto(`${url}${search}`);
+        await page.waitForSelector(`main[data-theme-ready="true"][data-invitation-theme="${theme}"][lang="${language}"]`);
+        const introComplete = page.locator('[data-cinematic-intro="complete"]');
+        if (await introComplete.count() === 0) {
+          const skip = page.locator('[data-intro-skip]');
+          if (await skip.count()) await skip.click();
+          await page.waitForSelector('[data-cinematic-intro="complete"]');
+        }
+        await page.addStyleTag({ content: animationFreezeCss });
+        webkitHistoryOps = 0;
+        return;
+      }
+      await page.evaluate((nextSearch) => {
+        history.pushState({}, '', nextSearch);
+        dispatchEvent(new PopStateEvent('popstate'));
+      }, search);
+      webkitHistoryOps++;
+    };
+
     for (const theme of (process.env.BROWSER_THEMES || 'classic,blush,magenta,navy,plum,saffron').split(',')) {
       for (const language of ['en', 'bn', 'ne']) {
         for (const pageName of ['front', 'family', 'details', 'back']) {
-          await page.evaluate((search) => { history.pushState({}, '', search); dispatchEvent(new PopStateEvent('popstate')); }, `?theme=${theme}&page=${pageName}&lang=${language}`);
+          await navigateMatrixState(theme, pageName, language);
           await page.waitForSelector(`main[data-theme-ready="true"][data-invitation-theme="${theme}"][lang="${language}"]`);
           await page.waitForSelector(`.bookStage.page-${({ family: 'inside-left', details: 'inside-right' })[pageName] || pageName}`);
           await page.evaluate(async () => { await document.fonts.ready; await Promise.all(document.getAnimations().filter(a => a.effect?.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))); });
@@ -68,14 +106,44 @@ try {
               if (image.currentSrc !== expected || !image.naturalWidth) issues.push('artwork not optimized/loaded');
             }
 
-            // Validate important layout zones by their element boxes. Text-range rectangles can
-            // overlap slightly because of glyph ascenders/descenders even when the actual CSS
-            // boxes are correctly separated, so semantic zones are checked explicitly here.
-            for (const [first, second] of [['.heritageBackIntro', '.heritageCoupleNames'], ['.dynamicFrontNames', '.dynamicFrontClosing'], ['.receptionCountdownItem', '.localizedDetailsClosing']]) {
+            // Validate important layout zones using the boxes of visible semantic content. A flex
+            // item can reserve more layout height than its painted children on a particular engine;
+            // that allocation is not a visual collision. For the countdown, `.countdown` is the
+            // bottom-most painted content and therefore the correct boundary against closing copy.
+            for (const [first, second] of [
+              ['.heritageBackIntro', '.heritageCoupleNames'],
+              ['.heritageCoupleNames', '.heritageJourneyMessage'],
+              ['.heritageJourneyMessage', '.heritageAssistance'],
+              ['.dynamicFrontHeading > span', '.dynamicFrontHeading > em'],
+              ['.dynamicFrontTagline', '.dynamicFrontNames'],
+              ['.dynamicFrontNames', '.dynamicFrontClosing'],
+              ['.receptionCountdownItem .countdown', '.localizedDetailsClosing']
+            ]) {
               const a = document.querySelector(first)?.getBoundingClientRect();
               const b = document.querySelector(second)?.getBoundingClientRect();
               if (a?.width && b?.width && a.bottom > b.top + 2) issues.push(`overlap: ${first}/${second}`);
             }
+
+            // Back-cover copy uses deliberate stacked semantic blocks. Firefox on macOS reports
+            // taller glyph-range rectangles for Bengali/Devanagari, so compare those blocks by
+            // their actual element boxes rather than by font-engine-specific text ranges.
+            const journeyLines = [...document.querySelectorAll('.heritageJourneyMessage > span')];
+            for (let index = 0; index < journeyLines.length - 1; index++) {
+              const a = journeyLines[index].getBoundingClientRect();
+              const b = journeyLines[index + 1].getBoundingClientRect();
+              if (a.width && b.width && a.bottom > b.top + 2) issues.push('overlap: .heritageJourneyMessage lines');
+            }
+            const assistanceHeading = document.querySelector('.heritageAssistance > h3')?.getBoundingClientRect();
+            const contactGrid = document.querySelector('.heritageAssistance .contactGrid')?.getBoundingClientRect();
+            if (assistanceHeading?.width && contactGrid?.width && assistanceHeading.bottom > contactGrid.top + 2) issues.push('overlap: .heritageAssistance heading/.contactGrid');
+            for (const contactCard of document.querySelectorAll('.heritageAssistance .contactCard')) {
+              const label = contactCard.querySelector('.label')?.getBoundingClientRect();
+              const name = contactCard.querySelector('h3')?.getBoundingClientRect();
+              const phone = contactCard.querySelector('a,.muted')?.getBoundingClientRect();
+              if (label?.width && name?.width && label.bottom > name.top + 2) issues.push('overlap: .contactCard .label/h3');
+              if (name?.width && phone?.width && name.bottom > phone.top + 2) issues.push('overlap: .contactCard h3/phone');
+            }
+
             for (const item of document.querySelectorAll('.receptionDetailItem')) {
               const label = item.querySelector('.receptionDetailLabel')?.getBoundingClientRect();
               const value = item.querySelector('.receptionDetailValue')?.getBoundingClientRect();
@@ -83,8 +151,9 @@ try {
             }
 
             // Compare rendered text fragments for the rest of the card. Semantic zones above are
-            // intentionally excluded to avoid false positives caused by font line-box metrics.
-            const semanticZones = '.heritageBackIntro,.heritageCoupleNames,.receptionDetailsOverlay,.localizedDetailsClosing';
+            // intentionally excluded because their element boxes are the cross-engine source of
+            // truth; raw glyph-range metrics differ between Linux, Windows and macOS.
+            const semanticZones = '.dynamicFrontHeading,.dynamicFrontTagline,.dynamicFrontNames,.heritageBackIntro,.heritageCoupleNames,.heritageJourneyMessage,.heritageAssistance,.receptionDetailsOverlay,.localizedDetailsClosing';
             const walker = document.createTreeWalker(document.querySelector('.invitePage'), NodeFilter.SHOW_TEXT);
             const fragments = [];
             while (walker.nextNode()) {
@@ -110,7 +179,10 @@ try {
             }
             return [...new Set(issues)];
           });
-          if (issues.length && screenshots) await page.locator('.pageViewport').screenshot({ path: `${screenshots}/failure-${width}x${height}-${theme}-${language}-${pageName}.png` });
+          if (issues.length && screenshots && failureScreenshots < maxFailureScreenshots) {
+            await page.locator('.pageViewport').screenshot({ path: `${screenshots}/failure-${width}x${height}-${theme}-${language}-${pageName}.png` });
+            failureScreenshots++;
+          }
           if (issues.length) errors.push(`${width}x${height}/${theme}/${language}/${pageName}: ${issues.join(', ')}`);
           if (pageName === 'details' && language !== 'en') {
             // Browser regression validates the already-rendered static artifact. A production-style
@@ -124,7 +196,7 @@ try {
           if (pageName === 'family') assert.equal(await page.locator('#family-blessings-title').innerText(), translate(language, 'With the Blessings of Our Families'));
           if (captureAllScreenshots && screenshots) await page.locator('.pageViewport').screenshot({ path: `${screenshots}/${width}x${height}-${theme}-${language}-${pageName}.png` });
           checked++;
-          if (checked % 72 === 0) console.log(`Checked ${checked} card renders; ${errors.length} issues recorded.`);
+          if (checked % 72 === 0) console.log(`Checked ${checked} card renders on ${browserTarget.label}; ${errors.length} issues recorded.`);
         }
       }
     }
@@ -170,7 +242,7 @@ try {
         if (round === 1) cachedSwitchTimes.push(elapsed);
       }
     }
-    if (process.env.REPORT_PATH) await fs.writeFile(process.env.REPORT_PATH, JSON.stringify({ checked, viewports: validationViewports, errors }, null, 2));
+    if (process.env.REPORT_PATH) await fs.writeFile(process.env.REPORT_PATH, JSON.stringify({ browser: browserTarget, checked, viewports: validationViewports, failureScreenshots, errors }, null, 2));
     await context.close();
   }
   const fallbackContext = await browser.newContext();
@@ -194,11 +266,11 @@ try {
   await fallbackPage.keyboard.press('Escape');
   assert.equal(await fallbackPage.locator('.exactLocationHotspot').getAttribute('aria-expanded'), 'false');
   await fallbackContext.close();
-  if (process.env.REPORT_PATH) await fs.writeFile(process.env.REPORT_PATH, JSON.stringify({ checked, viewports: validationViewports, errors }, null, 2));
+  if (process.env.REPORT_PATH) await fs.writeFile(process.env.REPORT_PATH, JSON.stringify({ browser: browserTarget, checked, viewports: validationViewports, failureScreenshots, errors }, null, 2));
   assert.deepEqual(errors, []);
   cachedSwitchTimes.sort((a, b) => a - b);
-  console.log(`Cached theme selection median: ${cachedSwitchTimes[Math.floor(cachedSwitchTimes.length / 2)].toFixed(1)} ms (local Chrome; excludes the existing decorative transition).`);
-  console.log(`Passed ${checked} theme/page/language/viewport renders, persistence, copy/QR links, browser history, rapid theme switching, blocked storage, image fallback and location state; no browser errors.`);
+  console.log(`Cached theme selection median: ${cachedSwitchTimes[Math.floor(cachedSwitchTimes.length / 2)].toFixed(1)} ms (${browserTarget.label}; excludes the existing decorative transition).`);
+  console.log(`Passed ${checked} theme/page/language/viewport renders on ${browserTarget.label}, persistence, copy/QR links, browser history, rapid theme switching, blocked storage, image fallback and location state; no browser errors.`);
 } finally {
   await browser?.close();
   server.closeAllConnections();
