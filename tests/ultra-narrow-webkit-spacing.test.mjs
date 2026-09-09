@@ -11,12 +11,12 @@ function ultraNarrowBlock() {
 
 test('240px WebKit spacing keeps Bengali family names below the blessing copy', () => {
   const block = ultraNarrowBlock();
-  assert.match(block, /\.bookApp\[lang="bn"\] \.familyCoupleNames\s*\{[\s\S]*?top:\s*45\.1%\s*!important/);
+  assert.match(block, /\.bookApp\[lang="bn"\] \.familyCoupleNames\s*\{[\s\S]*?top:\s*47%\s*!important/);
 });
 
 test('240px WebKit spacing gives Deep Red translated closing copy extra countdown clearance', () => {
   const block = ultraNarrowBlock();
-  assert.match(block, /\.bookApp:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="classic"\] \.localizedDetailsClosing\s*\{[\s\S]*?top:\s*74\.6%\s*!important/);
+  assert.match(block, /\.bookApp:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="classic"\] \.localizedDetailsClosing\s*\{[\s\S]*?top:\s*77\.2%\s*!important/);
 });
 
 test('240px WebKit spacing separates Saffron English tagline and couple names', () => {
