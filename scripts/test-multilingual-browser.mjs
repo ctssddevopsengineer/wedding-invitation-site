@@ -6,7 +6,6 @@ import path from 'node:path';
 import { chromium } from 'playwright';
 import { translate } from '../lib/locale.mjs';
 import { RESPONSIVE_VALIDATION_VIEWPORTS } from '../lib/responsive.mjs';
-import { EVENT } from '../lib/event.mjs';
 
 const root = path.resolve('out');
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
@@ -101,12 +100,11 @@ try {
           if (issues.length && screenshots) await page.locator('.pageViewport').screenshot({ path: `${screenshots}/failure-${width}x${height}-${theme}-${language}-${pageName}.png` });
           if (issues.length) errors.push(`${width}x${height}/${theme}/${language}/${pageName}: ${issues.join(', ')}`);
           if (pageName === 'details' && language !== 'en') {
+            // Browser regression validates the already-rendered static artifact. A production-style
+            // build has a concrete reception date, so assert localized numerals directly instead
+            // of consulting the fresh checkout's placeholder event configuration.
             const dateText = await page.locator('.receptionDetailValue').first().innerText();
-            if (Number.isFinite(EVENT.start.getTime())) {
-              assert.match(dateText, language === 'bn' ? /[০-৯]/ : /[०-९]/);
-            } else {
-              assert.equal(dateText, translate(language, 'Reception date will be announced soon.'));
-            }
+            assert.match(dateText, language === 'bn' ? /[০-৯]/ : /[०-९]/);
             assert.doesNotMatch(dateText, /Sunday|February|January|Monday/);
           }
           if (pageName === 'front') assert.equal(await page.locator('.openButton span').first().innerText(), translate(language, 'Open Invitation'));
