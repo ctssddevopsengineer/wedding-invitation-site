@@ -106,16 +106,16 @@ try {
               if (image.currentSrc !== expected || !image.naturalWidth) issues.push('artwork not optimized/loaded');
             }
 
-            // Validate important layout zones by their actual element boxes. Range rectangles vary
-            // across Windows/macOS font rasterizers and can overlap at glyph ascenders even when the
-            // rendered blocks are visually separate. These explicit pairs keep the test strict at
-            // the layout level while avoiding engine-specific line-box false positives.
+            // Validate important layout zones using the boxes of visible semantic content. A flex
+            // item can reserve more layout height than its painted children on a particular engine;
+            // that allocation is not a visual collision. For the countdown, `.countdown` is the
+            // bottom-most painted content and therefore the correct boundary against closing copy.
             for (const [first, second] of [
               ['.heritageBackIntro', '.heritageCoupleNames'],
               ['.dynamicFrontHeading > span', '.dynamicFrontHeading > em'],
               ['.dynamicFrontTagline', '.dynamicFrontNames'],
               ['.dynamicFrontNames', '.dynamicFrontClosing'],
-              ['.receptionCountdownItem', '.localizedDetailsClosing']
+              ['.receptionCountdownItem .countdown', '.localizedDetailsClosing']
             ]) {
               const a = document.querySelector(first)?.getBoundingClientRect();
               const b = document.querySelector(second)?.getBoundingClientRect();
