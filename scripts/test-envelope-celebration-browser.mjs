@@ -56,9 +56,19 @@ try {
     await page.locator('[data-intro-open]').click();
     const field = page.locator('[data-envelope-celebration]');
     await field.waitFor();
-    assert.equal(await field.locator('[data-celebration-particle]').count(), width <= 680 ? 106 : 184);
+    assert.equal(await field.locator('[data-celebration-particle]').count(), width <= 680 ? 122 : 212);
     for (const type of ['firecracker', 'sprinkler', 'ribbon']) assert.ok(await field.locator(`[data-celebration-particle="${type}"]`).count());
     assert.equal(await field.getAttribute('aria-hidden'), 'true');
+    assert.equal(await field.locator('[data-tubri]').count(), 2);
+    const cornerIssues = await field.locator('[data-tubri]').evaluateAll(nodes => nodes.flatMap(node => {
+      const r = node.getBoundingClientRect();
+      const problems = [];
+      if (r.left < 0 || r.right > innerWidth || r.top < 0 || r.bottom > innerHeight) problems.push('fountain outside viewport');
+      if (node.dataset.tubri === 'left' ? r.right > innerWidth * .25 : r.left < innerWidth * .75) problems.push('fountain crosses center');
+      if (!node.querySelector('[data-celebration-particle="sprinkler"]')) problems.push('missing fountain sparks');
+      return problems;
+    }));
+    assert.deepEqual(cornerIssues, []);
     assert.equal(await field.evaluate(node => getComputedStyle(node).pointerEvents), 'none');
     const handle = await field.elementHandle();
     await page.waitForSelector('[data-cinematic-intro="rising"]');
@@ -80,7 +90,8 @@ try {
       document.dispatchEvent(new Event('visibilitychange'));
     });
     await page.waitForSelector('[data-envelope-celebration][data-paused="true"]');
-    assert.equal(await field.locator('span').first().evaluate(node => getComputedStyle(node).animationPlayState), 'paused');
+    assert.equal(await field.locator('[data-celebration-particle]').first().evaluate(node => getComputedStyle(node).animationPlayState), 'paused');
+    assert.ok(await field.evaluate(node => node.getAnimations({ subtree: true }).every(a => a.playState === 'paused')), 'all fountain and ribbon animations pause');
     await page.locator('[data-intro-skip]').click();
     await complete(page);
     assert.equal(await field.count(), 0, 'skip cleans up effects');

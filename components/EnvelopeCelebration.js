@@ -22,12 +22,10 @@ export default function EnvelopeCelebration() {
   }, []);
   const particles = useMemo(() => createEnvelopeCelebration(preferences.compact), [preferences.compact]);
   if (!preferences.enabled) return null;
-  return (
-    <div className={styles.field} data-envelope-celebration data-paused={preferences.paused} aria-hidden="true">
-      {particles.map((particle) => (
+  const renderParticle = (particle) => (
         <span key={particle.id} className={`${styles.particle} ${styles[particle.type]} ${styles[particle.side]}`}
           data-celebration-particle={particle.type}
-          style={{ '--x': `${particle.x}px`, '--y-mid': `${particle.y * .75 + particle.gravity * .25}px`, '--y-end': `${particle.y + particle.gravity}px`, '--size': `${particle.size}px`, '--angle': `${particle.angle}deg`, '--origin': `${particle.origin}%`, '--y': `${particle.y}px`, '--delay': `${particle.delay}s`, '--duration': `${particle.duration}s`, '--rotation': `${particle.rotation}deg`, '--color': particle.color }}>
+          style={{ '--iterations': particle.iterations, '--x': `${particle.x}px`, '--y-mid': `${particle.y * .75 + particle.gravity * .25}px`, '--y-end': `${particle.y + particle.gravity}px`, '--size': `${particle.size}px`, '--angle': `${particle.angle}deg`, '--origin': `${particle.origin}%`, '--y': `${particle.y}px`, '--delay': `${particle.delay}s`, '--duration': `${particle.duration}s`, '--rotation': `${particle.rotation}deg`, '--color': particle.color }}>
           {particle.type === 'ribbon' ? (
             <svg className={styles.strip} viewBox="0 0 16 64" fill="none" focusable="false">
               <path d="M8 1 C-5 14 22 20 8 33 S-3 49 10 63" stroke="currentColor" strokeWidth="5" />
@@ -35,7 +33,18 @@ export default function EnvelopeCelebration() {
             </svg>
           ) : <i className={styles.ember} />}
         </span>
+  );
+  return (
+    <div className={styles.field} data-envelope-celebration data-paused={preferences.paused} aria-hidden="true">
+      {['left', 'right'].map(side => (
+        <div key={side} className={`${styles.tubri} ${styles[side]}`} data-tubri={side}>
+          <div className={styles.glow} />
+          <div className={styles.plume} />
+          {particles.filter(p => p.type === 'sprinkler' && p.side === side).map(renderParticle)}
+          <div className={styles.cone}><span /></div>
+        </div>
       ))}
+      {particles.filter(p => p.type !== 'sprinkler').map(renderParticle)}
     </div>
   );
 }

@@ -14,7 +14,7 @@ test('celebration runs only while the envelope opens and the card rises', () => 
 
 for (const compact of [false, true]) test(`celebration trajectories are bounded and repeatable (compact=${compact})`, () => {
   const particles = createEnvelopeCelebration(compact);
-  assert.equal(particles.length, compact ? 106 : 184);
+  assert.equal(particles.length, compact ? 122 : 212);
   assert.equal(new Set(particles.map(p => p.id)).size, particles.length);
   assert.deepEqual(particles, createEnvelopeCelebration(compact));
   for (const side of ['left', 'right']) {
@@ -24,7 +24,7 @@ for (const compact of [false, true]) test(`celebration trajectories are bounded 
     assert.ok(Number.isFinite(p.x) && Math.abs(p.x) <= 165);
     assert.ok(Number.isFinite(p.y) && Math.abs(p.y) <= 310);
     assert.ok(p.delay >= 0);
-    assert.ok(p.duration > 0 && (p.delay + p.duration) * 1000 <= INTRO_PHASES.opening.duration + INTRO_PHASES.rising.duration);
+    assert.ok(p.duration > 0 && (p.delay + p.duration * p.iterations) * 1000 <= INTRO_PHASES.opening.duration + INTRO_PHASES.rising.duration);
   }
 });
 
@@ -35,8 +35,26 @@ test('celebration sustains three bursts and staggered fountains through the long
   const bursts = particles.filter(p => p.type === 'firecracker' && p.side === 'left');
   assert.equal(new Set(bursts.map(p => p.delay)).size, 3);
   const fountains = particles.filter(p => p.type === 'sprinkler');
-  assert.ok(Math.max(...fountains.map(p => p.delay + p.duration)) > 4.5);
+  assert.ok(Math.max(...fountains.map(p => p.delay + p.duration * p.iterations)) > 4.5);
   assert.ok(new Set(fountains.map(p => p.y)).size > 20, 'jets have varied heights');
   assert.ok(particles.every(p => p.gravity > 0), 'all particles fall under gravity');
   assert.ok(particles.filter(p => p.type === 'ribbon').every(p => p.duration >= 2.8));
+});
+
+
+test('tubri fountains emit repeated narrow gold sprays from both corners', () => {
+  for (const compact of [true, false]) {
+    const sparks = createEnvelopeCelebration(compact).filter(p => p.type === 'sprinkler');
+    for (const side of ['left', 'right']) {
+      const jet = sparks.filter(p => p.side === side);
+      assert.equal(jet.length, compact ? 32 : 56);
+      assert.ok(jet.every(p => p.iterations === 3 && p.y <= -100));
+      assert.ok(jet.every(p => Math.abs(p.x) <= (compact ? 32 : 70)));
+      assert.ok(jet.some(p => p.x < 0) && jet.some(p => p.x > 0));
+      assert.ok(jet.every(p => ['#fff6d1', '#ffdb78', '#efac35'].includes(p.color)));
+      for (const time of [.5, 1.5, 3, 4.5]) {
+        assert.ok(jet.filter(p => p.delay <= time && p.delay + p.duration * p.iterations > time).length >= 8, 'continuous spray throughout the celebration');
+      }
+    }
+  }
 });
