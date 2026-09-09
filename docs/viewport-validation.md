@@ -5,6 +5,8 @@
 Run against a fresh production export:
 
 ```sh
+# Set the required event environment variables first (see README).
+npm run config:render
 npm run build
 BROWSER_CHANNEL=chrome REPORT_PATH=/tmp/responsive-report.json npm run test:browser
 npm test
@@ -15,4 +17,17 @@ The browser matrix renders six themes, three languages and four invitation pages
 
 `BROWSER_WIDTHS=320,712` selects a shorter diagnostic run at 1100px height. `BROWSER_THEMES=classic,blush` narrows themes. `SCREENSHOT_DIR=/tmp/invitation-shots` captures translated cards and failures. `REPORT_PATH` saves accumulated results after each viewport and at completion.
 
-These are Chromium checks of the current event content, including unresolved placeholders. They do not certify every physical device, browser engine, zoom setting or future event text. `npm run validate:export` separately rejects unresolved event placeholders; configure the real event details before publishing.
+`BROWSER_VIEWPORTS=240x320,412x915` selects exact width/height pairs. `BROWSER_ENGINE=chromium|firefox|webkit` selects the engine; Chrome and Edge channels are available with Chromium. The narrow Classic Bengali/Nepali cases also exercise a long address and require clearance between the countdown, closing blessing and location control.
+
+Mobile coverage uses actual Playwright mobile/touch contexts, not just narrow desktop windows:
+
+```sh
+BROWSER_ENGINE=chromium BROWSER_MOBILE=true BROWSER_COLOR_SCHEME=dark \
+  BROWSER_VIEWPORTS=360x780,390x844,412x915,430x932,915x412 npm run test:browser
+```
+
+Repeat with WebKit for mobile Safari emulation. Firefox does not support Playwright's `isMobile` emulation. CI runs these 360 additional combinations on its Chromium and WebKit targets, checking the device-width viewport, unrestricted zoom and the artwork's explicit light color scheme. Dark preference emulation is distinct from Samsung Internet's proprietary forced-dark rendering.
+
+These checks require configured event data because they verify localized date numerals. They do not certify every physical device, browser version, zoom setting or future event text. `npm run validate:export` separately rejects unresolved event placeholders; configure the real event details before publishing.
+
+For Samsung Internet on a Galaxy A55, verify all themes in portrait and landscape, with its website darkening both on and off. The page declares `color-scheme: only light` to preserve text/artwork palettes and `text-size-adjust: 100%` to prevent browser text inflation while keeping pinch zoom available. Samsung settings that force recoloring or explicitly request the desktop site can override website preferences; record the browser version and those settings when comparing screenshots.

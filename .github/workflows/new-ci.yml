@@ -233,6 +233,18 @@ jobs:
           REPORT_PATH: artifacts/responsive/reports/browser-regression.json
           MAX_FAILURE_SCREENSHOTS: '50'
         run: npm run test:browser
+      - name: Validate touch mobile layouts with dark browser preference
+        if: matrix.browser_engine == 'chromium' || matrix.browser_engine == 'webkit'
+        env:
+          BROWSER_ENGINE: ${{ matrix.browser_engine }}
+          BROWSER_CHANNEL: ${{ matrix.browser_channel }}
+          BROWSER_MOBILE: 'true'
+          BROWSER_COLOR_SCHEME: dark
+          BROWSER_VIEWPORTS: '360x780,390x844,412x915,430x932,915x412'
+          REPORT_PATH: artifacts/responsive/reports/mobile-dark-regression.json
+          SCREENSHOT_DIR: artifacts/responsive/screenshots
+          MAX_FAILURE_SCREENSHOTS: '50'
+        run: npm run test:browser
       - name: Upload ${{ matrix.label }} responsive regression evidence
         if: always()
         uses: actions/upload-artifact@v7

@@ -69,3 +69,13 @@
     top: 70.9% !important;
   }
 }
+
+/* An inline phone link inherits its parent's full-size line-box strut even
+   though the link itself has compact type. A block uses the link's own line
+   height, keeping the padded contact panel inside the narrow landscape card
+   across Chromium, Firefox and WebKit without moving the artwork overlays. */
+@media (max-width: 340px) {
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme] .heritageAssistance .contactCard a {
+    display: block;
+  }
+}
