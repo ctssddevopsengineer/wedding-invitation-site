@@ -56,18 +56,20 @@ html, body { min-width: 0; }
 @media (max-width: 319px) {
   .bookStage .pageViewport { width: calc((100vw - 16px) / .7); margin: 0; }
 
-  /* WebKit uses slightly taller Bengali glyph metrics at the 240x320 validation
-     viewport. Keep the names below the blessing paragraph without changing the
-     normal phone/tablet geometry. */
+  /* WebKit on macOS renders Bengali glyphs with a slightly taller line box at
+     the 240x320 validation viewport. Keep the couple-name zone comfortably
+     below the blessing copy while preserving the large gap before the family
+     blocks. This rule never affects the supported 320px-and-up layouts. */
   .bookApp[lang="bn"] .familyCoupleNames {
-    top: 45.1% !important;
+    top: 47% !important;
   }
 
-  /* The translated Deep Red countdown also grows a few pixels in WebKit. Give
-     the separate closing blessing additional clearance only in the ultra-narrow
-     viewport; 320px-and-up keeps the already approved 73.4% placement. */
+  /* At the same ultra-narrow viewport the translated Deep Red countdown is
+     materially taller in WebKit. Move only the independent closing blessing
+     far enough below that semantic zone; 320px-and-up retains the approved
+     73.4% placement and the location medallion still has clear space below. */
   .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .localizedDetailsClosing {
-    top: 74.6% !important;
+    top: 77.2% !important;
   }
 
   /* Saffron's English tagline wraps to three lines at 240px on WebKit. The
