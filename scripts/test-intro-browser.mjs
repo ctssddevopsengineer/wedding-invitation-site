@@ -197,6 +197,13 @@ try {
     await page.evaluate(() => Promise.all(window.walkAnimations.map((animation) => animation.finished)));
     assert.equal(await page.evaluate(() => [...document.querySelectorAll('[data-character]')].every((node, index) => node.getAnimations()[0] === window.walkAnimations[index])), true, 'walking animations are retained at the meeting, not restarted');
     await checkParticles(page);
+    const particleField = await page.locator('[data-wedding-particles]').elementHandle();
+    assert.ok(particleField, 'particle field exists when the couple meets');
+    const particlesSurviveReveal = page.waitForFunction(
+      (field) => document.querySelector('[data-cinematic-intro="revealing"]') && field === document.querySelector('[data-wedding-particles]'),
+      particleField,
+      { timeout: 5000 }
+    );
     await checkCoupleSpace(page);
     const stopped = await page.locator('[data-character]').evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().left));
     await page.waitForTimeout(350);
@@ -206,9 +213,7 @@ try {
       await sampleParticleFrameTimes(page);
     }
     if (theme === 'classic') await capture(page, 'desktop-together');
-    const particleField = await page.locator('[data-wedding-particles]').elementHandle();
-    await page.waitForSelector('[data-cinematic-intro="revealing"]');
-    assert.equal(await particleField.evaluate((node) => node === document.querySelector('[data-wedding-particles]')), true, 'petals survive into the scene fade');
+    await particlesSurviveReveal;
     await complete(page);
     assert.equal(await page.evaluate(() => window.originalFrontCover === document.querySelector('.frontCover')), true, 'FrontCover must not be cloned or remounted');
     assert.equal(await page.locator('.bookStage').evaluate((node) => node === document.activeElement), true);
