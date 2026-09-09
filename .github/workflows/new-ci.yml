@@ -149,11 +149,45 @@ jobs:
           if-no-files-found: error
 
   responsive-browser-regression:
-    name: Full Responsive Browser Regression
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
+    name: Full Responsive Browser Regression (${{ matrix.label }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
     needs:
       - build
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: Ubuntu Chromium
+            os: ubuntu-latest
+            browser_engine: chromium
+            browser_channel: ''
+            install_command: npx playwright install --with-deps chromium
+            artifact_suffix: ubuntu-chromium
+          - label: Ubuntu Firefox
+            os: ubuntu-latest
+            browser_engine: firefox
+            browser_channel: ''
+            install_command: npx playwright install --with-deps firefox
+            artifact_suffix: ubuntu-firefox
+          - label: Windows Chrome
+            os: windows-latest
+            browser_engine: chromium
+            browser_channel: chrome
+            install_command: npx playwright install chrome
+            artifact_suffix: windows-chrome
+          - label: Windows Edge
+            os: windows-latest
+            browser_engine: chromium
+            browser_channel: msedge
+            install_command: npx playwright install msedge
+            artifact_suffix: windows-edge
+          - label: macOS WebKit
+            os: macos-latest
+            browser_engine: webkit
+            browser_channel: ''
+            install_command: npx playwright install webkit
+            artifact_suffix: macos-webkit
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -164,27 +198,28 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install ${{ matrix.label }} browser
+        run: ${{ matrix.install_command }}
       - name: Download tested static artifact
         uses: actions/download-artifact@v8
         with:
           name: wedding-site-static-export
           path: out
       - name: Create browser result directories
-        run: |
-          mkdir -p artifacts/responsive/screenshots
-          mkdir -p artifacts/responsive/reports
-      - name: Run complete responsive browser matrix
+        run: node -e "const fs=require('fs'); fs.mkdirSync('artifacts/responsive/screenshots',{recursive:true}); fs.mkdirSync('artifacts/responsive/reports',{recursive:true});"
+      - name: Run complete 4032-render responsive matrix on ${{ matrix.label }}
         env:
+          BROWSER_ENGINE: ${{ matrix.browser_engine }}
+          BROWSER_CHANNEL: ${{ matrix.browser_channel }}
           SCREENSHOT_DIR: artifacts/responsive/screenshots
           REPORT_PATH: artifacts/responsive/reports/browser-regression.json
+          MAX_FAILURE_SCREENSHOTS: '50'
         run: npm run test:browser
-      - name: Upload responsive regression evidence
+      - name: Upload ${{ matrix.label }} responsive regression evidence
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: responsive-browser-regression
+          name: responsive-browser-regression-${{ matrix.artifact_suffix }}
           path: artifacts/responsive/
           retention-days: 14
           if-no-files-found: warn
@@ -373,14 +408,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo "Context:     ${{ needs.context.result }}"
-          echo "Quality:     ${{ needs.quality.result }}"
-          echo "Build:       ${{ needs.build.result }}"
-          echo "Responsive:  ${{ needs.responsive-browser-regression.result }}"
-          echo "Intro:       ${{ needs.intro-browser-regression.result }}"
-          echo "Music:       ${{ needs.music-browser-regression.result }}"
-          echo "Monogram:    ${{ needs.monogram-browser-regression.result }}"
-          echo "Visual:      ${{ needs.visual-regression.result }}"
+          echo "Context:                   ${{ needs.context.result }}"
+          echo "Quality:                   ${{ needs.quality.result }}"
+          echo "Build:                     ${{ needs.build.result }}"
+          echo "Cross-browser responsive:  ${{ needs.responsive-browser-regression.result }}"
+          echo "Intro:                     ${{ needs.intro-browser-regression.result }}"
+          echo "Music:                     ${{ needs.music-browser-regression.result }}"
+          echo "Monogram:                  ${{ needs.monogram-browser-regression.result }}"
+          echo "Visual:                    ${{ needs.visual-regression.result }}"
           if [[ "${{ needs.context.result }}" != "success" ]] ||
              [[ "${{ needs.quality.result }}" != "success" ]] ||
              [[ "${{ needs.build.result }}" != "success" ]] ||
