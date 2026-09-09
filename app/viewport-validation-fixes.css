@@ -64,6 +64,26 @@ html, body { min-width: 0; }
     top: 47% !important;
   }
 
+  /* Keep the approved 73.4% closing-blessing position and make only the visible
+     Classic Bengali/Nepali countdown cards more compact at the ultra-narrow
+     validation viewport. This removes the real painted overlap seen in WebKit
+     without moving the closing copy toward the location medallion or changing
+     any 320px-and-up layout. */
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .receptionCountdownItem .countdown {
+    gap: .08rem !important;
+  }
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .receptionCountdownItem .countdownUnit {
+    padding: .08rem .03rem !important;
+  }
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .receptionCountdownItem .countdownUnit strong {
+    font-size: 7px !important;
+    line-height: 1 !important;
+  }
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .receptionCountdownItem .countdownUnit span {
+    font-size: 5px !important;
+    line-height: 1 !important;
+  }
+
   /* Saffron's English tagline wraps to three lines at 240px on WebKit. The
      couple names need a little more vertical separation, but the following
      closing separator still has ample room at 49.2%. */
