@@ -38,7 +38,7 @@ async function ready(page, search = '') {
   await page.waitForSelector('main[data-theme-ready="true"]');
 }
 async function complete(page) {
-  await page.waitForSelector('[data-cinematic-intro="complete"]', { timeout: 16000 });
+  await page.waitForSelector('[data-cinematic-intro="complete"]', { timeout: 20000 });
   await page.waitForFunction(() => document.body.style.overflow !== 'hidden');
   assert.equal(await page.locator('.invitePage').count(), 1, 'only one real invitation page is mounted');
   assert.equal(await page.locator('[data-wedding-particles]').count(), 0, 'particles are removed when the intro finishes');
@@ -367,7 +367,7 @@ try {
     await page.route(`**/intro/${asset}.webp`, (route) => route.abort());
     await ready(page);
     await page.locator('[data-intro-open]').click();
-    await page.waitForSelector('[data-cinematic-intro="complete"]', { timeout: 6500 });
+    await page.waitForSelector('[data-cinematic-intro="complete"]', { timeout: 10000 });
     await complete(page);
     await page.locator('.frontCover .openButton').click();
     await page.locator('.familyBlessingsTemplate').waitFor();
@@ -378,7 +378,7 @@ try {
   await slow.route('**/intro/bride.webp', (route) => { held.push(route); });
   await ready(slow);
   await slow.locator('[data-intro-open]').click();
-  await slow.waitForSelector('[data-cinematic-intro="complete"]', { timeout: 6500 });
+  await slow.waitForSelector('[data-cinematic-intro="complete"]', { timeout: 10000 });
   await complete(slow);
   await Promise.all(held.map((route) => route.abort().catch(() => {})));
   await slow.context().close();

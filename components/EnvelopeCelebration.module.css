@@ -1,0 +1,79 @@
+.field {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  overflow: hidden;
+  contain: strict;
+  perspective: 700px;
+}
+.particle {
+  position: absolute;
+  top: var(--origin);
+  width: var(--size);
+  height: var(--size);
+  color: var(--color);
+  opacity: 0;
+  animation: flight var(--duration) var(--delay) linear both;
+}
+.left { left: max(12%, calc(50% - 290px)); }
+.right { right: max(12%, calc(50% - 290px)); }
+.ember {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #fff8df;
+  box-shadow: 0 0 4px 1px var(--color), 0 0 9px var(--color);
+}
+.ember::after {
+  content: '';
+  position: absolute;
+  right: 50%;
+  top: 0;
+  width: 15px;
+  height: 2px;
+  transform-origin: right center;
+  transform: rotate(var(--angle));
+  background: linear-gradient(90deg, transparent, var(--color));
+  border-radius: 50%;
+}
+.sprinkler .ember::after { width: 21px; }
+.ribbon { height: calc(var(--size) * 4); }
+.strip {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: flutter .95s ease-in-out infinite alternate;
+}
+.field[data-paused='true'] .particle,
+.field[data-paused='true'] .strip { animation-play-state: paused; }
+/* The outward launch decelerates; gravity carries the embers down as they cool. */
+@keyframes flight {
+  0% { opacity: 0; transform: translate(0, 0) scale(.5); animation-timing-function: cubic-bezier(.12,.5,.32,1); }
+  7% { opacity: 1; }
+  50% { opacity: .95; transform: translate(calc(var(--x) * .75), var(--y-mid)) scale(1); animation-timing-function: cubic-bezier(.45,0,.8,.6); }
+  80% { opacity: .65; }
+  100% { opacity: 0; transform: translate(var(--x), var(--y-end)) scale(.45); }
+}
+.ribbon { animation-name: ribbonFlight; }
+@keyframes ribbonFlight {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0deg); animation-timing-function: ease-out; }
+  8% { opacity: 1; }
+  45% { opacity: 1; transform: translate(calc(var(--x) * .6), var(--y)) rotate(calc(var(--rotation) * .4)); animation-timing-function: ease-in; }
+  85% { opacity: .9; }
+  100% { opacity: 0; transform: translate(var(--x), var(--y-end)) rotate(var(--rotation)); }
+}
+@keyframes flutter {
+  from { transform: rotateY(-65deg) rotateX(15deg); }
+  to { transform: rotateY(65deg) rotateX(-20deg); }
+}
+@media (max-width: 680px) {
+  .left { left: 9%; }
+  .right { right: 9%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .field { display: none; }
+  .particle, .strip { animation: none; }
+}

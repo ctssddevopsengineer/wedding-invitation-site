@@ -7,6 +7,8 @@ import { THEMES, THEME_IDS } from '@/lib/theme.mjs';
 import { advanceIntro, ENTRANCE_PHASES, INTRO_PHASES } from '@/lib/intro.mjs';
 import IntroDropdown from '@/components/IntroDropdown';
 import WeddingEntrance from '@/components/WeddingEntrance';
+import EnvelopeCelebration from '@/components/EnvelopeCelebration';
+import { isEnvelopeCelebrationPhase } from '@/lib/envelope-celebration.mjs';
 import { useMusic } from '@/components/MusicProvider';
 import MusicControl from '@/components/MusicControl';
 import styles from './CinematicIntro.module.css';
@@ -132,6 +134,7 @@ export default function CinematicIntro({
       aria-labelledby={active ? 'intro-title' : undefined}
       onKeyDown={handleKeys}
     >
+      {active && ready && isEnvelopeCelebrationPhase(phase) && <EnvelopeCelebration />}
       {active && ready && phase !== 'closed' && phase !== 'complete' && (
         <WeddingEntrance phase={phase} onStatusChange={setEntranceStatus} />
       )}
