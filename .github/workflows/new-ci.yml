@@ -182,6 +182,24 @@ jobs:
             browser_channel: msedge
             install_command: npx playwright install msedge
             artifact_suffix: windows-edge
+          - label: Windows Firefox
+            os: windows-latest
+            browser_engine: firefox
+            browser_channel: ''
+            install_command: npx playwright install firefox
+            artifact_suffix: windows-firefox
+          - label: macOS Chromium
+            os: macos-latest
+            browser_engine: chromium
+            browser_channel: ''
+            install_command: npx playwright install chromium
+            artifact_suffix: macos-chromium
+          - label: macOS Firefox
+            os: macos-latest
+            browser_engine: firefox
+            browser_channel: ''
+            install_command: npx playwright install firefox
+            artifact_suffix: macos-firefox
           - label: macOS WebKit
             os: macos-latest
             browser_engine: webkit
