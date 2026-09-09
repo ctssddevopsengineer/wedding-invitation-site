@@ -155,8 +155,7 @@
   padding: 10px;
   border: 1px solid #dcb87935;
   border-radius: 18px;
-  background: #2b1117cc;
-  backdrop-filter: blur(10px);
+  background: #2b1117;
 }
 .preferenceField {
   min-width: 0;
@@ -167,7 +166,7 @@
   font-size: .72rem;
   letter-spacing: .04em;
 }
-.preferenceField select {
+.preferenceTrigger {
   width: 100%;
   min-width: 0;
   min-height: 44px;
@@ -180,8 +179,8 @@
   font-size: .86rem;
   cursor: pointer;
 }
-.preferenceField select:focus-visible { outline: 2px solid #f7e3bf; outline-offset: 2px; }
-.preferenceField select:disabled { cursor: progress; opacity: .65; }
+.preferenceTrigger:focus-visible { outline: 2px solid #f7e3bf; outline-offset: 2px; }
+.preferenceTrigger:disabled { cursor: progress; opacity: .65; }
 .open, .skip, .replay {
   cursor: pointer;
   min-height: 44px;
@@ -262,9 +261,35 @@
   .footer { width: 100%; padding-bottom: 0; }
   .preferences { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 6px; padding: 6px; }
   .preferenceField { grid-template-columns: auto minmax(92px, 1fr); align-items: center; font-size: .66rem; }
-  .preferenceField select { min-height: 44px; font-size: .72rem; }
+  .preferenceTrigger { min-height: 44px; font-size: .72rem; }
   .open { max-width: 100%; gap: 8px; padding: 8px 12px; font-size: .8rem; }
 }
 @media (max-height: 600px) and (max-width: 430px) {
   .preferenceField { grid-template-columns: minmax(0, 1fr); }
 }
+
+.dropdownAnchor { position: relative; min-width: 0; }
+.preferenceTrigger { display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: left; }
+.preferenceMenu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px;
+  border: 1px solid #dcb87990;
+  border-radius: 12px;
+  background: #3b1720;
+  box-shadow: 0 8px 24px #0008;
+}
+.preferenceMenu[data-above='true'] { top: auto; bottom: calc(100% + 6px); }
+.preferenceOption {
+  display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px;
+  padding: 8px; border: 0; border-radius: 8px; background: transparent;
+  color: #fff0d0; font: inherit; text-align: left; cursor: pointer;
+}
+.preferenceOption > span { flex: 0 0 1em; }
+.preferenceOption:hover, .preferenceOption:focus-visible { background: #713342; outline: 2px solid #dcb879; outline-offset: -2px; }
+.preferenceOption[aria-selected='true'] { background: #592532; }

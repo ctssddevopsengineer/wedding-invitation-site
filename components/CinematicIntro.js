@@ -5,6 +5,7 @@ import { useLanguage } from '@/components/LanguageProvider';
 import { LANGUAGES } from '@/lib/locale.mjs';
 import { THEMES, THEME_IDS } from '@/lib/theme.mjs';
 import { advanceIntro, ENTRANCE_PHASES, INTRO_PHASES } from '@/lib/intro.mjs';
+import IntroDropdown from '@/components/IntroDropdown';
 import WeddingEntrance from '@/components/WeddingEntrance';
 import { useMusic } from '@/components/MusicProvider';
 import MusicControl from '@/components/MusicControl';
@@ -181,32 +182,22 @@ export default function CinematicIntro({
         <footer className={styles.footer}>
           {phase === 'closed' && (
             <div className={styles.preferences} data-intro-preferences>
-              <label className={styles.preferenceField}>
-                <span>{t('Language')}</span>
-                <select
-                  data-intro-control
-                  data-intro-language
-                  value={language}
-                  onChange={(event) => onLanguageChange?.(event.target.value)}
-                  aria-label={t('Language')}
-                >
-                  {Object.entries(LANGUAGES).map(([id, label]) => <option key={id} value={id}>{label}</option>)}
-                </select>
-              </label>
-              <label className={styles.preferenceField}>
-                <span>{t('Colour Theme')}</span>
-                <select
-                  data-intro-control
-                  data-intro-theme
-                  value={themeId}
-                  onChange={(event) => onThemeChange?.(event.target.value)}
-                  aria-label={t('Choose invitation colour theme')}
-                  aria-busy={Boolean(pendingTheme)}
-                  disabled={Boolean(pendingTheme)}
-                >
-                  {THEME_IDS.map((id) => <option key={id} value={id}>{t(THEMES[id].shortLabel)}</option>)}
-                </select>
-              </label>
+              <IntroDropdown
+                data-intro-language
+                label={t('Language')}
+                value={language}
+                options={Object.entries(LANGUAGES).map(([value, label]) => ({ value, label }))}
+                onChange={onLanguageChange}
+              />
+              <IntroDropdown
+                data-intro-theme
+                label={t('Colour Theme')}
+                ariaLabel={t('Choose invitation colour theme')}
+                value={themeId}
+                options={THEME_IDS.map((value) => ({ value, label: t(THEMES[value].shortLabel) }))}
+                onChange={onThemeChange}
+                busy={Boolean(pendingTheme)}
+              />
             </div>
           )}
           <button ref={openButton} className={styles.open} type="button" data-intro-control data-intro-open disabled={phase !== 'closed'} onClick={open}>
