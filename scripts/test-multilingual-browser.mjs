@@ -30,6 +30,7 @@ const server = http.createServer(async (req, res) => {
 });
 await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 const url = `http://127.0.0.1:${server.address().port}${basePath}/`;
+const animationFreezeCss = '*, *::before, *::after { animation: none !important; transition: none !important; }';
 let browser;
 try {
   browser = await browserTypes[browserTarget.engine].launch({
@@ -52,11 +53,39 @@ try {
     await page.waitForSelector('main[data-theme-ready="true"]');
     await page.locator('[data-intro-skip]').click();
     await page.waitForSelector('[data-cinematic-intro="complete"]');
-    await page.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; }' });
+    await page.addStyleTag({ content: animationFreezeCss });
+
+    // WebKit intentionally rate-limits History API mutations. The app itself may also update
+    // history after a synthetic popstate, so periodically start a fresh document before Safari's
+    // 100-history-operations-per-10-seconds safety limit can be reached. This preserves the same
+    // 4,032 rendered states without weakening the assertions or sleeping thousands of times.
+    let webkitHistoryOps = 0;
+    const navigateMatrixState = async (theme, pageName, language) => {
+      const search = `?theme=${theme}&page=${pageName}&lang=${language}`;
+      if (browserTarget.engine === 'webkit' && webkitHistoryOps >= 32) {
+        await page.goto(`${url}${search}`);
+        await page.waitForSelector(`main[data-theme-ready="true"][data-invitation-theme="${theme}"][lang="${language}"]`);
+        const introComplete = page.locator('[data-cinematic-intro="complete"]');
+        if (await introComplete.count() === 0) {
+          const skip = page.locator('[data-intro-skip]');
+          if (await skip.count()) await skip.click();
+          await page.waitForSelector('[data-cinematic-intro="complete"]');
+        }
+        await page.addStyleTag({ content: animationFreezeCss });
+        webkitHistoryOps = 0;
+        return;
+      }
+      await page.evaluate((nextSearch) => {
+        history.pushState({}, '', nextSearch);
+        dispatchEvent(new PopStateEvent('popstate'));
+      }, search);
+      webkitHistoryOps++;
+    };
+
     for (const theme of (process.env.BROWSER_THEMES || 'classic,blush,magenta,navy,plum,saffron').split(',')) {
       for (const language of ['en', 'bn', 'ne']) {
         for (const pageName of ['front', 'family', 'details', 'back']) {
-          await page.evaluate((search) => { history.pushState({}, '', search); dispatchEvent(new PopStateEvent('popstate')); }, `?theme=${theme}&page=${pageName}&lang=${language}`);
+          await navigateMatrixState(theme, pageName, language);
           await page.waitForSelector(`main[data-theme-ready="true"][data-invitation-theme="${theme}"][lang="${language}"]`);
           await page.waitForSelector(`.bookStage.page-${({ family: 'inside-left', details: 'inside-right' })[pageName] || pageName}`);
           await page.evaluate(async () => { await document.fonts.ready; await Promise.all(document.getAnimations().filter(a => a.effect?.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))); });
@@ -77,10 +106,17 @@ try {
               if (image.currentSrc !== expected || !image.naturalWidth) issues.push('artwork not optimized/loaded');
             }
 
-            // Validate important layout zones by their element boxes. Text-range rectangles can
-            // overlap slightly because of glyph ascenders/descenders even when the actual CSS
-            // boxes are correctly separated, so semantic zones are checked explicitly here.
-            for (const [first, second] of [['.heritageBackIntro', '.heritageCoupleNames'], ['.dynamicFrontNames', '.dynamicFrontClosing'], ['.receptionCountdownItem', '.localizedDetailsClosing']]) {
+            // Validate important layout zones by their actual element boxes. Range rectangles vary
+            // across Windows/macOS font rasterizers and can overlap at glyph ascenders even when the
+            // rendered blocks are visually separate. These explicit pairs keep the test strict at
+            // the layout level while avoiding engine-specific line-box false positives.
+            for (const [first, second] of [
+              ['.heritageBackIntro', '.heritageCoupleNames'],
+              ['.dynamicFrontHeading > span', '.dynamicFrontHeading > em'],
+              ['.dynamicFrontTagline', '.dynamicFrontNames'],
+              ['.dynamicFrontNames', '.dynamicFrontClosing'],
+              ['.receptionCountdownItem', '.localizedDetailsClosing']
+            ]) {
               const a = document.querySelector(first)?.getBoundingClientRect();
               const b = document.querySelector(second)?.getBoundingClientRect();
               if (a?.width && b?.width && a.bottom > b.top + 2) issues.push(`overlap: ${first}/${second}`);
@@ -92,8 +128,9 @@ try {
             }
 
             // Compare rendered text fragments for the rest of the card. Semantic zones above are
-            // intentionally excluded to avoid false positives caused by font line-box metrics.
-            const semanticZones = '.heritageBackIntro,.heritageCoupleNames,.receptionDetailsOverlay,.localizedDetailsClosing';
+            // intentionally excluded because their element boxes are the cross-engine source of
+            // truth; raw glyph-range metrics differ between Linux, Windows and macOS.
+            const semanticZones = '.dynamicFrontHeading,.dynamicFrontTagline,.dynamicFrontNames,.heritageBackIntro,.heritageCoupleNames,.receptionDetailsOverlay,.localizedDetailsClosing';
             const walker = document.createTreeWalker(document.querySelector('.invitePage'), NodeFilter.SHOW_TEXT);
             const fragments = [];
             while (walker.nextNode()) {
