@@ -63,9 +63,6 @@
   perspective: 1400px;
   filter: drop-shadow(0 24px 28px #0007);
   contain: layout style;
-  /* The envelope masks the card below its base throughout the rise. Allow
-     overflow above for the lifted flap and card, independent of card height. */
-  clip-path: inset(-200% 0 0);
 }
 .envelopeBack {
   position: absolute;
@@ -73,6 +70,15 @@
   border: 1px solid #dcb879aa;
   border-radius: 5px;
   background: linear-gradient(145deg, #d6ad73, #f3dfb5 45%, #ac804c);
+}
+/* Mask only the moving card, behind the envelope pocket. The overlap keeps
+   fractional CSS/device pixels from exposing a thin strip along its base. */
+.cardMask {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  clip-path: inset(-200% 0 2px);
+  pointer-events: none;
 }
 .card {
   position: absolute;

@@ -27,12 +27,13 @@ const errors = [];
 let samples = 0;
 try {
   for (const viewport of [
-    { width: 393, height: 852 }, // Reported iPhone 16 viewport.
-    { width: 240, height: 320 }, { width: 320, height: 568 },
-    { width: 844, height: 390 }, { width: 768, height: 1024 },
-    { width: 1366, height: 900 }
+    { width: 393, height: 852, dpr: 3 }, // Reported iPhone 16 viewport.
+    { width: 240, height: 320, dpr: 1 }, { width: 320, height: 568, dpr: 2 },
+    { width: 844, height: 390, dpr: 3 }, { width: 768, height: 1024, dpr: 2 },
+    { width: 1366, height: 900, dpr: 1 },
+    { width: 375, height: 667, dpr: 2 }, { width: 430, height: 932, dpr: 3 }
   ]) {
-    const page = await browser.newPage({ viewport, deviceScaleFactor: 1 });
+    const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height }, deviceScaleFactor: viewport.dpr });
     page.on('pageerror', error => errors.push(error.message));
     await page.route('https://**', route => route.abort());
     for (const theme of THEME_IDS) {
@@ -61,20 +62,21 @@ try {
             animation.currentTime = animation.effect.target === card ? time : 1000;
           }
           const r = document.querySelector('[data-envelope-scene]').getBoundingClientRect();
-          return { top: r.top, bottom: r.bottom, left: r.left, right: r.right };
+          const dpr = devicePixelRatio;
+          return { top: r.top * dpr, bottom: (r.bottom - 1) * dpr, left: r.left * dpr, right: r.right * dpr };
         }, { phase, time });
         const { data, info } = await sharp(await page.screenshot()).removeAlpha().raw().toBuffer({ resolveWithObject: true });
         let below = 0, above = 0;
         for (let y = 0; y < info.height; y++) {
           for (let x = Math.ceil(box.left); x < Math.min(info.width, box.right); x++) {
             const i = (y * info.width + x) * info.channels;
-            if (data[i] < 20 && data[i + 1] > 240 && data[i + 2] < 20) {
+            if (data[i + 1] > data[i] + 35 && data[i + 1] > data[i + 2] + 35) {
               if (y >= Math.ceil(box.bottom)) below++;
               if (y < Math.floor(box.top)) above++;
             }
           }
         }
-        const label = `${viewport.width}x${viewport.height}, ${theme}, ${phase} ${time}ms`;
+        const label = `${viewport.width}x${viewport.height} @${viewport.dpr}x, ${theme}, ${phase} ${time}ms`;
         assert.equal(below, 0, `card leaks below envelope: ${label}`);
         if (phase === 'rising' && time === 1500) assert.ok(above > 0, `rising card must remain visible above envelope: ${label}`);
         samples++;

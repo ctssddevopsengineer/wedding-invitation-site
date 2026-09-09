@@ -153,8 +153,10 @@ export default function CinematicIntro({
       <div className={active ? styles.scene : styles.passthrough} data-envelope-scene={active ? true : undefined}>
         {active && <div className={styles.envelopeBack} aria-hidden="true" />}
         {/* The existing stage is mounted exactly once, through every phase. */}
-        <div className={active ? styles.card : styles.revealedCard} inert={active} aria-hidden={active ? true : undefined}>
-          {children}
+        <div className={active ? styles.cardMask : styles.passthrough}>
+          <div className={active ? styles.card : styles.revealedCard} inert={active} aria-hidden={active ? true : undefined}>
+            {children}
+          </div>
         </div>
         {active && (
           <>
