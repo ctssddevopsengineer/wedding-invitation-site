@@ -44,6 +44,7 @@ test('browser regression validates scroll behavior, reachability and horizontal 
   assert.match(browserRegression, /if \(width < 375\)/);
   assert.match(browserRegression, /scrollState\.overflowY, 'auto'/);
   assert.match(browserRegression, /scrollState\.overflowX, 'hidden'/);
+  assert.match(browserRegression, /Array\(6\)\.fill\(/);
   assert.match(browserRegression, /stress\.overflow > 0/);
   assert.match(browserRegression, /stress\.reachedBottom/);
   assert.match(browserRegression, /stress\.horizontalOverflow <= 1/);
