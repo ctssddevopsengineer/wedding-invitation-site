@@ -20,9 +20,18 @@ import './inside-right-saffron-parity.css';
 import './inside-left-saffron-parity.css';
 import './saffron-front-separator.css';
 import './front-saffron-parity.css';
+import './compact-details-scroll.css';
 
 const bengali = localFont({ src: './fonts/noto-serif-bengali.ttf', variable: '--font-bengali', display: 'swap', preload: false });
 const devanagari = localFont({ src: './fonts/noto-serif-devanagari.ttf', variable: '--font-devanagari', display: 'swap', preload: false });
+
+// Artwork and overlaid text share a fixed palette, including in dark browser UI.
+// Leave zoom unrestricted for accessibility.
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  colorScheme: 'only light'
+};
 
 export const metadata = {
   title: 'Wedding Reception Invitation',

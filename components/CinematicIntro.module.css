@@ -71,6 +71,15 @@
   border-radius: 5px;
   background: linear-gradient(145deg, #d6ad73, #f3dfb5 45%, #ac804c);
 }
+/* Mask only the moving card, behind the envelope pocket. The overlap keeps
+   fractional CSS/device pixels from exposing a thin strip along its base. */
+.cardMask {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  clip-path: inset(-200% 0 2px);
+  pointer-events: none;
+}
 .card {
   position: absolute;
   top: 8%;
@@ -155,8 +164,7 @@
   padding: 10px;
   border: 1px solid #dcb87935;
   border-radius: 18px;
-  background: #2b1117cc;
-  backdrop-filter: blur(10px);
+  background: #2b1117;
 }
 .preferenceField {
   min-width: 0;
@@ -167,7 +175,7 @@
   font-size: .72rem;
   letter-spacing: .04em;
 }
-.preferenceField select {
+.preferenceTrigger {
   width: 100%;
   min-width: 0;
   min-height: 44px;
@@ -180,8 +188,8 @@
   font-size: .86rem;
   cursor: pointer;
 }
-.preferenceField select:focus-visible { outline: 2px solid #f7e3bf; outline-offset: 2px; }
-.preferenceField select:disabled { cursor: progress; opacity: .65; }
+.preferenceTrigger:focus-visible { outline: 2px solid #f7e3bf; outline-offset: 2px; }
+.preferenceTrigger:disabled { cursor: progress; opacity: .65; }
 .open, .skip, .replay {
   cursor: pointer;
   min-height: 44px;
@@ -202,13 +210,13 @@
 .passthrough, .revealedCard, .chrome { display: contents; }
 .chrome[inert] { visibility: hidden; }
 
-.overlay[data-cinematic-intro='opening'] .flap { animation: flapOpen 1s cubic-bezier(.4, 0, .2, 1) both; }
+.overlay[data-cinematic-intro='opening'] .flap { animation: flapOpen 1.4s cubic-bezier(.4, 0, .2, 1) both; }
 .overlay:not([data-cinematic-intro='closed']) .heading { opacity: 0; }
 .overlay[data-cinematic-intro='opening'] .seal { opacity: 0; transition: opacity .25s; }
 .overlay[data-cinematic-intro='opening'] .card { visibility: visible; }
 .overlay:is([data-cinematic-intro='rising'], [data-cinematic-intro='scene'], [data-cinematic-intro='walking'], [data-cinematic-intro='together'], [data-cinematic-intro='revealing']) .flap { transform: rotateX(-180deg); z-index: 0; }
 .overlay:is([data-cinematic-intro='rising'], [data-cinematic-intro='scene'], [data-cinematic-intro='walking'], [data-cinematic-intro='together'], [data-cinematic-intro='revealing']) .seal { visibility: hidden; }
-.overlay[data-cinematic-intro='rising'] .card { visibility: visible; animation: cardRise 1.5s cubic-bezier(.22, .7, .25, 1) both; }
+.overlay[data-cinematic-intro='rising'] .card { visibility: visible; animation: cardRise 4.6s cubic-bezier(.22, .7, .25, 1) both; }
 .overlay:is([data-cinematic-intro='scene'], [data-cinematic-intro='walking'], [data-cinematic-intro='together'], [data-cinematic-intro='revealing']) .card { visibility: visible; transform: translateY(-65%); clip-path: inset(0); }
 .scene, .footer { transition: opacity .7s ease; }
 .overlay:is([data-cinematic-intro='scene'], [data-cinematic-intro='walking'], [data-cinematic-intro='together'], [data-cinematic-intro='revealing']) :is(.scene, .footer) { opacity: 0; }
@@ -262,9 +270,35 @@
   .footer { width: 100%; padding-bottom: 0; }
   .preferences { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 6px; padding: 6px; }
   .preferenceField { grid-template-columns: auto minmax(92px, 1fr); align-items: center; font-size: .66rem; }
-  .preferenceField select { min-height: 44px; font-size: .72rem; }
+  .preferenceTrigger { min-height: 44px; font-size: .72rem; }
   .open { max-width: 100%; gap: 8px; padding: 8px 12px; font-size: .8rem; }
 }
 @media (max-height: 600px) and (max-width: 430px) {
   .preferenceField { grid-template-columns: minmax(0, 1fr); }
 }
+
+.dropdownAnchor { position: relative; min-width: 0; }
+.preferenceTrigger { display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: left; }
+.preferenceMenu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px;
+  border: 1px solid #dcb87990;
+  border-radius: 12px;
+  background: #3b1720;
+  box-shadow: 0 8px 24px #0008;
+}
+.preferenceMenu[data-above='true'] { top: auto; bottom: calc(100% + 6px); }
+.preferenceOption {
+  display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px;
+  padding: 8px; border: 0; border-radius: 8px; background: transparent;
+  color: #fff0d0; font: inherit; text-align: left; cursor: pointer;
+}
+.preferenceOption > span { flex: 0 0 1em; }
+.preferenceOption:hover, .preferenceOption:focus-visible { background: #713342; outline: 2px solid #dcb879; outline-offset: -2px; }
+.preferenceOption[aria-selected='true'] { background: #592532; }

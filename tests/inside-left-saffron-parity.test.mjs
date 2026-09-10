@@ -129,23 +129,26 @@ test('InsideLeft continues to expose every styled semantic class', () => {
   ]) assert.ok(insideLeft.includes(className), `InsideLeft still exposes ${className}`);
 });
 
-test('inside-left parity loads before the final Saffron front layers and CSS is balanced', () => {
+test('inside-left parity keeps its ordering before front layers and compact details scrolling', () => {
   const generalImport = "import './saffron-typography-parity.css';";
   const insideRightImport = "import './inside-right-saffron-parity.css';";
   const parityImport = "import './inside-left-saffron-parity.css';";
   const frontSeparatorImport = "import './saffron-front-separator.css';";
   const frontParityImport = "import './front-saffron-parity.css';";
+  const compactScrollImport = "import './compact-details-scroll.css';";
 
-  for (const required of [generalImport, insideRightImport, parityImport, frontSeparatorImport, frontParityImport]) {
+  for (const required of [generalImport, insideRightImport, parityImport, frontSeparatorImport, frontParityImport, compactScrollImport]) {
     assert.ok(layout.includes(required));
   }
   assert.ok(layout.indexOf(parityImport) > layout.indexOf(insideRightImport));
   assert.ok(layout.indexOf(frontSeparatorImport) > layout.indexOf(parityImport));
   assert.ok(layout.indexOf(frontParityImport) > layout.indexOf(frontSeparatorImport));
+  assert.ok(layout.indexOf(compactScrollImport) > layout.indexOf(frontParityImport));
 
   const importLines = layout.split('\n').filter((line) => line.startsWith("import './"));
-  assert.equal(importLines.at(-3), parityImport);
-  assert.equal(importLines.at(-2), frontSeparatorImport);
-  assert.equal(importLines.at(-1), frontParityImport);
+  assert.equal(importLines.at(-4), parityImport);
+  assert.equal(importLines.at(-3), frontSeparatorImport);
+  assert.equal(importLines.at(-2), frontParityImport);
+  assert.equal(importLines.at(-1), compactScrollImport);
   assert.equal(count(css, '{'), count(css, '}'));
 });

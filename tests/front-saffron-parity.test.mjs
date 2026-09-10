@@ -165,15 +165,19 @@ test('FrontCover exposes the complete Saffron-style semantic sequence', () => {
   }
 });
 
-test('front parity is the final visual layer and CSS blocks are balanced', () => {
+test('front parity remains the final front visual layer before compact details scrolling', () => {
   const saffronSeparatorImport = "import './saffron-front-separator.css';";
   const parityImport = "import './front-saffron-parity.css';";
+  const compactScrollImport = "import './compact-details-scroll.css';";
 
   assert.ok(layout.includes(saffronSeparatorImport));
   assert.ok(layout.includes(parityImport));
+  assert.ok(layout.includes(compactScrollImport));
   assert.ok(layout.indexOf(parityImport) > layout.indexOf(saffronSeparatorImport));
+  assert.ok(layout.indexOf(compactScrollImport) > layout.indexOf(parityImport));
 
   const importLines = layout.split('\n').filter((line) => line.startsWith("import './"));
-  assert.equal(importLines.at(-1), parityImport);
+  assert.equal(importLines.at(-2), parityImport);
+  assert.equal(importLines.at(-1), compactScrollImport);
   assert.equal(count(css, '{'), count(css, '}'));
 });

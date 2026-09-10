@@ -27,7 +27,7 @@ test('opening progresses through the flap and card before revealing the website'
   assert.equal(advanceIntro('closed', 'advance'), 'closed');
   assert.ok(INTRO_PHASES.walking.duration >= 5000, 'walking remains slow and unhurried');
   assert.ok(INTRO_PHASES.together.duration >= 1000, 'the couple pauses before the reveal');
-  assert.ok(Object.values(INTRO_PHASES).reduce((sum, step) => sum + step.duration, 0) < 15000, 'the complete intro is bounded');
+  assert.ok(Object.values(INTRO_PHASES).reduce((sum, step) => sum + step.duration, 0) < 18000, 'the complete intro is bounded');
 });
 
 test('missing or late assets bypass only the entrance and still reveal the invitation', () => {

@@ -1,17 +1,32 @@
-// Build first. Run with BROWSER_CHANNEL=chrome to use an installed Chrome.
+// Build first. Use BROWSER_ENGINE=chromium|firefox|webkit and optional BROWSER_CHANNEL=chrome|msedge.
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import http from 'node:http';
 import path from 'node:path';
-import { chromium } from 'playwright';
+import { chromium, firefox, webkit } from 'playwright';
+import { resolveBrowserTarget } from '../lib/browser-regression.mjs';
 import { translate } from '../lib/locale.mjs';
 import { RESPONSIVE_VALIDATION_VIEWPORTS } from '../lib/responsive.mjs';
-import { EVENT } from '../lib/event.mjs';
 
 const root = path.resolve('out');
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 const screenshots = process.env.SCREENSHOT_DIR;
-const validationViewports = process.env.BROWSER_WIDTHS ? process.env.BROWSER_WIDTHS.split(',').map(Number).map(width => ({ width, height: 1100 })) : RESPONSIVE_VALIDATION_VIEWPORTS;
+const captureAllScreenshots = process.env.CAPTURE_ALL_SCREENSHOTS === 'true';
+const maxFailureScreenshots = Math.max(0, Number.parseInt(process.env.MAX_FAILURE_SCREENSHOTS || '50', 10) || 0);
+const validationViewports = process.env.BROWSER_VIEWPORTS
+  ? process.env.BROWSER_VIEWPORTS.split(',').map(size => {
+    const [width, height] = size.split('x').map(Number);
+    if (!(width > 0 && height > 0)) throw new Error(`Invalid viewport: ${size}`);
+    return { width, height };
+  })
+  : process.env.BROWSER_WIDTHS
+    ? process.env.BROWSER_WIDTHS.split(',').map(Number).map(width => ({ width, height: 1100 }))
+    : RESPONSIVE_VALIDATION_VIEWPORTS;
+const browserTarget = resolveBrowserTarget();
+const mobile = process.env.BROWSER_MOBILE === 'true';
+const colorScheme = process.env.BROWSER_COLOR_SCHEME || 'light';
+if (mobile && browserTarget.engine === 'firefox') throw new Error('Playwright mobile emulation requires Chromium or WebKit.');
+const browserTypes = { chromium, firefox, webkit };
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.webp': 'image/webp', '.png': 'image/png', '.woff2': 'font/woff2', '.ttf': 'font/ttf' };
 const server = http.createServer(async (req, res) => {
   try {
@@ -26,15 +41,26 @@ const server = http.createServer(async (req, res) => {
 });
 await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 const url = `http://127.0.0.1:${server.address().port}${basePath}/`;
+const animationFreezeCss = '*, *::before, *::after { animation: none !important; transition: none !important; }';
 let browser;
+const launchBrowser = () => browserTypes[browserTarget.engine].launch({
+  headless: true,
+  ...(browserTarget.channel ? { channel: browserTarget.channel } : {})
+});
 try {
-  browser = await chromium.launch({ headless: true, ...(process.env.BROWSER_CHANNEL ? { channel: process.env.BROWSER_CHANNEL } : {}) });
+  browser = await launchBrowser();
   const errors = [];
   let checked = 0;
+  let failureScreenshots = 0;
   const cachedSwitchTimes = [];
   if (screenshots) await fs.mkdir(screenshots, { recursive: true });
+  console.log(`Running full responsive regression on ${browserTarget.label}.`);
   for (const { width, height } of validationViewports) {
-    const context = await browser.newContext({ viewport: { width, height } });
+    const context = await browser.newContext({
+      viewport: { width, height },
+      colorScheme,
+      ...(mobile ? { isMobile: true, hasTouch: true, deviceScaleFactor: 2.625 } : {})
+    });
     // The existing QR service is external; only first-party requests are needed.
     await context.route('https://**', (route) => route.abort());
     const page = await context.newPage();
@@ -43,11 +69,48 @@ try {
     await page.waitForSelector('main[data-theme-ready="true"]');
     await page.locator('[data-intro-skip]').click();
     await page.waitForSelector('[data-cinematic-intro="complete"]');
-    await page.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; }' });
+    await page.addStyleTag({ content: animationFreezeCss });
+    if (mobile) {
+      // A desktop context with a narrow viewport cannot detect missing mobile
+      // viewport metadata: a real mobile context falls back to ~980 CSS pixels.
+      assert.equal(await page.evaluate(() => innerWidth), width, 'Mobile layout must use the device width');
+      assert.equal(await page.locator('meta[name="viewport"]').count(), 1);
+      assert.doesNotMatch(await page.locator('meta[name="viewport"]').getAttribute('content'), /user-scalable=no|maximum-scale=1/);
+      assert.equal(await page.locator('meta[name="color-scheme"]').getAttribute('content'), 'only light');
+      assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme), 'light only');
+    }
+
+    // WebKit intentionally rate-limits History API mutations. The app itself may also update
+    // history after a synthetic popstate, so periodically start a fresh document before Safari's
+    // 100-history-operations-per-10-seconds safety limit can be reached. This preserves the full
+    // rendered matrix without weakening assertions or sleeping thousands of times.
+    let webkitHistoryOps = 0;
+    const navigateMatrixState = async (theme, pageName, language) => {
+      const search = `?theme=${theme}&page=${pageName}&lang=${language}`;
+      if (browserTarget.engine === 'webkit' && webkitHistoryOps >= 32) {
+        await page.goto(`${url}${search}`);
+        await page.waitForSelector(`main[data-theme-ready="true"][data-invitation-theme="${theme}"][lang="${language}"]`);
+        const introComplete = page.locator('[data-cinematic-intro="complete"]');
+        if (await introComplete.count() === 0) {
+          const skip = page.locator('[data-intro-skip]');
+          if (await skip.count()) await skip.click();
+          await page.waitForSelector('[data-cinematic-intro="complete"]');
+        }
+        await page.addStyleTag({ content: animationFreezeCss });
+        webkitHistoryOps = 0;
+        return;
+      }
+      await page.evaluate((nextSearch) => {
+        history.pushState({}, '', nextSearch);
+        dispatchEvent(new PopStateEvent('popstate'));
+      }, search);
+      webkitHistoryOps++;
+    };
+
     for (const theme of (process.env.BROWSER_THEMES || 'classic,blush,magenta,navy,plum,saffron').split(',')) {
       for (const language of ['en', 'bn', 'ne']) {
         for (const pageName of ['front', 'family', 'details', 'back']) {
-          await page.evaluate((search) => { history.pushState({}, '', search); dispatchEvent(new PopStateEvent('popstate')); }, `?theme=${theme}&page=${pageName}&lang=${language}`);
+          await navigateMatrixState(theme, pageName, language);
           await page.waitForSelector(`main[data-theme-ready="true"][data-invitation-theme="${theme}"][lang="${language}"]`);
           await page.waitForSelector(`.bookStage.page-${({ family: 'inside-left', details: 'inside-right' })[pageName] || pageName}`);
           await page.evaluate(async () => { await document.fonts.ready; await Promise.all(document.getAnimations().filter(a => a.effect?.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))); });
@@ -56,6 +119,7 @@ try {
           assert.equal(await page.locator('#invitation-language-value').getAttribute('lang'), language);
           const issues = await page.evaluate(() => {
             const issues = [];
+            const compactDetailsScroller = innerWidth < 375 && document.querySelector('.bookStage.page-inside-right .receptionDetailsOverlay');
             if (document.documentElement.scrollWidth > innerWidth + 1) issues.push('horizontal page overflow: ' + [...document.querySelectorAll('body *')].filter(n => n.getBoundingClientRect().right > innerWidth + 2).slice(0, 5).map(n => n.className).join('/'));
             const card = document.querySelector('.invitePage').getBoundingClientRect();
             for (const node of document.querySelectorAll('.invitePage h1,.invitePage h2,.familyBlock,.heritageAssistance,.receptionDetailsOverlay')) {
@@ -67,53 +131,159 @@ try {
               const expected = /(?:\/themes\/|\/images\/wedding-monogram\.png$)/.test(image.src) ? image.src.replace(/\.(?:png|jpe?g)$/, '.webp') : image.src;
               if (image.currentSrc !== expected || !image.naturalWidth) issues.push('artwork not optimized/loaded');
             }
-            // New typography guards apply to translations; approved English geometry is preserved.
-            for (const [first, second] of [['.heritageBackIntro', '.heritageCoupleNames'], ['.dynamicFrontNames', '.dynamicFrontClosing']]) {
+
+            // Validate important layout zones using the boxes of visible semantic content. A flex
+            // item can reserve more layout height than its painted children on a particular engine;
+            // that allocation is not a visual collision. Below 375px the reception overlay is a
+            // clipping scroll container, so off-screen countdown geometry must not be compared to
+            // the independently positioned translated closing copy outside that scrollport.
+            for (const [first, second] of [
+              ['.heritageBackIntro', '.heritageCoupleNames'],
+              ['.heritageCoupleNames', '.heritageJourneyMessage'],
+              ['.heritageJourneyMessage', '.heritageAssistance'],
+              ['.dynamicFrontHeading > span', '.dynamicFrontHeading > em'],
+              ['.dynamicFrontTagline', '.dynamicFrontNames'],
+              ['.dynamicFrontNames', '.dynamicFrontClosing'],
+              ['.receptionCountdownItem .countdown', '.localizedDetailsClosing']
+            ]) {
+              if (compactDetailsScroller && first === '.receptionCountdownItem .countdown' && second === '.localizedDetailsClosing') continue;
               const a = document.querySelector(first)?.getBoundingClientRect();
               const b = document.querySelector(second)?.getBoundingClientRect();
               if (a?.width && b?.width && a.bottom > b.top + 2) issues.push(`overlap: ${first}/${second}`);
             }
-            // Compare rendered text fragments, rather than overlapping parent boxes.
+
+            // Back-cover copy uses deliberate stacked semantic blocks. Firefox on macOS reports
+            // taller glyph-range rectangles for Bengali/Devanagari, so compare those blocks by
+            // their actual element boxes rather than by font-engine-specific text ranges.
+            const journeyLines = [...document.querySelectorAll('.heritageJourneyMessage > span')];
+            for (let index = 0; index < journeyLines.length - 1; index++) {
+              const a = journeyLines[index].getBoundingClientRect();
+              const b = journeyLines[index + 1].getBoundingClientRect();
+              if (a.width && b.width && a.bottom > b.top + 2) issues.push('overlap: .heritageJourneyMessage lines');
+            }
+            const assistanceHeading = document.querySelector('.heritageAssistance > h3')?.getBoundingClientRect();
+            const contactGrid = document.querySelector('.heritageAssistance .contactGrid')?.getBoundingClientRect();
+            if (assistanceHeading?.width && contactGrid?.width && assistanceHeading.bottom > contactGrid.top + 2) issues.push('overlap: .heritageAssistance heading/.contactGrid');
+            for (const contactCard of document.querySelectorAll('.heritageAssistance .contactCard')) {
+              const label = contactCard.querySelector('.label')?.getBoundingClientRect();
+              const name = contactCard.querySelector('h3')?.getBoundingClientRect();
+              const phone = contactCard.querySelector('a,.muted')?.getBoundingClientRect();
+              if (label?.width && name?.width && label.bottom > name.top + 2) issues.push('overlap: .contactCard .label/h3');
+              if (name?.width && phone?.width && name.bottom > phone.top + 2) issues.push('overlap: .contactCard h3/phone');
+            }
+
+            for (const item of document.querySelectorAll('.receptionDetailItem')) {
+              const label = item.querySelector('.receptionDetailLabel')?.getBoundingClientRect();
+              const value = item.querySelector('.receptionDetailValue')?.getBoundingClientRect();
+              if (label?.width && value?.width && label.bottom > value.top + 1) issues.push('overlap: .receptionDetailLabel/.receptionDetailValue');
+            }
+
+            // Compare rendered text fragments for the rest of the card. Semantic zones above are
+            // intentionally excluded because their element boxes are the cross-engine source of
+            // truth; raw glyph-range metrics differ between Linux, Windows and macOS. Content
+            // below a compact scrollport is intentionally clipped and reachable by scrolling, so
+            // its off-screen range geometry is not a card-boundary violation.
+            const semanticZones = '.dynamicFrontHeading,.dynamicFrontTagline,.dynamicFrontNames,.heritageBackIntro,.heritageCoupleNames,.heritageJourneyMessage,.heritageAssistance,.receptionDetailsOverlay,.localizedDetailsClosing';
             const walker = document.createTreeWalker(document.querySelector('.invitePage'), NodeFilter.SHOW_TEXT);
             const fragments = [];
             while (walker.nextNode()) {
               const node = walker.currentNode;
               if (!node.textContent.trim() || node.parentElement.closest('[aria-hidden="true"], .srOnly')) continue;
               const style = getComputedStyle(node.parentElement);
-              if (style.visibility === 'hidden' || style.display === 'none') continue;
+              if (style.visibility === 'hidden' || style.display === 'none' || Number(style.opacity) === 0) continue;
               const range = document.createRange(); range.selectNodeContents(node);
               for (const rect of range.getClientRects()) {
-                if (rect.width && rect.height) fragments.push({ rect, node, label: (node.parentElement.className || node.parentElement.tagName) + ':' + node.textContent.trim().slice(0, 35) });
+                if (rect.width && rect.height) fragments.push({ rect, node, element: node.parentElement, label: (node.parentElement.className || node.parentElement.tagName) + ':' + node.textContent.trim().slice(0, 35) });
               }
             }
             for (let i = 0; i < fragments.length; i++) {
               const a = fragments[i];
-              if (a.rect.left < card.left - 2 || a.rect.right > card.right + 2 || a.rect.bottom > card.bottom + 2) issues.push(`text outside card: ${a.label}`);
+              const insideCompactDetailsScroller = compactDetailsScroller && a.element.closest('.receptionDetailsOverlay');
+              if (!insideCompactDetailsScroller && (a.rect.left < card.left - 2 || a.rect.right > card.right + 2 || a.rect.bottom > card.bottom + 2)) issues.push(`text outside card: ${a.label}`);
               for (const b of fragments.slice(i + 1)) {
                 if (a.node === b.node) continue;
+                if (a.element.closest(semanticZones) || b.element.closest(semanticZones)) continue;
                 const overlapX = Math.min(a.rect.right, b.rect.right) - Math.max(a.rect.left, b.rect.left);
                 const overlapY = Math.min(a.rect.bottom, b.rect.bottom) - Math.max(a.rect.top, b.rect.top);
                 if (overlapX > 2 && overlapY > Math.min(a.rect.height, b.rect.height) * .25) issues.push(`text collision: ${a.label}/${b.label}`);
               }
             }
-            return issues;
+            return [...new Set(issues)];
           });
-          if (issues.length && screenshots) await page.locator('.pageViewport').screenshot({ path: `${screenshots}/failure-${width}x${height}-${theme}-${language}-${pageName}.png` });
+          if (issues.length && screenshots && failureScreenshots < maxFailureScreenshots) {
+            await page.locator('.pageViewport').screenshot({ path: `${screenshots}/failure-${width}x${height}-${theme}-${language}-${pageName}.png` });
+            failureScreenshots++;
+          }
           if (issues.length) errors.push(`${width}x${height}/${theme}/${language}/${pageName}: ${issues.join(', ')}`);
-          if (pageName === 'details' && language !== 'en') {
-            const dateText = await page.locator('.receptionDetailValue').first().innerText();
-            if (Number.isFinite(EVENT.start.getTime())) {
-              assert.match(dateText, language === 'bn' ? /[০-৯]/ : /[०-९]/);
-            } else {
-              assert.equal(dateText, translate(language, 'Reception date will be announced soon.'));
+
+          if (pageName === 'details') {
+            const scrollState = await page.evaluate(() => {
+              const overlay = document.querySelector('.receptionDetailsOverlay');
+              const style = getComputedStyle(overlay);
+              const initialScrollTop = overlay.scrollTop;
+              overlay.scrollTop = overlay.scrollHeight;
+              const maxScrollTop = overlay.scrollTop;
+              overlay.scrollTop = initialScrollTop;
+              return {
+                overflowY: style.overflowY,
+                overflowX: style.overflowX,
+                overscrollBehaviorY: style.overscrollBehaviorY,
+                clientHeight: overlay.clientHeight,
+                scrollHeight: overlay.scrollHeight,
+                clientWidth: overlay.clientWidth,
+                scrollWidth: overlay.scrollWidth,
+                maxScrollTop
+              };
+            });
+
+            if (width < 375) {
+              assert.equal(scrollState.overflowY, 'auto', `${width}px inside-right details must enable vertical scrolling`);
+              assert.equal(scrollState.overflowX, 'hidden', `${width}px inside-right details must never scroll horizontally`);
+              assert.equal(scrollState.overscrollBehaviorY, 'contain', `${width}px inside-right scrolling must not chain into the page`);
+              assert.ok(scrollState.scrollWidth <= scrollState.clientWidth + 1, `${width}px inside-right scrollport has horizontal overflow`);
+
+              // Force a long production-style address and prove the content becomes real scroll
+              // overflow rather than being compressed into overlapping flex items. Restore the
+              // original text immediately so the rest of the matrix remains deterministic.
+              const stress = await page.evaluate(() => {
+                const overlay = document.querySelector('.receptionDetailsOverlay');
+                const address = document.querySelector('.receptionAddressValue');
+                const original = address.textContent;
+                const originalScrollTop = overlay.scrollTop;
+                try {
+                  address.textContent = Array(6).fill('92, Artillary Road, Cantonment, Barrackpore, West Bengal 700120 — Near the main entrance, opposite the community hall, please follow the reception signs.').join(' ');
+                  overlay.scrollTop = 0;
+                  const overflow = overlay.scrollHeight - overlay.clientHeight;
+                  const horizontalOverflow = overlay.scrollWidth - overlay.clientWidth;
+                  overlay.scrollTop = overlay.scrollHeight;
+                  const reachedBottom = overlay.scrollTop > 0;
+                  return { overflow, horizontalOverflow, reachedBottom };
+                } finally {
+                  address.textContent = original;
+                  overlay.scrollTop = originalScrollTop;
+                }
+              });
+              assert.ok(stress.overflow > 0, `${width}px long inside-right content must produce vertical scroll overflow`);
+              assert.ok(stress.reachedBottom, `${width}px inside-right content must be reachable by scrolling`);
+              assert.ok(stress.horizontalOverflow <= 1, `${width}px long inside-right content must not create horizontal scrolling`);
+            } else if (width === 375) {
+              assert.notEqual(scrollState.overflowY, 'auto', '375px is the fixed-layout boundary and must not use the compact scroll fallback');
             }
+          }
+
+          if (pageName === 'details' && language !== 'en') {
+            // Browser regression validates the already-rendered static artifact. A production-style
+            // build has a concrete reception date, so assert localized numerals directly instead
+            // of consulting the fresh checkout's placeholder event configuration.
+            const dateText = await page.locator('.receptionDetailValue').first().innerText();
+            assert.match(dateText, language === 'bn' ? /[০-৯]/ : /[०-९]/);
             assert.doesNotMatch(dateText, /Sunday|February|January|Monday/);
           }
           if (pageName === 'front') assert.equal(await page.locator('.openButton span').first().innerText(), translate(language, 'Open Invitation'));
           if (pageName === 'family') assert.equal(await page.locator('#family-blessings-title').innerText(), translate(language, 'With the Blessings of Our Families'));
-          if (screenshots && language !== 'en') await page.locator('.pageViewport').screenshot({ path: `${screenshots}/${width}x${height}-${theme}-${language}-${pageName}.png` });
+          if (captureAllScreenshots && screenshots) await page.locator('.pageViewport').screenshot({ path: `${screenshots}/${width}x${height}-${theme}-${language}-${pageName}.png` });
           checked++;
-          if (checked % 72 === 0) console.log(`Checked ${checked} card renders; ${errors.length} issues recorded.`);
+          if (checked % 72 === 0) console.log(`Checked ${checked} card renders on ${browserTarget.label}; ${errors.length} issues recorded.`);
         }
       }
     }
@@ -159,8 +329,16 @@ try {
         if (round === 1) cachedSwitchTimes.push(elapsed);
       }
     }
-    if (process.env.REPORT_PATH) await fs.writeFile(process.env.REPORT_PATH, JSON.stringify({ checked, viewports: validationViewports, errors }, null, 2));
-    await context.close();
+    if (process.env.REPORT_PATH) await fs.writeFile(process.env.REPORT_PATH, JSON.stringify({ browser: browserTarget, checked, viewports: validationViewports, failureScreenshots, errors }, null, 2));
+    if (browserTarget.engine === 'webkit') {
+      // macOS WebKit can segfault tearing down successive contexts in one
+      // long-lived process. Finish each fully checked viewport by retiring the
+      // process, then start fresh. Assertions and browser errors still fail.
+      await browser.close();
+      browser = await launchBrowser();
+    } else {
+      await context.close();
+    }
   }
   const fallbackContext = await browser.newContext();
   await fallbackContext.route('https://**', (route) => route.abort());
@@ -183,11 +361,11 @@ try {
   await fallbackPage.keyboard.press('Escape');
   assert.equal(await fallbackPage.locator('.exactLocationHotspot').getAttribute('aria-expanded'), 'false');
   await fallbackContext.close();
-  if (process.env.REPORT_PATH) await fs.writeFile(process.env.REPORT_PATH, JSON.stringify({ checked, viewports: validationViewports, errors }, null, 2));
+  if (process.env.REPORT_PATH) await fs.writeFile(process.env.REPORT_PATH, JSON.stringify({ browser: browserTarget, checked, viewports: validationViewports, failureScreenshots, errors }, null, 2));
   assert.deepEqual(errors, []);
   cachedSwitchTimes.sort((a, b) => a - b);
-  console.log(`Cached theme selection median: ${cachedSwitchTimes[Math.floor(cachedSwitchTimes.length / 2)].toFixed(1)} ms (local Chrome; excludes the existing decorative transition).`);
-  console.log(`Passed ${checked} theme/page/language/viewport renders, persistence, copy/QR links, browser history, rapid theme switching, blocked storage, image fallback and location state; no browser errors.`);
+  console.log(`Cached theme selection median: ${cachedSwitchTimes[Math.floor(cachedSwitchTimes.length / 2)].toFixed(1)} ms (${browserTarget.label}; excludes the existing decorative transition).`);
+  console.log(`Passed ${checked} theme/page/language/viewport renders on ${browserTarget.label}, persistence, copy/QR links, browser history, rapid theme switching, blocked storage, image fallback and location state; no browser errors.`);
 } finally {
   await browser?.close();
   server.closeAllConnections();

@@ -22,14 +22,14 @@ test('intro preference changes use the same invitation state handlers', () => {
   assert.match(bookSource, /themeId=\{themeId\}/);
   assert.match(bookSource, /onLanguageChange=\{\(value\) => setLanguage\(resolveLanguage\(value\)\)\}/);
   assert.match(bookSource, /onThemeChange=\{changeTheme\}/);
-  assert.match(introSource, /onLanguageChange\?\.\(event\.target\.value\)/);
-  assert.match(introSource, /onThemeChange\?\.\(event\.target\.value\)/);
+  assert.match(introSource, /onChange=\{onLanguageChange\}/);
+  assert.match(introSource, /onChange=\{onThemeChange\}/);
 });
 
-test('opening remains available during initialization and theme preload; keyboard trap includes selects', () => {
+test('opening remains available during initialization and theme preload; keyboard trap includes dropdown triggers', () => {
   assert.match(introSource, /data-intro-open disabled=\{phase !== 'closed'\}/);
   assert.match(introSource, /\[data-intro-control\]:not\(:disabled\)/);
-  assert.match(introSource, /aria-busy=\{Boolean\(pendingTheme\)\}/);
+  assert.match(introSource, /busy=\{Boolean\(pendingTheme\)\}/);
 });
 
 test('standard controls mount only after the intro to avoid duplicate interactive chrome', () => {
@@ -44,5 +44,5 @@ test('intro preference panel is responsive on mobile, landscape and short viewpo
   assert.match(introCss, /@media \(max-width: 430px\)/);
   assert.match(introCss, /@media \(orientation: landscape\) and \(max-height: 520px\)/);
   assert.match(introCss, /@media \(max-height: 400px\)/);
-  assert.match(introCss, /\.preferenceField select:focus-visible/);
+  assert.match(introCss, /\.preferenceTrigger:focus-visible/);
 });

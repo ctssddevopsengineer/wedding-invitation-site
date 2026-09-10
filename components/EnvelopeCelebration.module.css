@@ -1,0 +1,149 @@
+.field {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  overflow: hidden;
+  contain: strict;
+  perspective: 700px;
+}
+.particle {
+  position: absolute;
+  top: var(--origin);
+  width: var(--size);
+  height: var(--size);
+  color: var(--color);
+  opacity: 0;
+  animation: flight var(--duration) var(--delay) linear both;
+}
+.left { left: max(12%, calc(50% - 290px)); }
+.right { right: max(12%, calc(50% - 290px)); }
+.ember {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #fff8df;
+  box-shadow: 0 0 4px 1px var(--color), 0 0 9px var(--color);
+}
+.ember::after {
+  content: '';
+  position: absolute;
+  right: 50%;
+  top: 0;
+  width: 15px;
+  height: 2px;
+  transform-origin: right center;
+  transform: rotate(var(--angle));
+  background: linear-gradient(90deg, transparent, var(--color));
+  border-radius: 50%;
+}
+.sprinkler .ember::after { width: 21px; }
+.ribbon { height: calc(var(--size) * 4); }
+.strip {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: flutter .95s ease-in-out infinite alternate;
+}
+.field[data-paused='true'] .particle,
+.field[data-paused='true'] .strip { animation-play-state: paused; }
+/* The outward launch decelerates; gravity carries the embers down as they cool. */
+@keyframes flight {
+  0% { opacity: 0; transform: translate(0, 0) scale(.5); animation-timing-function: cubic-bezier(.12,.5,.32,1); }
+  7% { opacity: 1; }
+  50% { opacity: .95; transform: translate(calc(var(--x) * .75), var(--y-mid)) scale(1); animation-timing-function: cubic-bezier(.45,0,.8,.6); }
+  80% { opacity: .65; }
+  100% { opacity: 0; transform: translate(var(--x), var(--y-end)) scale(.45); }
+}
+.ribbon { animation-name: ribbonFlight; }
+@keyframes ribbonFlight {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0deg); animation-timing-function: ease-out; }
+  8% { opacity: 1; }
+  45% { opacity: 1; transform: translate(calc(var(--x) * .6), var(--y)) rotate(calc(var(--rotation) * .4)); animation-timing-function: ease-in; }
+  85% { opacity: .9; }
+  100% { opacity: 0; transform: translate(var(--x), var(--y-end)) rotate(var(--rotation)); }
+}
+@keyframes flutter {
+  from { transform: rotateY(-65deg) rotateX(15deg); }
+  to { transform: rotateY(65deg) rotateX(-20deg); }
+}
+@media (max-width: 680px) {
+  .left { left: 9%; }
+  .right { right: 9%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .field { display: none; }
+  .particle, .strip { animation: none; }
+}
+
+/* Two grounded tubri fountains frame the envelope without crossing its center. */
+.tubri {
+  position: absolute;
+  top: auto;
+  bottom: max(13%, 60px);
+  width: clamp(70px, 15vw, 210px);
+  height: min(42vh, 330px);
+  --jet-height: min(29vh, 235px);
+}
+.tubri.left { left: 1%; }
+.tubri.right { right: 1%; }
+.tubri .sprinkler {
+  left: 50%;
+  right: auto;
+  top: auto;
+  bottom: 25px;
+  animation-name: tubriSpark;
+  animation-iteration-count: var(--iterations);
+}
+.tubri .ember::after { transform: rotate(-90deg); width: 13px; }
+.cone {
+  position: absolute;
+  width: 30px;
+  height: 29px;
+  bottom: 0;
+  left: calc(50% - 15px);
+  clip-path: polygon(46% 0, 54% 0, 100% 95%, 85% 100%, 15% 100%, 0 95%);
+  background: repeating-linear-gradient(0deg, transparent 0 7px, #f0c56b 8px 9px), linear-gradient(90deg, #5c2717, #bb7940 45%, #67321e);
+}
+.cone span { position: absolute; inset: 0 12px 20px; background: #fff2b1; }
+.plume {
+  position: absolute;
+  bottom: 24px;
+  left: calc(50% - 20px);
+  width: 40px;
+  height: var(--jet-height);
+  transform-origin: bottom;
+  background: linear-gradient(0deg, #fffbe6, #ffd56bbb 12%, #ed9b2825 60%, transparent);
+  clip-path: polygon(46% 100%, 3% 18%, 30% 40%, 37% 0, 51% 31%, 73% 8%, 69% 47%, 100% 24%, 54% 100%);
+  animation: jetIgnition 5.65s ease-out both;
+}
+.glow {
+  position: absolute;
+  bottom: -12px;
+  left: calc(50% - 50px);
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(ellipse at 50% 75%, #ffc35060, #ef981514 38%, transparent 70%);
+  animation: jetIgnition 5.65s ease-out both;
+}
+@keyframes jetIgnition {
+  0% { opacity: 0; transform: scaleY(.1); }
+  8%, 35%, 65% { opacity: .85; transform: scaleY(1); }
+  22%, 50%, 78% { opacity: .6; transform: scaleY(.87); }
+  90% { opacity: .5; transform: scaleY(.75); }
+  100% { opacity: 0; transform: scaleY(.15); }
+}
+@keyframes tubriSpark {
+  0% { opacity: 0; transform: translate(0, 0) scale(.7); animation-timing-function: ease-out; }
+  8% { opacity: 1; }
+  48% { opacity: 1; transform: translate(calc(var(--x) * .4), max(var(--y), -36vh)) scale(1); animation-timing-function: ease-in; }
+  80% { opacity: .7; }
+  100% { opacity: 0; transform: translate(var(--x), -12px) scale(.3); }
+}
+.field[data-paused='true'] .plume,
+.field[data-paused='true'] .glow { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .plume, .glow { animation: none; }
+}

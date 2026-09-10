@@ -1,0 +1,44 @@
+/* ========================================================================== */
+/* COMPACT INSIDE-RIGHT SCROLL FALLBACK                                       */
+/*                                                                            */
+/* Viewports below 375 CSS px keep the approved parchment/artwork geometry    */
+/* while the dense reception-details column becomes independently scrollable. */
+/* This prevents translated/long content from being compressed into overlapping */
+/* flex items. The 375px-and-up layout is intentionally untouched.            */
+/* ========================================================================== */
+
+@media (max-width: 374px) {
+  .bookStage.page-inside-right .receptionDetailsOverlay {
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(169, 119, 40, .55) transparent;
+    justify-content: flex-start !important;
+    padding-bottom: .45rem;
+  }
+
+  /* Flex children must keep their natural painted height. Otherwise the flex
+     algorithm can compress long Bengali/Nepali/address content and make one
+     item's text paint into the next item instead of producing scroll overflow. */
+  .bookStage.page-inside-right .receptionDetailsOverlay > .receptionDetailItem,
+  .bookStage.page-inside-right .receptionDetailsOverlay > .receptionDetailDivider,
+  .bookStage.page-inside-right .receptionDetailsOverlay > br {
+    flex: 0 0 auto;
+  }
+
+  .bookStage.page-inside-right .receptionDetailsOverlay::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  .bookStage.page-inside-right .receptionDetailsOverlay::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .bookStage.page-inside-right .receptionDetailsOverlay::-webkit-scrollbar-thumb {
+    background: rgba(169, 119, 40, .55);
+    border-radius: 999px;
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "normalization": "rgb-6bit-sha256",
+  "cases": {
+    "small-phone-classic-details-bn": {"viewport":"320x658","theme":"classic","page":"details","language":"bn","width":304,"height":523,"hash":"bc0df471a3910739d5aa242a248bd3ed8777e70682174471f0a93aad89d1de9b"},
+    "small-phone-blush-front-en": {"viewport":"320x658","theme":"blush","page":"front","language":"en","width":304,"height":523,"hash":"2a3b2d846fa2c6ab738da58097554b5d4fb32b26fedd472e60d9115d06a1be97"},
+    "small-phone-magenta-family-ne": {"viewport":"320x658","theme":"magenta","page":"family","language":"ne","width":304,"height":523,"hash":"379d9d7344100cc722cf7c544beada53c952b668e6751690d03c4ac8a2d6774c"},
+    "android-classic-back-ne": {"viewport":"360x800","theme":"classic","page":"back","language":"ne","width":344,"height":244,"hash":"84098ecf35f5be1a2ebcd301674ae2b8fb7abc9a43d32d001fe5dbb2ecaaed71"},
+    "android-navy-front-bn": {"viewport":"360x800","theme":"navy","page":"front","language":"bn","width":344,"height":591,"hash":"6e614690bcf04666baff36beb86ee7b6c34dcc4895b4b2cb7e06cedd725949f7"},
+    "android-plum-details-en": {"viewport":"360x800","theme":"plum","page":"details","language":"en","width":344,"height":592,"hash":"4e1382e78aad53241073a39e86df0126a1974d154358a2932a23ca4de9d40571"},
+    "modern-phone-classic-front-en": {"viewport":"390x844","theme":"classic","page":"front","language":"en","width":374,"height":643,"hash":"6b7bbd8f3ce07a4134967c5d5d384234bfffb9b26fdbe14ca98a77d729476881"},
+    "modern-phone-saffron-details-ne": {"viewport":"390x844","theme":"saffron","page":"details","language":"ne","width":374,"height":643,"hash":"ec6f08ddfb0334993b31d373019e3a0b6ce717b8e3ca5702f009a340afd23da7"},
+    "modern-phone-blush-family-bn": {"viewport":"390x844","theme":"blush","page":"family","language":"bn","width":374,"height":643,"hash":"f4ecb0467ddf96fcac195508259aa38d984ec32915cc5be0fec6e97a83bf53a6"},
+    "galaxy-a55-class-classic-family-bn": {"viewport":"412x915","theme":"classic","page":"family","language":"bn","width":396,"height":681,"hash":"f5586de668097b3db4789cdc0974fcaf4d26d7012ad15c6b970a38b21eefc5d0"},
+    "galaxy-a55-class-magenta-back-en": {"viewport":"412x915","theme":"magenta","page":"back","language":"en","width":396,"height":281,"hash":"3915335e4380d1dada22ae48c99b4aecd0107793c46e898478801e591865a92a"},
+    "galaxy-a55-class-navy-details-ne": {"viewport":"412x915","theme":"navy","page":"details","language":"ne","width":396,"height":681,"hash":"fe4006e7500065a040cc8ddeb129264ed0adf673fa0ca370761e2ad96d5f9278"},
+    "phone-landscape-classic-details-ne": {"viewport":"640x360","theme":"classic","page":"details","language":"ne","width":624,"height":968,"hash":"fba1d9dd5e46c9e5816956b45ba387081088093478bd18f536bbf79cd1b897df"},
+    "phone-landscape-plum-front-bn": {"viewport":"640x360","theme":"plum","page":"front","language":"bn","width":624,"height":968,"hash":"ca53e0ffcaafa162541f742b48b2b3a3a9976f260ca7c6ff1c3d816408a7a92c"},
+    "phone-landscape-saffron-back-en": {"viewport":"640x360","theme":"saffron","page":"back","language":"en","width":624,"height":442,"hash":"0c5a9efd302fe0a65537cc63e0837d8e25a7e9b534efaf1f36772932567669c3"},
+    "tablet-classic-back-bn": {"viewport":"768x1024","theme":"classic","page":"back","language":"bn","width":726,"height":513,"hash":"01673b5c8ec5b26b8ebb8ec3190722210ea8ad5fbaddb5064da08818d88b0d61"},
+    "tablet-blush-details-en": {"viewport":"768x1024","theme":"blush","page":"details","language":"en","width":726,"height":1028,"hash":"b2c15be5e48e1146ead0198e958abc6c969231b2202a95eeeb32e674c111f79e"},
+    "tablet-magenta-front-ne": {"viewport":"768x1024","theme":"magenta","page":"front","language":"ne","width":726,"height":1028,"hash":"a6505aacea41afe4fa02bfef97bc05492a8cdde979074ca7b046f77975587238"},
+    "laptop-classic-family-en": {"viewport":"1366x768","theme":"classic","page":"family","language":"en","width":840,"height":1191,"hash":"1e295d6058560475c5669c0f4616f2a874bee88821ad235d64f774ee0401335a"},
+    "laptop-navy-back-ne": {"viewport":"1366x768","theme":"navy","page":"back","language":"ne","width":1116,"height":789,"hash":"f3fd6a3c1e527fde8a0c13c719f63acf705dced7145cb24fedd26f8fed1e3452"},
+    "laptop-plum-details-bn": {"viewport":"1366x768","theme":"plum","page":"details","language":"bn","width":840,"height":1191,"hash":"da78b93aeed101bbd482da5bfafaf857984c793266304b4934359d4338369ce1"},
+    "large-desktop-classic-front-ne": {"viewport":"1920x1080","theme":"classic","page":"front","language":"ne","width":840,"height":1191,"hash":"28cdc801932c41446b75d627847f9e1e6fc9a29155187932fce6157771f3407d"},
+    "large-desktop-saffron-family-en": {"viewport":"1920x1080","theme":"saffron","page":"family","language":"en","width":840,"height":1191,"hash":"a5d0d4cd53a00c0c36c9a3e1d0f2a27bd8ac29e187824d5dc9d41f0cdcf97b83"},
+    "large-desktop-blush-back-bn": {"viewport":"1920x1080","theme":"blush","page":"back","language":"bn","width":1116,"height":789,"hash":"8f1d437629df6b24e0ce56f68f7655df1f864380487e30b4616f911502949035"}
+  }
+}

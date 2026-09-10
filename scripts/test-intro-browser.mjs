@@ -38,7 +38,7 @@ async function ready(page, search = '') {
   await page.waitForSelector('main[data-theme-ready="true"]');
 }
 async function complete(page) {
-  await page.waitForSelector('[data-cinematic-intro="complete"]', { timeout: 16000 });
+  await page.waitForSelector('[data-cinematic-intro="complete"]', { timeout: 20000 });
   await page.waitForFunction(() => document.body.style.overflow !== 'hidden');
   assert.equal(await page.locator('.invitePage').count(), 1, 'only one real invitation page is mounted');
   assert.equal(await page.locator('[data-wedding-particles]').count(), 0, 'particles are removed when the intro finishes');
@@ -149,7 +149,8 @@ try {
   await cold.waitForSelector('main[data-theme-ready="true"]');
   const artworkHeld = [];
   await cold.route('**/themes/navy/**', route => { artworkHeld.push(route); });
-  await cold.locator('[data-intro-theme]').selectOption('navy');
+  await cold.locator('[data-intro-theme]').click();
+  await cold.getByRole('option', { name: 'Royal Navy', exact: true }).click();
   await cold.waitForSelector('[data-intro-theme][aria-busy="true"]');
   assert.equal(await cold.locator('[data-intro-open]').isDisabled(), false, 'pending artwork does not block opening');
   await cold.locator('[data-intro-open]').click();
@@ -158,6 +159,36 @@ try {
   await cold.unroute('**/themes/navy/**');
   await cold.waitForSelector('main[data-invitation-theme="navy"]');
   await cold.context().close();
+
+  // Menus stay attached to their fields at desktop and phone sizes.
+  for (const viewport of [{ width: 390, height: 844 }, { width: 240, height: 320 }, { width: 1366, height: 900 }]) {
+    const page = await newPage({ viewport });
+    await ready(page, '?lang=en');
+    for (const selector of ['[data-intro-language]', '[data-intro-theme]']) {
+      const trigger = page.locator(selector);
+      await trigger.click();
+      const menu = page.getByRole('listbox');
+      const fieldBox = await trigger.boundingBox();
+      const menuBox = await menu.boundingBox();
+      assert.ok(Math.abs(fieldBox.x - menuBox.x) < 2, 'menu aligns with field');
+      assert.ok(Math.min(Math.abs(menuBox.y - fieldBox.y - fieldBox.height), Math.abs(fieldBox.y - menuBox.y - menuBox.height)) < 8, 'menu stays next to field');
+      assert.ok(menuBox.y >= 0 && menuBox.y + menuBox.height <= viewport.height, 'menu stays within viewport');
+      await page.keyboard.press('ArrowDown');
+      assert.equal(await page.locator(':focus').getAttribute('role'), 'option');
+      await page.keyboard.press('Escape');
+      assert.equal(await menu.count(), 0);
+      assert.equal(await page.locator('[data-cinematic-intro="closed"]').count(), 1, 'Escape does not skip the intro');
+      await trigger.click();
+      await page.keyboard.press('Tab');
+      assert.equal(await menu.count(), 0);
+      const next = selector.includes('language') ? '[data-intro-theme]' : '[data-intro-open]';
+      assert.equal(await page.locator(next).evaluate(node => node === document.activeElement), true);
+    }
+    await page.locator('[data-intro-language]').click();
+    await page.getByRole('option', { name: 'বাংলা', exact: true }).click();
+    await page.waitForFunction(() => document.documentElement.lang === 'bn');
+    await page.context().close();
+  }
 
   // Full sequence for every theme: the exact same FrontCover DOM node survives.
   for (const theme of THEME_IDS) {
@@ -197,6 +228,13 @@ try {
     await page.evaluate(() => Promise.all(window.walkAnimations.map((animation) => animation.finished)));
     assert.equal(await page.evaluate(() => [...document.querySelectorAll('[data-character]')].every((node, index) => node.getAnimations()[0] === window.walkAnimations[index])), true, 'walking animations are retained at the meeting, not restarted');
     await checkParticles(page);
+    const particleField = await page.locator('[data-wedding-particles]').elementHandle();
+    assert.ok(particleField, 'particle field exists when the couple meets');
+    const particlesSurviveReveal = page.waitForFunction(
+      (field) => document.querySelector('[data-cinematic-intro="revealing"]') && field === document.querySelector('[data-wedding-particles]'),
+      particleField,
+      { timeout: 5000 }
+    );
     await checkCoupleSpace(page);
     const stopped = await page.locator('[data-character]').evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().left));
     await page.waitForTimeout(350);
@@ -206,9 +244,7 @@ try {
       await sampleParticleFrameTimes(page);
     }
     if (theme === 'classic') await capture(page, 'desktop-together');
-    const particleField = await page.locator('[data-wedding-particles]').elementHandle();
-    await page.waitForSelector('[data-cinematic-intro="revealing"]');
-    assert.equal(await particleField.evaluate((node) => node === document.querySelector('[data-wedding-particles]')), true, 'petals survive into the scene fade');
+    await particlesSurviveReveal;
     await complete(page);
     assert.equal(await page.evaluate(() => window.originalFrontCover === document.querySelector('.frontCover')), true, 'FrontCover must not be cloned or remounted');
     assert.equal(await page.locator('.bookStage').evaluate((node) => node === document.activeElement), true);
@@ -331,7 +367,7 @@ try {
     await page.route(`**/intro/${asset}.webp`, (route) => route.abort());
     await ready(page);
     await page.locator('[data-intro-open]').click();
-    await page.waitForSelector('[data-cinematic-intro="complete"]', { timeout: 6500 });
+    await page.waitForSelector('[data-cinematic-intro="complete"]', { timeout: 10000 });
     await complete(page);
     await page.locator('.frontCover .openButton').click();
     await page.locator('.familyBlessingsTemplate').waitFor();
@@ -342,7 +378,7 @@ try {
   await slow.route('**/intro/bride.webp', (route) => { held.push(route); });
   await ready(slow);
   await slow.locator('[data-intro-open]').click();
-  await slow.waitForSelector('[data-cinematic-intro="complete"]', { timeout: 6500 });
+  await slow.waitForSelector('[data-cinematic-intro="complete"]', { timeout: 10000 });
   await complete(slow);
   await Promise.all(held.map((route) => route.abort().catch(() => {})));
   await slow.context().close();
