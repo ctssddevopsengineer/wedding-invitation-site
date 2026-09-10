@@ -82,8 +82,8 @@ try {
 
     // WebKit intentionally rate-limits History API mutations. The app itself may also update
     // history after a synthetic popstate, so periodically start a fresh document before Safari's
-    // 100-history-operations-per-10-seconds safety limit can be reached. This preserves the same
-    // 4,032 rendered states without weakening the assertions or sleeping thousands of times.
+    // 100-history-operations-per-10-seconds safety limit can be reached. This preserves the full
+    // rendered matrix without weakening assertions or sleeping thousands of times.
     let webkitHistoryOps = 0;
     const navigateMatrixState = async (theme, pageName, language) => {
       const search = `?theme=${theme}&page=${pageName}&lang=${language}`;
@@ -119,6 +119,7 @@ try {
           assert.equal(await page.locator('#invitation-language-value').getAttribute('lang'), language);
           const issues = await page.evaluate(() => {
             const issues = [];
+            const compactDetailsScroller = innerWidth < 375 && document.querySelector('.bookStage.page-inside-right .receptionDetailsOverlay');
             if (document.documentElement.scrollWidth > innerWidth + 1) issues.push('horizontal page overflow: ' + [...document.querySelectorAll('body *')].filter(n => n.getBoundingClientRect().right > innerWidth + 2).slice(0, 5).map(n => n.className).join('/'));
             const card = document.querySelector('.invitePage').getBoundingClientRect();
             for (const node of document.querySelectorAll('.invitePage h1,.invitePage h2,.familyBlock,.heritageAssistance,.receptionDetailsOverlay')) {
@@ -133,8 +134,9 @@ try {
 
             // Validate important layout zones using the boxes of visible semantic content. A flex
             // item can reserve more layout height than its painted children on a particular engine;
-            // that allocation is not a visual collision. For the countdown, `.countdown` is the
-            // bottom-most painted content and therefore the correct boundary against closing copy.
+            // that allocation is not a visual collision. Below 375px the reception overlay is a
+            // clipping scroll container, so off-screen countdown geometry must not be compared to
+            // the independently positioned translated closing copy outside that scrollport.
             for (const [first, second] of [
               ['.heritageBackIntro', '.heritageCoupleNames'],
               ['.heritageCoupleNames', '.heritageJourneyMessage'],
@@ -144,6 +146,7 @@ try {
               ['.dynamicFrontNames', '.dynamicFrontClosing'],
               ['.receptionCountdownItem .countdown', '.localizedDetailsClosing']
             ]) {
+              if (compactDetailsScroller && first === '.receptionCountdownItem .countdown' && second === '.localizedDetailsClosing') continue;
               const a = document.querySelector(first)?.getBoundingClientRect();
               const b = document.querySelector(second)?.getBoundingClientRect();
               if (a?.width && b?.width && a.bottom > b.top + 2) issues.push(`overlap: ${first}/${second}`);
@@ -177,7 +180,9 @@ try {
 
             // Compare rendered text fragments for the rest of the card. Semantic zones above are
             // intentionally excluded because their element boxes are the cross-engine source of
-            // truth; raw glyph-range metrics differ between Linux, Windows and macOS.
+            // truth; raw glyph-range metrics differ between Linux, Windows and macOS. Content
+            // below a compact scrollport is intentionally clipped and reachable by scrolling, so
+            // its off-screen range geometry is not a card-boundary violation.
             const semanticZones = '.dynamicFrontHeading,.dynamicFrontTagline,.dynamicFrontNames,.heritageBackIntro,.heritageCoupleNames,.heritageJourneyMessage,.heritageAssistance,.receptionDetailsOverlay,.localizedDetailsClosing';
             const walker = document.createTreeWalker(document.querySelector('.invitePage'), NodeFilter.SHOW_TEXT);
             const fragments = [];
@@ -193,7 +198,8 @@ try {
             }
             for (let i = 0; i < fragments.length; i++) {
               const a = fragments[i];
-              if (a.rect.left < card.left - 2 || a.rect.right > card.right + 2 || a.rect.bottom > card.bottom + 2) issues.push(`text outside card: ${a.label}`);
+              const insideCompactDetailsScroller = compactDetailsScroller && a.element.closest('.receptionDetailsOverlay');
+              if (!insideCompactDetailsScroller && (a.rect.left < card.left - 2 || a.rect.right > card.right + 2 || a.rect.bottom > card.bottom + 2)) issues.push(`text outside card: ${a.label}`);
               for (const b of fragments.slice(i + 1)) {
                 if (a.node === b.node) continue;
                 if (a.element.closest(semanticZones) || b.element.closest(semanticZones)) continue;
@@ -209,24 +215,62 @@ try {
             failureScreenshots++;
           }
           if (issues.length) errors.push(`${width}x${height}/${theme}/${language}/${pageName}: ${issues.join(', ')}`);
-          if (width < 320 && theme === 'classic' && language !== 'en' && pageName === 'details') {
-            // CI's configured address spans five lines; short visual fixtures
-            // previously missed its countdown collision. Exercise both copies.
-            const clearance = await page.evaluate(() => {
-              const address = document.querySelector('.receptionAddressValue');
-              const original = address.textContent;
-              try {
-                address.textContent = '92, Artillary Road, Cantonment, Barrackpore, West Bengal 700120';
-                const countdown = document.querySelector('.countdown').getBoundingClientRect();
-                const closing = document.querySelector('.localizedDetailsClosing').getBoundingClientRect();
-                const location = document.querySelector('.exactLocationHotspot').getBoundingClientRect();
-                return { countdown: closing.top - countdown.bottom, location: location.top - closing.bottom };
-              } finally {
-                address.textContent = original;
-              }
+
+          if (pageName === 'details') {
+            const scrollState = await page.evaluate(() => {
+              const overlay = document.querySelector('.receptionDetailsOverlay');
+              const style = getComputedStyle(overlay);
+              const initialScrollTop = overlay.scrollTop;
+              overlay.scrollTop = overlay.scrollHeight;
+              const maxScrollTop = overlay.scrollTop;
+              overlay.scrollTop = initialScrollTop;
+              return {
+                overflowY: style.overflowY,
+                overflowX: style.overflowX,
+                overscrollBehaviorY: style.overscrollBehaviorY,
+                clientHeight: overlay.clientHeight,
+                scrollHeight: overlay.scrollHeight,
+                clientWidth: overlay.clientWidth,
+                scrollWidth: overlay.scrollWidth,
+                maxScrollTop
+              };
             });
-            if (clearance.countdown < 2 || clearance.location < 0) errors.push(`${width}x${height}/${theme}/${language}/${pageName}: long-address clearance ${JSON.stringify(clearance)}`);
+
+            if (width < 375) {
+              assert.equal(scrollState.overflowY, 'auto', `${width}px inside-right details must enable vertical scrolling`);
+              assert.equal(scrollState.overflowX, 'hidden', `${width}px inside-right details must never scroll horizontally`);
+              assert.equal(scrollState.overscrollBehaviorY, 'contain', `${width}px inside-right scrolling must not chain into the page`);
+              assert.ok(scrollState.scrollWidth <= scrollState.clientWidth + 1, `${width}px inside-right scrollport has horizontal overflow`);
+
+              // Force a long production-style address and prove the content becomes real scroll
+              // overflow rather than being compressed into overlapping flex items. Restore the
+              // original text immediately so the rest of the matrix remains deterministic.
+              const stress = await page.evaluate(() => {
+                const overlay = document.querySelector('.receptionDetailsOverlay');
+                const address = document.querySelector('.receptionAddressValue');
+                const original = address.textContent;
+                const originalScrollTop = overlay.scrollTop;
+                try {
+                  address.textContent = '92, Artillary Road, Cantonment, Barrackpore, West Bengal 700120 — Near the main entrance, opposite the community hall, please follow the reception signs.';
+                  overlay.scrollTop = 0;
+                  const overflow = overlay.scrollHeight - overlay.clientHeight;
+                  const horizontalOverflow = overlay.scrollWidth - overlay.clientWidth;
+                  overlay.scrollTop = overlay.scrollHeight;
+                  const reachedBottom = overlay.scrollTop > 0;
+                  return { overflow, horizontalOverflow, reachedBottom };
+                } finally {
+                  address.textContent = original;
+                  overlay.scrollTop = originalScrollTop;
+                }
+              });
+              assert.ok(stress.overflow > 0, `${width}px long inside-right content must produce vertical scroll overflow`);
+              assert.ok(stress.reachedBottom, `${width}px inside-right content must be reachable by scrolling`);
+              assert.ok(stress.horizontalOverflow <= 1, `${width}px long inside-right content must not create horizontal scrolling`);
+            } else if (width === 375) {
+              assert.notEqual(scrollState.overflowY, 'auto', '375px is the fixed-layout boundary and must not use the compact scroll fallback');
+            }
           }
+
           if (pageName === 'details' && language !== 'en') {
             // Browser regression validates the already-rendered static artifact. A production-style
             // build has a concrete reception date, so assert localized numerals directly instead
