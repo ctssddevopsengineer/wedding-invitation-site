@@ -13,8 +13,19 @@ const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 const screenshots = process.env.SCREENSHOT_DIR;
 const captureAllScreenshots = process.env.CAPTURE_ALL_SCREENSHOTS === 'true';
 const maxFailureScreenshots = Math.max(0, Number.parseInt(process.env.MAX_FAILURE_SCREENSHOTS || '50', 10) || 0);
-const validationViewports = process.env.BROWSER_WIDTHS ? process.env.BROWSER_WIDTHS.split(',').map(Number).map(width => ({ width, height: 1100 })) : RESPONSIVE_VALIDATION_VIEWPORTS;
+const validationViewports = process.env.BROWSER_VIEWPORTS
+  ? process.env.BROWSER_VIEWPORTS.split(',').map(size => {
+    const [width, height] = size.split('x').map(Number);
+    if (!(width > 0 && height > 0)) throw new Error(`Invalid viewport: ${size}`);
+    return { width, height };
+  })
+  : process.env.BROWSER_WIDTHS
+    ? process.env.BROWSER_WIDTHS.split(',').map(Number).map(width => ({ width, height: 1100 }))
+    : RESPONSIVE_VALIDATION_VIEWPORTS;
 const browserTarget = resolveBrowserTarget();
+const mobile = process.env.BROWSER_MOBILE === 'true';
+const colorScheme = process.env.BROWSER_COLOR_SCHEME || 'light';
+if (mobile && browserTarget.engine === 'firefox') throw new Error('Playwright mobile emulation requires Chromium or WebKit.');
 const browserTypes = { chromium, firefox, webkit };
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.webp': 'image/webp', '.png': 'image/png', '.woff2': 'font/woff2', '.ttf': 'font/ttf' };
 const server = http.createServer(async (req, res) => {
@@ -32,11 +43,12 @@ await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 const url = `http://127.0.0.1:${server.address().port}${basePath}/`;
 const animationFreezeCss = '*, *::before, *::after { animation: none !important; transition: none !important; }';
 let browser;
+const launchBrowser = () => browserTypes[browserTarget.engine].launch({
+  headless: true,
+  ...(browserTarget.channel ? { channel: browserTarget.channel } : {})
+});
 try {
-  browser = await browserTypes[browserTarget.engine].launch({
-    headless: true,
-    ...(browserTarget.channel ? { channel: browserTarget.channel } : {})
-  });
+  browser = await launchBrowser();
   const errors = [];
   let checked = 0;
   let failureScreenshots = 0;
@@ -44,7 +56,11 @@ try {
   if (screenshots) await fs.mkdir(screenshots, { recursive: true });
   console.log(`Running full responsive regression on ${browserTarget.label}.`);
   for (const { width, height } of validationViewports) {
-    const context = await browser.newContext({ viewport: { width, height } });
+    const context = await browser.newContext({
+      viewport: { width, height },
+      colorScheme,
+      ...(mobile ? { isMobile: true, hasTouch: true, deviceScaleFactor: 2.625 } : {})
+    });
     // The existing QR service is external; only first-party requests are needed.
     await context.route('https://**', (route) => route.abort());
     const page = await context.newPage();
@@ -54,6 +70,15 @@ try {
     await page.locator('[data-intro-skip]').click();
     await page.waitForSelector('[data-cinematic-intro="complete"]');
     await page.addStyleTag({ content: animationFreezeCss });
+    if (mobile) {
+      // A desktop context with a narrow viewport cannot detect missing mobile
+      // viewport metadata: a real mobile context falls back to ~980 CSS pixels.
+      assert.equal(await page.evaluate(() => innerWidth), width, 'Mobile layout must use the device width');
+      assert.equal(await page.locator('meta[name="viewport"]').count(), 1);
+      assert.doesNotMatch(await page.locator('meta[name="viewport"]').getAttribute('content'), /user-scalable=no|maximum-scale=1/);
+      assert.equal(await page.locator('meta[name="color-scheme"]').getAttribute('content'), 'only light');
+      assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme), 'light only');
+    }
 
     // WebKit intentionally rate-limits History API mutations. The app itself may also update
     // history after a synthetic popstate, so periodically start a fresh document before Safari's
@@ -184,6 +209,24 @@ try {
             failureScreenshots++;
           }
           if (issues.length) errors.push(`${width}x${height}/${theme}/${language}/${pageName}: ${issues.join(', ')}`);
+          if (width < 320 && theme === 'classic' && language !== 'en' && pageName === 'details') {
+            // CI's configured address spans five lines; short visual fixtures
+            // previously missed its countdown collision. Exercise both copies.
+            const clearance = await page.evaluate(() => {
+              const address = document.querySelector('.receptionAddressValue');
+              const original = address.textContent;
+              try {
+                address.textContent = '92, Artillary Road, Cantonment, Barrackpore, West Bengal 700120';
+                const countdown = document.querySelector('.countdown').getBoundingClientRect();
+                const closing = document.querySelector('.localizedDetailsClosing').getBoundingClientRect();
+                const location = document.querySelector('.exactLocationHotspot').getBoundingClientRect();
+                return { countdown: closing.top - countdown.bottom, location: location.top - closing.bottom };
+              } finally {
+                address.textContent = original;
+              }
+            });
+            if (clearance.countdown < 2 || clearance.location < 0) errors.push(`${width}x${height}/${theme}/${language}/${pageName}: long-address clearance ${JSON.stringify(clearance)}`);
+          }
           if (pageName === 'details' && language !== 'en') {
             // Browser regression validates the already-rendered static artifact. A production-style
             // build has a concrete reception date, so assert localized numerals directly instead
@@ -243,7 +286,15 @@ try {
       }
     }
     if (process.env.REPORT_PATH) await fs.writeFile(process.env.REPORT_PATH, JSON.stringify({ browser: browserTarget, checked, viewports: validationViewports, failureScreenshots, errors }, null, 2));
-    await context.close();
+    if (browserTarget.engine === 'webkit') {
+      // macOS WebKit can segfault tearing down successive contexts in one
+      // long-lived process. Finish each fully checked viewport by retiring the
+      // process, then start fresh. Assertions and browser errors still fail.
+      await browser.close();
+      browser = await launchBrowser();
+    } else {
+      await context.close();
+    }
   }
   const fallbackContext = await browser.newContext();
   await fallbackContext.route('https://**', (route) => route.abort());
