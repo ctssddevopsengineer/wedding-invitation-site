@@ -7,6 +7,12 @@
 /* flex items. The 375px-and-up layout is intentionally untouched.            */
 /* ========================================================================== */
 
+/* The hint exists in the component for stable hydration, but is never allowed
+   to participate in layout unless the compact breakpoint is active. */
+.compactScrollHint {
+  display: none;
+}
+
 @media (max-width: 374px) {
   .bookStage.page-inside-right .receptionDetailsOverlay {
     box-sizing: border-box;
