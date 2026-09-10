@@ -251,7 +251,7 @@ try {
                 const original = address.textContent;
                 const originalScrollTop = overlay.scrollTop;
                 try {
-                  address.textContent = '92, Artillary Road, Cantonment, Barrackpore, West Bengal 700120 — Near the main entrance, opposite the community hall, please follow the reception signs.';
+                  address.textContent = Array(6).fill('92, Artillary Road, Cantonment, Barrackpore, West Bengal 700120 — Near the main entrance, opposite the community hall, please follow the reception signs.').join(' ');
                   overlay.scrollTop = 0;
                   const overflow = overlay.scrollHeight - overlay.clientHeight;
                   const horizontalOverflow = overlay.scrollWidth - overlay.clientWidth;
