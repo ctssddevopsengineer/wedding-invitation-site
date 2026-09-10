@@ -1,7 +1,8 @@
 /* Compact multilingual back-cover hardening.
    Scope is intentionally narrow: Deep Red / Classic, Bengali and Nepali,
    at very small phone widths only. The approved artwork, card proportions,
-   desktop/tablet geometry and all other themes/pages remain untouched. */
+   desktop/tablet geometry remain untouched. The final phone-link rule also
+   covers translated contact panels in the other themes. */
 
 @media (max-width: 360px) {
   .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .heritageBackIntro {

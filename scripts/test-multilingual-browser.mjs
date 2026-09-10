@@ -43,11 +43,12 @@ await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 const url = `http://127.0.0.1:${server.address().port}${basePath}/`;
 const animationFreezeCss = '*, *::before, *::after { animation: none !important; transition: none !important; }';
 let browser;
+const launchBrowser = () => browserTypes[browserTarget.engine].launch({
+  headless: true,
+  ...(browserTarget.channel ? { channel: browserTarget.channel } : {})
+});
 try {
-  browser = await browserTypes[browserTarget.engine].launch({
-    headless: true,
-    ...(browserTarget.channel ? { channel: browserTarget.channel } : {})
-  });
+  browser = await launchBrowser();
   const errors = [];
   let checked = 0;
   let failureScreenshots = 0;
@@ -285,7 +286,15 @@ try {
       }
     }
     if (process.env.REPORT_PATH) await fs.writeFile(process.env.REPORT_PATH, JSON.stringify({ browser: browserTarget, checked, viewports: validationViewports, failureScreenshots, errors }, null, 2));
-    await context.close();
+    if (browserTarget.engine === 'webkit') {
+      // macOS WebKit can segfault tearing down successive contexts in one
+      // long-lived process. Finish each fully checked viewport by retiring the
+      // process, then start fresh. Assertions and browser errors still fail.
+      await browser.close();
+      browser = await launchBrowser();
+    } else {
+      await context.close();
+    }
   }
   const fallbackContext = await browser.newContext();
   await fallbackContext.route('https://**', (route) => route.abort());

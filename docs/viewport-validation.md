@@ -28,6 +28,12 @@ BROWSER_ENGINE=chromium BROWSER_MOBILE=true BROWSER_COLOR_SCHEME=dark \
 
 Repeat with WebKit for mobile Safari emulation. Firefox does not support Playwright's `isMobile` emulation. CI runs these 360 additional combinations on its Chromium and WebKit targets, checking the device-width viewport, unrestricted zoom and the artwork's explicit light color scheme. Dark preference emulation is distinct from Samsung Internet's proprietary forced-dark rendering.
 
+WebKit uses a fresh browser process after each fully checked viewport to avoid the macOS process crash observed while closing successive contexts. A crash during a check, a layout error, or a failed assertion still fails the run. No viewport or assertion is skipped.
+
+The shared CI browser installer temporarily moves Google's unrelated Chrome apt source aside on disposable Linux runners; Playwright downloads its own pinned browsers. This prevents that feed's observed hash mismatch from blocking Ubuntu library installation while preserving apt signature/checksum verification. Installation gets at most three attempts, and persistent failure remains fatal. The installer tests execute its shell script with fake installers and package-source fixtures, including macOS Bash compatibility.
+
+Pixel baselines were approved on the Linux CI environment. Exact hashes can differ on macOS because fonts and rasterization differ. For local change review, render the original and changed commits with the same browser, OS and deterministic event fixture; do not overwrite approved Linux hashes merely to make a Mac comparison pass.
+
 These checks require configured event data because they verify localized date numerals. They do not certify every physical device, browser version, zoom setting or future event text. `npm run validate:export` separately rejects unresolved event placeholders; configure the real event details before publishing.
 
 For Samsung Internet on a Galaxy A55, verify all themes in portrait and landscape, with its website darkening both on and off. The page declares `color-scheme: only light` to preserve text/artwork palettes and `text-size-adjust: 100%` to prevent browser text inflation while keeping pinch zoom available. Samsung settings that force recoloring or explicitly request the desktop site can override website preferences; record the browser version and those settings when comparing screenshots.

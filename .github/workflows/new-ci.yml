@@ -162,49 +162,41 @@ jobs:
             os: ubuntu-latest
             browser_engine: chromium
             browser_channel: ''
-            install_command: npx playwright install --with-deps chromium
             artifact_suffix: ubuntu-chromium
           - label: Ubuntu Firefox
             os: ubuntu-latest
             browser_engine: firefox
             browser_channel: ''
-            install_command: npx playwright install --with-deps firefox
             artifact_suffix: ubuntu-firefox
           - label: Windows Chrome
             os: windows-latest
             browser_engine: chromium
             browser_channel: chrome
-            install_command: npx playwright install chrome
             artifact_suffix: windows-chrome
           - label: Windows Edge
             os: windows-latest
             browser_engine: chromium
             browser_channel: msedge
-            install_command: npx playwright install msedge
             artifact_suffix: windows-edge
           - label: Windows Firefox
             os: windows-latest
             browser_engine: firefox
             browser_channel: ''
-            install_command: npx playwright install firefox
             artifact_suffix: windows-firefox
           - label: macOS Chromium
             os: macos-latest
             browser_engine: chromium
             browser_channel: ''
-            install_command: npx playwright install chromium
             artifact_suffix: macos-chromium
           - label: macOS Firefox
             os: macos-latest
             browser_engine: firefox
             browser_channel: ''
-            install_command: npx playwright install firefox
             artifact_suffix: macos-firefox
           - label: macOS WebKit
             os: macos-latest
             browser_engine: webkit
             browser_channel: ''
-            install_command: npx playwright install webkit
             artifact_suffix: macos-webkit
     steps:
       - name: Checkout repository
@@ -217,7 +209,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Install ${{ matrix.label }} browser
-        run: ${{ matrix.install_command }}
+        uses: ./.github/actions/install-playwright
+        with:
+          browser: ${{ matrix.browser_channel || matrix.browser_engine }}
       - name: Download tested static artifact
         uses: actions/download-artifact@v8
         with:
@@ -271,7 +265,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+        uses: ./.github/actions/install-playwright
+        with:
+          browser: chromium
       - name: Download tested static artifact
         uses: actions/download-artifact@v8
         with:
@@ -311,7 +307,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+        uses: ./.github/actions/install-playwright
+        with:
+          browser: chromium
       - name: Download tested static artifact
         uses: actions/download-artifact@v8
         with:
@@ -337,7 +335,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+        uses: ./.github/actions/install-playwright
+        with:
+          browser: chromium
       - name: Download tested static artifact
         uses: actions/download-artifact@v8
         with:
@@ -402,7 +402,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+        uses: ./.github/actions/install-playwright
+        with:
+          browser: chromium
       - name: Render deterministic visual-test configuration
         run: npm run config:render
       - name: Build deterministic visual-test export

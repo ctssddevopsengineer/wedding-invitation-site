@@ -1,0 +1,43 @@
+name: Install Playwright browser
+description: Install the pinned browser without unrelated hosted-runner apt repositories blocking Linux dependencies.
+inputs:
+  browser:
+    description: Playwright engine or Chromium channel
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Isolate Playwright dependencies from the runner's Chrome apt feed
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        set -euo pipefail
+        # Bundled Playwright browsers do not use Google's system Chrome feed.
+        # A hash mismatch in that unrelated feed otherwise aborts apt update.
+        # Move only matching source files on this disposable GitHub runner;
+        # keep apt's signature and checksum verification fully enabled.
+        for source in /etc/apt/sources.list.d/*; do
+          if [[ -f "$source" ]] && grep -qE 'https?://dl\.google\.com/linux/chrome(-stable)?/deb' "$source"; then
+            sudo mv "$source" "$RUNNER_TEMP/$(basename "$source").playwright-disabled"
+          fi
+        done
+    - name: Install pinned browser and required system libraries
+      shell: bash
+      env:
+        PLAYWRIGHT_BROWSER: ${{ inputs.browser }}
+        PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT: '120000'
+      run: |
+        set -euo pipefail
+        install_command=(npx playwright install)
+        if [[ "$RUNNER_OS" == Linux ]]; then install_command+=(--with-deps); fi
+        install_command+=("$PLAYWRIGHT_BROWSER")
+        for attempt in 1 2 3; do
+          if "${install_command[@]}"; then
+            exit 0
+          fi
+          if [[ "$attempt" -lt 3 ]]; then
+            echo "::warning::Browser installation attempt $attempt failed; retrying."
+            sleep 10
+          fi
+        done
+        exit 1
