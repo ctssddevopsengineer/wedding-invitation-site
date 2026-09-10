@@ -7,6 +7,12 @@
 /* flex items. The 375px-and-up layout is intentionally untouched.            */
 /* ========================================================================== */
 
+/* The hint exists in the component for stable hydration, but is never allowed
+   to participate in layout unless the compact breakpoint is active. */
+.compactScrollHint {
+  display: none;
+}
+
 @media (max-width: 374px) {
   .bookStage.page-inside-right .receptionDetailsOverlay {
     box-sizing: border-box;
@@ -27,6 +33,45 @@
   .bookStage.page-inside-right .receptionDetailsOverlay > .receptionDetailDivider,
   .bookStage.page-inside-right .receptionDetailsOverlay > br {
     flex: 0 0 auto;
+  }
+
+
+  .bookStage.page-inside-right .compactScrollHint {
+    position: absolute;
+    z-index: 6;
+    left: 50%;
+    bottom: .12rem;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .18rem;
+    max-width: calc(100% - .4rem);
+    padding: .18rem .38rem;
+    border: 1px solid color-mix(in srgb, var(--theme-gold) 38%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--theme-soft) 92%, white 8%);
+    box-shadow: 0 .18rem .45rem rgba(45, 25, 15, .14);
+    color: var(--theme-accent-dark);
+    font-size: clamp(.42rem, 1.7cqw, .58rem);
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .16s ease, visibility .16s ease;
+  }
+
+  .bookStage.page-inside-right .compactScrollHint[data-visible="true"] {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .bookStage.page-inside-right .compactScrollHintArrow {
+    display: inline-block;
+    font-size: 1.08em;
+    line-height: 1;
   }
 
   .bookStage.page-inside-right .receptionDetailsOverlay::-webkit-scrollbar {
