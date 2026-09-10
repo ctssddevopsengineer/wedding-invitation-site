@@ -20,6 +20,8 @@ export default function InsideRight({ themeId, initialLocationOpen = false, onLo
   const [isPinnedOpen, setIsPinnedOpen] = useState(Boolean(initialLocationOpen));
   const [isHoverOpen, setIsHoverOpen] = useState(false);
   const closeTimerRef = useRef(null);
+  const detailsScrollRef = useRef(null);
+  const [showScrollHint, setShowScrollHint] = useState(false);
   const isLocationOpen = isPinnedOpen || isHoverOpen;
 
   function clearCloseTimer() {
@@ -75,6 +77,43 @@ export default function InsideRight({ themeId, initialLocationOpen = false, onLo
 
   useEffect(() => () => clearCloseTimer(), []);
 
+  useEffect(() => {
+    const overlay = detailsScrollRef.current;
+    if (!overlay) return undefined;
+
+    let frameId = 0;
+    const updateScrollHint = () => {
+      window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(() => {
+        const compactViewport = window.innerWidth < 375;
+        const hasOverflow = overlay.scrollHeight > overlay.clientHeight + 1;
+        const atBottom = overlay.scrollTop + overlay.clientHeight >= overlay.scrollHeight - 2;
+        setShowScrollHint(compactViewport && hasOverflow && !atBottom);
+      });
+    };
+
+    updateScrollHint();
+    overlay.addEventListener('scroll', updateScrollHint, { passive: true });
+    window.addEventListener('resize', updateScrollHint, { passive: true });
+
+    const resizeObserver = typeof ResizeObserver === 'function' ? new ResizeObserver(updateScrollHint) : null;
+    resizeObserver?.observe(overlay);
+    for (const child of overlay.children) resizeObserver?.observe(child);
+
+    const mutationObserver = typeof MutationObserver === 'function'
+      ? new MutationObserver(updateScrollHint)
+      : null;
+    mutationObserver?.observe(overlay, { subtree: true, childList: true, characterData: true });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      overlay.removeEventListener('scroll', updateScrollHint);
+      window.removeEventListener('resize', updateScrollHint);
+      resizeObserver?.disconnect();
+      mutationObserver?.disconnect();
+    };
+  }, [language, themeId]);
+
   return (
     <article className="invitePage exactInsideRight" aria-label={t("Inside right — reception details")}>
       <Artwork
@@ -95,7 +134,7 @@ export default function InsideRight({ themeId, initialLocationOpen = false, onLo
       {language !== 'en' && themeId === 'classic' && <p className="localizedDetailsClosing">{t('We would be honored by your presence on this joyous evening.')}</p>}
       </div>
 
-      <section className="receptionDetailsOverlay" aria-label={t("Reception details")}>
+      <section ref={detailsScrollRef} className="receptionDetailsOverlay" aria-label={t("Reception details")}>
         <div className="receptionDetailItem">
           <p className="receptionDetailLabel">{t("Day & Date")}</p>
           <p className="receptionDetailValue">{EVENT.dateLabel}</p>
@@ -139,6 +178,15 @@ export default function InsideRight({ themeId, initialLocationOpen = false, onLo
         <div className="receptionDetailItem receptionCountdownItem">
           <p className="receptionDetailLabel">{t("Until We Celebrate")}</p>
           <Countdown target={EVENT.start} />
+        </div>
+
+        <div
+          className="compactScrollHint"
+          data-visible={showScrollHint ? 'true' : 'false'}
+          aria-hidden="true"
+        >
+          <span>{t("Scroll for more")}</span>
+          <span className="compactScrollHintArrow" aria-hidden="true">↓</span>
         </div>
       </section>
 
