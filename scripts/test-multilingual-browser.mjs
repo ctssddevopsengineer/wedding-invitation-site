@@ -242,32 +242,42 @@ try {
               assert.equal(scrollState.overscrollBehaviorY, 'contain', `${width}px inside-right scrolling must not chain into the page`);
               assert.ok(scrollState.scrollWidth <= scrollState.clientWidth + 1, `${width}px inside-right scrollport has horizontal overflow`);
 
-              // Force a long production-style address and prove the content becomes real scroll
-              // overflow rather than being compressed into overlapping flex items. Restore the
-              // original text immediately so the rest of the matrix remains deterministic.
-              const stress = await page.evaluate(() => {
+              // Force a long production-style address and prove that real overflow exposes the
+              // localized affordance, remains horizontally safe, is reachable, and dismisses at
+              // the bottom. Restore the original copy immediately after the checks.
+              const originalAddress = await page.locator('.receptionAddressValue').textContent();
+              await page.evaluate(() => {
                 const overlay = document.querySelector('.receptionDetailsOverlay');
                 const address = document.querySelector('.receptionAddressValue');
-                const original = address.textContent;
-                const originalScrollTop = overlay.scrollTop;
-                try {
-                  address.textContent = Array(6).fill('92, Artillary Road, Cantonment, Barrackpore, West Bengal 700120 — Near the main entrance, opposite the community hall, please follow the reception signs.').join(' ');
-                  overlay.scrollTop = 0;
-                  const overflow = overlay.scrollHeight - overlay.clientHeight;
-                  const horizontalOverflow = overlay.scrollWidth - overlay.clientWidth;
-                  overlay.scrollTop = overlay.scrollHeight;
-                  const reachedBottom = overlay.scrollTop > 0;
-                  return { overflow, horizontalOverflow, reachedBottom };
-                } finally {
-                  address.textContent = original;
-                  overlay.scrollTop = originalScrollTop;
-                }
+                address.textContent = Array(6).fill('92, Artillary Road, Cantonment, Barrackpore, West Bengal 700120 — Near the main entrance, opposite the community hall, please follow the reception signs.').join(' ');
+                overlay.scrollTop = 0;
+              });
+              await page.waitForFunction(() => document.querySelector('.compactScrollHint')?.dataset.visible === 'true');
+
+              const stress = await page.evaluate(() => {
+                const overlay = document.querySelector('.receptionDetailsOverlay');
+                const hint = document.querySelector('.compactScrollHint');
+                const overflow = overlay.scrollHeight - overlay.clientHeight;
+                const horizontalOverflow = overlay.scrollWidth - overlay.clientWidth;
+                const hintText = hint?.textContent?.replace(/\\s+/g, ' ').trim() || '';
+                overlay.scrollTop = overlay.scrollHeight;
+                overlay.dispatchEvent(new Event('scroll'));
+                const reachedBottom = overlay.scrollTop > 0;
+                return { overflow, horizontalOverflow, reachedBottom, hintText };
               });
               assert.ok(stress.overflow > 0, `${width}px long inside-right content must produce vertical scroll overflow`);
               assert.ok(stress.reachedBottom, `${width}px inside-right content must be reachable by scrolling`);
               assert.ok(stress.horizontalOverflow <= 1, `${width}px long inside-right content must not create horizontal scrolling`);
+              assert.ok(stress.hintText.length > 1, `${width}px overflow hint must expose localized guidance`);
+              await page.waitForFunction(() => document.querySelector('.compactScrollHint')?.dataset.visible === 'false');
+              await page.evaluate((original) => {
+                const overlay = document.querySelector('.receptionDetailsOverlay');
+                document.querySelector('.receptionAddressValue').textContent = original;
+                overlay.scrollTop = 0;
+              }, originalAddress);
             } else if (width === 375) {
               assert.notEqual(scrollState.overflowY, 'auto', '375px is the fixed-layout boundary and must not use the compact scroll fallback');
+              assert.equal(await page.locator('.compactScrollHint').evaluate((node) => getComputedStyle(node).display), 'none', '375px must never show compact scroll guidance');
             }
           }
 
