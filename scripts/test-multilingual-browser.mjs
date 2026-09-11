@@ -271,10 +271,32 @@ try {
                   const scroller = document.querySelector('[data-compact-scroll-region]');
                   const target = document.querySelector(selector);
                   target.textContent = Array(8).fill('Long multilingual invitation content for compact parchment scrolling and overlap regression validation.').join(' ');
+
+                  // Text wrapping varies legitimately by theme, script and browser engine. Add a
+                  // deterministic temporary block after the stressed content so every compact page
+                  // is guaranteed to exercise real vertical overflow and the overflow-aware hint.
+                  const spacer = document.createElement('div');
+                  spacer.dataset.compactScrollStressSpacer = 'true';
+                  spacer.setAttribute('aria-hidden', 'true');
+                  spacer.style.height = `${scroller.clientHeight + 160}px`;
+                  spacer.style.width = '1px';
+                  spacer.style.flex = '0 0 auto';
+                  spacer.style.pointerEvents = 'none';
+                  scroller.appendChild(spacer);
+
                   scroller.scrollTop = 0;
+                  window.dispatchEvent(new Event('resize'));
                 }, { selector: stressSelector });
 
-                await page.waitForFunction(() => document.querySelector('.compactScrollHint')?.dataset.visible === 'true');
+                await page.waitForFunction(
+                  () => {
+                    const scroller = document.querySelector('[data-compact-scroll-region]');
+                    const hint = document.querySelector('.compactScrollHint');
+                    return scroller?.dataset.compactOverflow === 'true' && hint?.dataset.visible === 'true';
+                  },
+                  null,
+                  { timeout: 5000 }
+                );
 
                 const stress = await page.evaluate(() => {
                   const scroller = document.querySelector('[data-compact-scroll-region]');
@@ -293,11 +315,17 @@ try {
                 assert.ok(stress.horizontalOverflow <= 1, `${width}px/${pageName} long content must not create horizontal scrolling`);
                 assert.ok(stress.hintText.length > 1, `${width}px/${pageName} overflow hint must expose localized guidance`);
 
-                await page.waitForFunction(() => document.querySelector('.compactScrollHint')?.dataset.visible === 'false');
+                await page.waitForFunction(
+                  () => document.querySelector('.compactScrollHint')?.dataset.visible === 'false',
+                  null,
+                  { timeout: 5000 }
+                );
                 await page.locator(stressSelector).evaluate((node, html) => { node.innerHTML = html; }, originalHtml);
                 await page.evaluate(() => {
                   const scroller = document.querySelector('[data-compact-scroll-region]');
+                  scroller.querySelector('[data-compact-scroll-stress-spacer]')?.remove();
                   scroller.scrollTop = 0;
+                  window.dispatchEvent(new Event('resize'));
                 });
               }
             } else if (width === 375) {
