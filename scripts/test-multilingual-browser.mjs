@@ -122,6 +122,15 @@ try {
             const compactScroller = innerWidth < 375 && document.querySelector('[data-compact-scroll-region]');
             if (document.documentElement.scrollWidth > innerWidth + 1) issues.push('horizontal page overflow: ' + [...document.querySelectorAll('body *')].filter(n => n.getBoundingClientRect().right > innerWidth + 2).slice(0, 5).map(n => n.className).join('/'));
             const card = document.querySelector('.invitePage').getBoundingClientRect();
+            if (innerWidth < 375 && document.querySelector('.bookStage.page-front')) {
+              const heading = document.querySelector('.dynamicFrontHeading')?.getBoundingClientRect();
+              const theme = document.querySelector('main[data-invitation-theme]')?.dataset.invitationTheme;
+              const minimumSafeRatio = ({ navy: 0.31, plum: 0.31, saffron: 0.25, classic: 0.24, blush: 0.24, magenta: 0.24 })[theme] ?? 0.24;
+              const minimumSafeTop = card.top + card.height * minimumSafeRatio;
+              if (heading?.height && heading.top < minimumSafeTop - 2) {
+                issues.push('front heading enters crest/ornament safe zone');
+              }
+            }
             if (innerWidth < 375 && document.querySelector('.bookStage.page-inside-left')) {
               const heading = document.querySelector('#family-blessings-title')?.getBoundingClientRect();
               const minimumSafeTop = card.top + card.height * 0.27;
