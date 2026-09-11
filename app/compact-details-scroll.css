@@ -255,3 +255,22 @@
     border-radius: 999px;
   }
 }
+
+
+/* Watch-class screens need a larger reserved footer because the Open Invitation
+   control is intentionally fixed over the artwork. Keep the compact copy in a
+   scrollport above that control instead of allowing the last line to paint
+   underneath the button. */
+@media (max-width: 200px) {
+  .bookStage.page-front .dynamicFrontCopy {
+    bottom: 27% !important;
+  }
+
+  .bookStage.page-front .openButton {
+    min-height: 44px;
+    max-width: 86%;
+    padding: .5rem .65rem;
+    font-size: .72rem;
+    line-height: 1.15;
+  }
+}
