@@ -223,6 +223,30 @@ try {
             failureScreenshots++;
           }
           if (issues.length) errors.push(`${width}x${height}/${theme}/${language}/${pageName}: ${issues.join(', ')}`);
+          if (width <= 340) {
+            const navLayout = await page.evaluate(() => {
+              const previous = document.querySelector('.bookNav .navArrow:first-child')?.getBoundingClientRect();
+              const next = document.querySelector('.bookNav .navArrow:last-child')?.getBoundingClientRect();
+              const dots = document.querySelector('.bookNav .pageDots')?.getBoundingClientRect();
+              const dotRects = [...document.querySelectorAll('.bookNav .pageDot')].map((node) => node.getBoundingClientRect());
+              const intersects = (a, b) => Boolean(a && b && Math.min(a.right, b.right) - Math.max(a.left, b.left) > 1 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 1);
+              return {
+                previousDotsOverlap: intersects(previous, dots),
+                nextDotsOverlap: intersects(next, dots),
+                dotArrowOverlap: dotRects.some((dot) => intersects(dot, previous) || intersects(dot, next)),
+                dotsInsideViewport: dots ? dots.left >= -1 && dots.right <= innerWidth + 1 : false,
+                previousSize: previous ? { width: previous.width, height: previous.height } : null,
+                nextSize: next ? { width: next.width, height: next.height } : null
+              };
+            });
+            assert.equal(navLayout.previousDotsOverlap, false, `${width}px previous arrow must not overlap page dots`);
+            assert.equal(navLayout.nextDotsOverlap, false, `${width}px next arrow must not overlap page dots`);
+            assert.equal(navLayout.dotArrowOverlap, false, `${width}px page-dot touch targets must not overlap navigation arrows`);
+            assert.equal(navLayout.dotsInsideViewport, true, `${width}px page dots must remain inside the wearable viewport`);
+            assert.ok(navLayout.previousSize?.width >= 44 && navLayout.previousSize?.height >= 44, `${width}px previous arrow keeps a 44px touch target`);
+            assert.ok(navLayout.nextSize?.width >= 44 && navLayout.nextSize?.height >= 44, `${width}px next arrow keeps a 44px touch target`);
+          }
+
 
           {
             const scrollState = await page.evaluate(() => {
