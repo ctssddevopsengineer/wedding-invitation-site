@@ -147,7 +147,7 @@ try {
               ['.dynamicFrontNames', '.dynamicFrontClosing'],
               ['.receptionCountdownItem .countdown', '.localizedDetailsClosing']
             ]) {
-              if (compactScroller?.matches('.receptionDetailsOverlay') && first === '.receptionCountdownItem .countdown' && second === '.localizedDetailsClosing') continue;
+              if (compactScroller && compactScroller.matches('.receptionDetailsOverlay') && first === '.receptionCountdownItem .countdown' && second === '.localizedDetailsClosing') continue;
               const a = document.querySelector(first)?.getBoundingClientRect();
               const b = document.querySelector(second)?.getBoundingClientRect();
               if (a?.width && b?.width && a.bottom > b.top + 2) issues.push(`overlap: ${first}/${second}`);
