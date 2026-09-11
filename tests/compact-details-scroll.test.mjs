@@ -48,6 +48,19 @@ test('compact scroll CSS is loaded after existing responsive/theme overrides', (
   assert.ok(featureImport > themeImport);
 });
 
+test('compact front preserves theme-specific crest and ornament safe zones', () => {
+  assert.match(css, /--compact-front-safe-top, 25%/);
+  assert.match(css, /data-invitation-theme="classic"[\s\S]*?--compact-front-safe-top:\s*25%/);
+  assert.match(css, /data-invitation-theme="blush"[\s\S]*?--compact-front-safe-top:\s*25%/);
+  assert.match(css, /data-invitation-theme="magenta"[\s\S]*?--compact-front-safe-top:\s*25%/);
+  assert.match(css, /data-invitation-theme="saffron"[\s\S]*?--compact-front-safe-top:\s*26%/);
+  assert.match(css, /data-invitation-theme="navy"[\s\S]*?data-invitation-theme="plum"[\s\S]*?--compact-front-safe-top:\s*32%/);
+  assert.match(css, /\.weddingMonogramSpacer[\s\S]*?display:\s*none\s*!important/);
+  assert.match(browserRegression, /front heading enters crest\/ornament safe zone/);
+  assert.match(browserRegression, /navy:\s*0\.31/);
+  assert.match(browserRegression, /saffron:\s*0\.25/);
+});
+
 test('compact inside-left preserves the crest and bell artwork safe zone', () => {
   assert.match(css, /page-inside-left \.familyBlessingsContent[\s\S]*?inset:\s*28% 8% 5%\s*!important/);
   assert.match(browserRegression, /inside-left heading enters crest\/bell safe zone/);
