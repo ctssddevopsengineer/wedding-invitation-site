@@ -232,6 +232,20 @@ try {
             failureScreenshots++;
           }
           if (issues.length) errors.push(`${width}x${height}/${theme}/${language}/${pageName}: ${issues.join(', ')}`);
+          if (width <= 200 && pageName === 'front') {
+            const frontFooter = await page.evaluate(() => {
+              const scroller = document.querySelector('[data-compact-scroll-region="front"]')?.getBoundingClientRect();
+              const button = document.querySelector('.frontCover .openButton')?.getBoundingClientRect();
+              return scroller && button ? {
+                clear: scroller.bottom <= button.top - 2,
+                scrollerBottom: scroller.bottom,
+                buttonTop: button.top
+              } : null;
+            });
+            assert.ok(frontFooter, `${width}px front page must expose compact copy and Open Invitation control`);
+            assert.equal(frontFooter.clear, true, `${width}px compact front copy must stay above Open Invitation`);
+          }
+
           if (width <= 340) {
             const navLayout = await page.evaluate(() => {
               const previous = document.querySelector('.bookNav .navArrow:first-child')?.getBoundingClientRect();
