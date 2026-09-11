@@ -26,6 +26,14 @@ test('responsive matrix includes Apple Watch-class viewports', () => {
   assert.match(responsive, /162x197/);
 });
 
+test('watch-class front copy reserves a footer above the Open Invitation control', () => {
+  assert.match(controls, /@media \(max-width: 200px\)/);
+  const compactCss = fs.readFileSync(new URL('../app/compact-details-scroll.css', import.meta.url), 'utf8');
+  assert.match(compactCss, /@media \(max-width: 200px\)[\s\S]*?page-front \.dynamicFrontCopy[\s\S]*?bottom:\s*27%\s*!important/);
+  assert.match(compactCss, /page-front \.openButton[\s\S]*?min-height:\s*44px/);
+  assert.match(browserRegression, /compact front copy must stay above Open Invitation/);
+});
+
 test('browser regression rejects navigation overlap on wearable widths', () => {
   assert.match(browserRegression, /width <= 340/);
   assert.match(browserRegression, /previousDotsOverlap/);
