@@ -25,7 +25,7 @@ test('compact parchment scrolling covers all four pages strictly below 375px', (
   ]) assert.ok(css.includes(selector), `compact scrolling covers ${selector}`);
 });
 
-test('compact details scrollport allows only vertical scrolling and contains overscroll', () => {
+test('compact page scrollports allow only vertical scrolling and contain overscroll', () => {
   assert.match(css, /overflow-y:\s*auto/);
   assert.match(css, /overflow-x:\s*hidden/);
   assert.match(css, /overscroll-behavior-y:\s*contain/);
@@ -57,7 +57,7 @@ test('browser regression validates scroll behavior, reachability and horizontal 
   assert.match(browserRegression, /if \(width < 375\)/);
   assert.match(browserRegression, /scrollState\.overflowY, 'auto'/);
   assert.match(browserRegression, /scrollState\.overflowX, 'hidden'/);
-  assert.match(browserRegression, /Array\(6\)\.fill\(/);
+  assert.match(browserRegression, /Array\(8\)\.fill\(/);
   assert.match(browserRegression, /stress\.overflow > 0/);
   assert.match(browserRegression, /stress\.reachedBottom/);
   assert.match(browserRegression, /stress\.horizontalOverflow <= 1/);
