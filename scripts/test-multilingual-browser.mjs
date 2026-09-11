@@ -122,6 +122,13 @@ try {
             const compactScroller = innerWidth < 375 && document.querySelector('[data-compact-scroll-region]');
             if (document.documentElement.scrollWidth > innerWidth + 1) issues.push('horizontal page overflow: ' + [...document.querySelectorAll('body *')].filter(n => n.getBoundingClientRect().right > innerWidth + 2).slice(0, 5).map(n => n.className).join('/'));
             const card = document.querySelector('.invitePage').getBoundingClientRect();
+            if (innerWidth < 375 && document.querySelector('.bookStage.page-inside-left')) {
+              const heading = document.querySelector('#family-blessings-title')?.getBoundingClientRect();
+              const minimumSafeTop = card.top + card.height * 0.27;
+              if (heading?.height && heading.top < minimumSafeTop - 2) {
+                issues.push('inside-left heading enters crest/bell safe zone');
+              }
+            }
             for (const node of document.querySelectorAll('.invitePage h1,.invitePage h2,.familyBlock,.heritageAssistance,.receptionDetailsOverlay')) {
               const box = node.getBoundingClientRect();
               const insideCompactScroller = compactScroller && compactScroller.contains(node);
