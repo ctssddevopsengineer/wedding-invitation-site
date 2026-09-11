@@ -56,3 +56,23 @@
     line-height: 1.2;
   }
 }
+
+
+/* watchOS-class CSS viewports can be narrower than the four 44px dot hit
+   targets combined. Keep arrows at 44px, but compact only the page-dot touch
+   targets so the full navigation remains inside the screen. */
+@media (max-width: 200px) {
+  .bookApp[data-invitation-theme] .pageDot {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+  }
+
+  .bookApp .pageDot::after {
+    inset: 13px;
+  }
+
+  .bookNav {
+    grid-template-rows: 44px 34px;
+  }
+}
