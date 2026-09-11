@@ -92,7 +92,7 @@ test('clipped compact geometry is excluded from card-boundary false positives wi
   assert.match(browserRegression, /const compactScroller = innerWidth < 375/);
   assert.match(browserRegression, /compactScroller\.contains\(node\)/);
   assert.match(browserRegression, /compactScroller\.contains\(a\.element\)/);
-  assert.match(browserRegression, /compactScroller\?\.matches\('\.receptionDetailsOverlay'\)/);
+  assert.match(browserRegression, /compactScroller && compactScroller\.matches\('\.receptionDetailsOverlay'\)/);
   assert.match(browserRegression, /stressSelector/);
   assert.match(browserRegression, /front: '\.dynamicFrontClosing'/);
   assert.match(browserRegression, /family: '\.familyBlessingsClosing'/);
