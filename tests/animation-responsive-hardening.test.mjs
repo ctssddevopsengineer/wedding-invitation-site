@@ -30,10 +30,10 @@ test('couple scene has explicit phone and landscape hardening without tiny capti
 
 test('watch-class couple scene stays below the measured caption', () => {
   assert.match(entranceCss, /@media \(max-width:\s*200px\) and \(max-height:\s*260px\)/);
-  assert.match(entranceCss, /top:\s*calc\(var\(--caption-bottom,\s*118px\) \+ 6px\)/);
-  assert.match(entranceCss, /--figure-height:\s*100%/);
-  assert.match(entranceCss, /\.groom\s*\{[\s\S]*?height:\s*100%/);
-  assert.match(entranceCss, /\.bride\s*\{[\s\S]*?height:\s*90%/);
+  assert.match(entranceCss, /top:\s*calc\(var\(--caption-bottom,\s*118px\) \+ 10px\)/);
+  assert.match(entranceCss, /\.person\s*\{[\s\S]*?width:\s*auto[\s\S]*?aspect-ratio:\s*2 \/ 3/);
+  assert.match(entranceCss, /\.groom\s*\{[\s\S]*?right:\s*calc\(50% - 3px\)[\s\S]*?aspect-ratio:\s*7 \/ 10/);
+  assert.match(entranceCss, /\.bride\s*\{[\s\S]*?left:\s*calc\(50% - 3px\)[\s\S]*?aspect-ratio:\s*2 \/ 3/);
 });
 
 test('watch-class closed intro fits controls without horizontal overflow', () => {
