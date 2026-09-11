@@ -86,7 +86,10 @@
   /* Inside Left: the monogram remains fixed in the artwork safe zone while
      family copy becomes a natural-height stack that can scroll independently. */
   .bookStage.page-inside-left .familyBlessingsContent {
-    inset: 20% 10% 6% !important;
+    /* Preserve the artwork's crest/bell safe zone. The original heading begins
+       around 28.55%; starting the compact scroller near that same landmark
+       prevents the first line from sliding under the hanging bells. */
+    inset: 28% 8% 5% !important;
     display: flex;
     flex-direction: column;
     align-items: center;
