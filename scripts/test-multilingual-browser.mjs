@@ -195,12 +195,27 @@ try {
               if (label?.width && value?.width && label.bottom > value.top + 1) issues.push('overlap: .receptionDetailLabel/.receptionDetailValue');
             }
 
+            // Closing copy uses explicit block spans. Range glyph boxes for Bengali/Nepali can
+            // legitimately extend beyond their CSS line boxes in WebKit/Firefox, so use element
+            // boxes as the cross-engine source of truth and keep the generic glyph scan out of
+            // these semantic zones.
+            for (const selector of ['.dynamicFrontClosing', '.familyBlessingsClosing']) {
+              const lines = [...document.querySelectorAll(`${selector} > span`)]
+                .map((node) => node.getBoundingClientRect())
+                .filter((rect) => rect.width && rect.height);
+              for (let index = 0; index < lines.length - 1; index++) {
+                if (lines[index].bottom > lines[index + 1].top + 1) {
+                  issues.push(`overlap: ${selector} line ${index + 1}/${index + 2}`);
+                }
+              }
+            }
+
             // Compare rendered text fragments for the rest of the card. Semantic zones above are
             // intentionally excluded because their element boxes are the cross-engine source of
             // truth; raw glyph-range metrics differ between Linux, Windows and macOS. Content
             // below a compact scrollport is intentionally clipped and reachable by scrolling, so
             // its off-screen range geometry is not a card-boundary violation.
-            const semanticZones = '.dynamicFrontHeading,.dynamicFrontTagline,.dynamicFrontNames,.heritageBackIntro,.heritageCoupleNames,.heritageJourneyMessage,.heritageAssistance,.receptionDetailsOverlay,.localizedDetailsClosing';
+            const semanticZones = '.dynamicFrontHeading,.dynamicFrontTagline,.dynamicFrontNames,.dynamicFrontClosing,.familyBlessingsClosing,.heritageBackIntro,.heritageCoupleNames,.heritageJourneyMessage,.heritageAssistance,.receptionDetailsOverlay,.localizedDetailsClosing';
             const walker = document.createTreeWalker(document.querySelector('.invitePage'), NodeFilter.SHOW_TEXT);
             const fragments = [];
             while (walker.nextNode()) {
