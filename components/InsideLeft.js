@@ -1,11 +1,16 @@
+'use client';
+
 import WeddingMonogram from '@/components/WeddingMonogram';
 import Artwork from '@/components/Artwork';
 import { useLanguage } from '@/components/LanguageProvider';
 import { getThemeAsset } from '@/lib/theme.mjs';
+import CompactScrollHint from '@/components/CompactScrollHint';
+import { useCompactScrollHint } from '@/components/useCompactScrollHint';
 
 export default function InsideLeft({ themeId }) {
   const { language, t, event: EVENT } = useLanguage();
   const copy = EVENT.insideLeft;
+  const { scrollRef, showScrollHint } = useCompactScrollHint(`${language}:${themeId}`);
 
   return (
     <article
@@ -19,7 +24,7 @@ export default function InsideLeft({ themeId }) {
       />
       <WeddingMonogram themeId={themeId} page="insideLeft" />
 
-      <div className="familyBlessingsContent">
+      <div ref={scrollRef} data-compact-scroll-region="inside-left" className="familyBlessingsContent">
 
         <section className="familyBlessingsIntro" aria-labelledby="family-blessings-title">
           <h2 id="family-blessings-title">{copy.heading}</h2>
@@ -60,6 +65,7 @@ export default function InsideLeft({ themeId }) {
             <span key={`${line}-${index}`}>{line}</span>
           ))}
         </p>
+        <CompactScrollHint visible={showScrollHint} label={t("Scroll for more")} />
       </div>
     </article>
   );
