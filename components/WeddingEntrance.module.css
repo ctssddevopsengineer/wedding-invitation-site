@@ -140,25 +140,36 @@
   }
 
   .procession {
-    top: calc(var(--caption-bottom, 118px) + 6px);
+    top: calc(var(--caption-bottom, 118px) + 10px);
     bottom: 8px;
     height: auto;
-    --figure-height: 100%;
-    --figure-width: calc(var(--figure-height) * 2 / 3);
-    --walk-distance: clamp(16px, 10vw, 28px);
+    --walk-distance: clamp(12px, 8vw, 20px);
   }
 
+  /* On watch viewports, percentage-based figure-width math resolves against
+     the containing block width rather than the remaining vertical height.
+     Size each figure from its actual height with aspect-ratio instead, then
+     pin the pair around the center line so both stay fully on-screen. */
   .person {
     height: 100%;
+    width: auto;
     max-height: 100%;
+    aspect-ratio: 2 / 3;
   }
 
   .groom {
+    right: calc(50% - 3px);
+    left: auto;
     height: 100%;
-    width: calc(var(--figure-width) * 1.05);
+    width: auto;
+    aspect-ratio: 7 / 10;
   }
 
   .bride {
+    left: calc(50% - 3px);
+    right: auto;
     height: 90%;
+    width: auto;
+    aspect-ratio: 2 / 3;
   }
 }
