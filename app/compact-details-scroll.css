@@ -34,9 +34,9 @@
      Artwork, monogram and Open Invitation control remain outside the scroller. */
   .bookStage.page-front .dynamicFrontCopy {
     inset: auto !important;
-    top: 18% !important;
+    top: var(--compact-front-safe-top, 25%) !important;
     right: auto !important;
-    bottom: 14% !important;
+    bottom: 12% !important;
     left: 50% !important;
     width: 76% !important;
     height: auto !important;
@@ -47,6 +47,21 @@
     justify-content: flex-start !important;
     gap: .28rem;
     padding: .18rem .08rem .9rem;
+  }
+
+  /* Front artwork safe zones differ by theme. The compact scroller begins below
+     the crest/ornament area instead of using one aggressive top value for all art. */
+  .bookApp[data-invitation-theme="classic"] .bookStage.page-front { --compact-front-safe-top: 25%; }
+  .bookApp[data-invitation-theme="blush"] .bookStage.page-front { --compact-front-safe-top: 25%; }
+  .bookApp[data-invitation-theme="magenta"] .bookStage.page-front { --compact-front-safe-top: 25%; }
+  .bookApp[data-invitation-theme="saffron"] .bookStage.page-front { --compact-front-safe-top: 26%; }
+  .bookApp:is([data-invitation-theme="navy"], [data-invitation-theme="plum"]) .bookStage.page-front { --compact-front-safe-top: 32%; }
+
+  /* Classic/Blush reserve emblem space in their normal-flow desktop layout.
+     The compact scroller already starts below the emblem, so retaining the
+     32cqw spacer would push the heading unnecessarily far down. */
+  .bookStage.page-front .weddingMonogramSpacer {
+    display: none !important;
   }
 
   .bookStage.page-front .dynamicFrontCopy > :is(
