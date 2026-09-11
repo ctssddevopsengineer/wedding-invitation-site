@@ -111,6 +111,13 @@ test('all four pages expose the shared localized scroll guidance', () => {
   assert.match(translations, /"Scroll for more":\s*"थप हेर्न स्क्रोल गर्नुहोस्"/);
 });
 
+test('localized closing copy uses semantic line boxes instead of cross-engine glyph ranges', () => {
+  assert.match(browserRegression, /\.dynamicFrontClosing/);
+  assert.match(browserRegression, /\.familyBlessingsClosing/);
+  assert.match(browserRegression, /getBoundingClientRect\(\)/);
+  assert.match(browserRegression, /overlap: \$\{selector\} line/);
+  assert.match(browserRegression, /semanticZones = '[^']*\.dynamicFrontClosing[^']*\.familyBlessingsClosing/);
+});
 test('clipped compact geometry is excluded from card-boundary false positives without hiding semantic overlap checks', () => {
   assert.match(browserRegression, /const compactScroller = innerWidth < 375/);
   assert.match(browserRegression, /compactScroller\.contains\(node\)/);
