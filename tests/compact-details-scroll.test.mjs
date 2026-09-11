@@ -48,6 +48,12 @@ test('compact scroll CSS is loaded after existing responsive/theme overrides', (
   assert.ok(featureImport > themeImport);
 });
 
+test('compact inside-left preserves the crest and bell artwork safe zone', () => {
+  assert.match(css, /page-inside-left \.familyBlessingsContent[\s\S]*?inset:\s*28% 8% 5%\s*!important/);
+  assert.match(browserRegression, /inside-left heading enters crest\/bell safe zone/);
+  assert.match(browserRegression, /card\.height \* 0\.27/);
+});
+
 test('responsive matrix covers both sides of the 375px boundary', () => {
   assert.match(responsive, /374x812/);
   assert.match(responsive, /375x812/);
