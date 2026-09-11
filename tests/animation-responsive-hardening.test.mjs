@@ -28,6 +28,14 @@ test('couple scene has explicit phone and landscape hardening without tiny capti
   assert.match(entranceCss, /will-change:\s*transform,\s*opacity/);
 });
 
+test('watch-class couple scene stays below the measured caption', () => {
+  assert.match(entranceCss, /@media \(max-width:\s*200px\) and \(max-height:\s*260px\)/);
+  assert.match(entranceCss, /top:\s*calc\(var\(--caption-bottom,\s*118px\) \+ 6px\)/);
+  assert.match(entranceCss, /--figure-height:\s*100%/);
+  assert.match(entranceCss, /\.groom\s*\{[\s\S]*?height:\s*100%/);
+  assert.match(entranceCss, /\.bride\s*\{[\s\S]*?height:\s*90%/);
+});
+
 test('music control stays clear of the page navigation without changing page dots', () => {
   assert.match(musicCss, /bottom:\s*max\(86px,/);
   assert.match(musicCss, /background:\s*transparent/);
