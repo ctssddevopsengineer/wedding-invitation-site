@@ -78,14 +78,6 @@ export default function InsideRight({ themeId, initialLocationOpen = false, onLo
 
   useEffect(() => () => clearCloseTimer(), []);
 
-  return () => {
-      window.cancelAnimationFrame(frameId);
-      overlay.removeEventListener('scroll', updateScrollHint);
-      window.removeEventListener('resize', updateScrollHint);
-      resizeObserver?.disconnect();
-      mutationObserver?.disconnect();
-    };
-  }, [language, themeId]);
 
   return (
     <article className="invitePage exactInsideRight" aria-label={t("Inside right — reception details")}>
