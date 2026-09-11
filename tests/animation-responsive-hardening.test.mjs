@@ -36,6 +36,16 @@ test('watch-class couple scene stays below the measured caption', () => {
   assert.match(entranceCss, /\.bride\s*\{[\s\S]*?height:\s*90%/);
 });
 
+test('watch-class closed intro fits controls without horizontal overflow', () => {
+  assert.match(introCss, /@media \(max-width:\s*200px\) and \(max-height:\s*260px\)/);
+  assert.match(introCss, /padding:\s*52px 6px 6px/);
+  assert.match(introCss, /overlay\[data-cinematic-intro='closed'\] \.heading[\s\S]*?display:\s*none/);
+  assert.match(introCss, /\.preferences[\s\S]*?grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\)/);
+  assert.match(introCss, /\.preferenceTrigger[\s\S]*?min-height:\s*44px/);
+  assert.match(introCss, /\.open[\s\S]*?min-height:\s*44px/);
+  assert.match(musicCss, /@media \(max-width:\s*200px\) and \(max-height:\s*260px\)[\s\S]*?left:\s*max\(6px/);
+});
+
 test('music control stays clear of the page navigation without changing page dots', () => {
   assert.match(musicCss, /bottom:\s*max\(86px,/);
   assert.match(musicCss, /background:\s*transparent/);
