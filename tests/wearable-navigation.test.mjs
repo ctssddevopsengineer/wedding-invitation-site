@@ -34,6 +34,14 @@ test('watch-class front copy reserves a footer above the Open Invitation control
   assert.match(browserRegression, /compact front copy must stay above Open Invitation/);
 });
 
+test('compact collision regression clips text geometry to the visible scrollport', () => {
+  assert.match(browserRegression, /closest\('\[data-compact-scroll-region\]'\)/);
+  assert.match(browserRegression, /const clipRect = clippingScroller\?\.getBoundingClientRect\(\)/);
+  assert.match(browserRegression, /Math\.max\(rawRect\.top, clipRect\.top\)/);
+  assert.match(browserRegression, /Math\.min\(rawRect\.bottom, clipRect\.bottom\)/);
+  assert.match(browserRegression, /if \(right <= left \|\| bottom <= top\) continue/);
+});
+
 test('browser regression rejects navigation overlap on wearable widths', () => {
   assert.match(browserRegression, /width <= 340/);
   assert.match(browserRegression, /previousDotsOverlap/);
