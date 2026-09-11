@@ -113,21 +113,24 @@ General rules:
 - preserve theme-specific artwork alignment,
 - preserve readable Bengali and Nepali typography.
 
-### Inside Right compact scrolling
+### Compact parchment scrolling
 
 For the current compact-scrolling feature:
 
-- viewports below 375 CSS px may use the Inside Right reception-details scroll fallback,
+- viewports below 375 CSS px may use a page-local vertical scroll fallback on Front, Inside Left, Inside Right, and Back,
+- the behavior applies across all six themes and English, Bengali, and Nepali,
 - 375px and above must retain the normal fixed-layout behavior,
 - scrolling must be vertical only,
 - horizontal scrolling is not allowed,
+- artwork and monograms remain outside the scrolling text region,
 - long content must remain reachable,
-- content must not flex-shrink into text overlap,
-- Front, Inside Left, and Back must remain unaffected,
+- compact layouts must stack semantic text instead of retaining overlap-prone absolute coordinates,
+- Inside Right flex children must not shrink into text overlap,
 - any scroll guidance must appear only when real overflow exists,
 - the scroll hint must disappear at the bottom,
 - the hint must remain absent at 375px and above,
-- localized guidance must work for English, Bengali, and Nepali.
+- localized guidance must work for English, Bengali, and Nepali,
+- horizontal invitation navigation must remain available.
 
 Do not solve compact overflow by shrinking typography to an unreadable size.
 

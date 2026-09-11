@@ -1,12 +1,17 @@
+'use client';
+
 import WeddingMonogram from '@/components/WeddingMonogram';
 import Artwork from '@/components/Artwork';
 import { useLanguage } from '@/components/LanguageProvider';
 import { getTheme, getThemeAsset } from '@/lib/theme.mjs';
+import CompactScrollHint from '@/components/CompactScrollHint';
+import { useCompactScrollHint } from '@/components/useCompactScrollHint';
 
 export default function FrontCover({ onOpen, themeId }) {
   const { language, t, event: EVENT } = useLanguage();
   const theme = getTheme(themeId);
   const usesDynamicFrontCopy = theme.dynamicFront || theme.blankFront;
+  const { scrollRef, showScrollHint } = useCompactScrollHint(`${language}:${themeId}`);
 
   return (
     <article className="invitePage frontCover" aria-label={t("Front cover")}>
@@ -19,6 +24,8 @@ export default function FrontCover({ onOpen, themeId }) {
 
       {(usesDynamicFrontCopy || language !== 'en') && (
         <section
+          ref={scrollRef}
+          data-compact-scroll-region="front"
           className={`dynamicFrontCopy ${!usesDynamicFrontCopy ? 'localizedPrintedFront' : ''}`}
           aria-label={t("Reception invitation cover text")}
         >
@@ -41,6 +48,7 @@ export default function FrontCover({ onOpen, themeId }) {
               <span key={`${line}-${index}`}>{line}</span>
             ))}
           </p>
+          <CompactScrollHint visible={showScrollHint} label={t("Scroll for more")} />
         </section>
       )}
 
