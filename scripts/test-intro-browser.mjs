@@ -312,7 +312,7 @@ try {
               firstFigureTop: figures.length ? Math.min(...figures.map((rect) => rect.top)) : 0
             };
           });
-          assert.ok(separation.firstFigureTop >= separation.captionBottom + 4, `${width}x${height} couple must stay below intro caption`);
+          assert.ok(separation.firstFigureTop >= separation.captionBottom + 8, `${width}x${height} couple must keep an 8px caption safety gap`);
         }
         await capture(page, `together-${width}x${height}`);
       }
