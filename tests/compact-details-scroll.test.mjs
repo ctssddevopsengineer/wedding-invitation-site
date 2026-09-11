@@ -58,6 +58,10 @@ test('browser regression validates scroll behavior, reachability and horizontal 
   assert.match(browserRegression, /scrollState\.overflowY, 'auto'/);
   assert.match(browserRegression, /scrollState\.overflowX, 'hidden'/);
   assert.match(browserRegression, /Array\(8\)\.fill\(/);
+  assert.match(browserRegression, /compactScrollStressSpacer/);
+  assert.match(browserRegression, /scroller\.clientHeight \+ 160/);
+  assert.match(browserRegression, /dataset\.compactOverflow === 'true'/);
+  assert.match(browserRegression, /timeout:\s*5000/);
   assert.match(browserRegression, /stress\.overflow > 0/);
   assert.match(browserRegression, /stress\.reachedBottom/);
   assert.match(browserRegression, /stress\.horizontalOverflow <= 1/);
