@@ -10,6 +10,8 @@ import CalendarButtons from '@/components/CalendarButtons';
 import Countdown from '@/components/Countdown';
 import { withBasePath } from '@/lib/public-path.mjs';
 import { getTheme, getThemeAsset } from '@/lib/theme.mjs';
+import CompactScrollHint from '@/components/CompactScrollHint';
+import { useCompactScrollHint } from '@/components/useCompactScrollHint';
 
 const HOVER_CLOSE_DELAY_MS = 180;
 
@@ -20,8 +22,7 @@ export default function InsideRight({ themeId, initialLocationOpen = false, onLo
   const [isPinnedOpen, setIsPinnedOpen] = useState(Boolean(initialLocationOpen));
   const [isHoverOpen, setIsHoverOpen] = useState(false);
   const closeTimerRef = useRef(null);
-  const detailsScrollRef = useRef(null);
-  const [showScrollHint, setShowScrollHint] = useState(false);
+  const { scrollRef: detailsScrollRef, showScrollHint } = useCompactScrollHint(`${language}:${themeId}`);
   const isLocationOpen = isPinnedOpen || isHoverOpen;
 
   function clearCloseTimer() {
@@ -77,35 +78,7 @@ export default function InsideRight({ themeId, initialLocationOpen = false, onLo
 
   useEffect(() => () => clearCloseTimer(), []);
 
-  useEffect(() => {
-    const overlay = detailsScrollRef.current;
-    if (!overlay) return undefined;
-
-    let frameId = 0;
-    const updateScrollHint = () => {
-      window.cancelAnimationFrame(frameId);
-      frameId = window.requestAnimationFrame(() => {
-        const compactViewport = window.innerWidth < 375;
-        const hasOverflow = overlay.scrollHeight > overlay.clientHeight + 1;
-        const atBottom = overlay.scrollTop + overlay.clientHeight >= overlay.scrollHeight - 2;
-        setShowScrollHint(compactViewport && hasOverflow && !atBottom);
-      });
-    };
-
-    updateScrollHint();
-    overlay.addEventListener('scroll', updateScrollHint, { passive: true });
-    window.addEventListener('resize', updateScrollHint, { passive: true });
-
-    const resizeObserver = typeof ResizeObserver === 'function' ? new ResizeObserver(updateScrollHint) : null;
-    resizeObserver?.observe(overlay);
-    for (const child of overlay.children) resizeObserver?.observe(child);
-
-    const mutationObserver = typeof MutationObserver === 'function'
-      ? new MutationObserver(updateScrollHint)
-      : null;
-    mutationObserver?.observe(overlay, { subtree: true, childList: true, characterData: true });
-
-    return () => {
+  return () => {
       window.cancelAnimationFrame(frameId);
       overlay.removeEventListener('scroll', updateScrollHint);
       window.removeEventListener('resize', updateScrollHint);
@@ -134,7 +107,7 @@ export default function InsideRight({ themeId, initialLocationOpen = false, onLo
       {language !== 'en' && themeId === 'classic' && <p className="localizedDetailsClosing">{t('We would be honored by your presence on this joyous evening.')}</p>}
       </div>
 
-      <section ref={detailsScrollRef} className="receptionDetailsOverlay" aria-label={t("Reception details")}>
+      <section ref={detailsScrollRef} data-compact-scroll-region="inside-right" className="receptionDetailsOverlay" aria-label={t("Reception details")}>
         <div className="receptionDetailItem">
           <p className="receptionDetailLabel">{t("Day & Date")}</p>
           <p className="receptionDetailValue">{EVENT.dateLabel}</p>
@@ -180,14 +153,7 @@ export default function InsideRight({ themeId, initialLocationOpen = false, onLo
           <Countdown target={EVENT.start} />
         </div>
 
-        <div
-          className="compactScrollHint"
-          data-visible={showScrollHint ? 'true' : 'false'}
-          aria-hidden="true"
-        >
-          <span>{t("Scroll for more")}</span>
-          <span className="compactScrollHintArrow" aria-hidden="true">↓</span>
-        </div>
+        <CompactScrollHint visible={showScrollHint} label={t("Scroll for more")} />
       </section>
 
       <div className={!theme.dynamicLocationLabel ? 'localizedArtworkCoordinates' : 'dynamicLocationContainer'}>
