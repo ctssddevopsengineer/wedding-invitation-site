@@ -209,7 +209,18 @@ try {
               const style = getComputedStyle(node.parentElement);
               if (style.visibility === 'hidden' || style.display === 'none' || Number(style.opacity) === 0) continue;
               const range = document.createRange(); range.selectNodeContents(node);
-              for (const rect of range.getClientRects()) {
+              const clippingScroller = innerWidth < 375 ? node.parentElement.closest('[data-compact-scroll-region]') : null;
+              const clipRect = clippingScroller?.getBoundingClientRect();
+              for (const rawRect of range.getClientRects()) {
+                let rect = rawRect;
+                if (clipRect) {
+                  const left = Math.max(rawRect.left, clipRect.left);
+                  const right = Math.min(rawRect.right, clipRect.right);
+                  const top = Math.max(rawRect.top, clipRect.top);
+                  const bottom = Math.min(rawRect.bottom, clipRect.bottom);
+                  if (right <= left || bottom <= top) continue;
+                  rect = { left, right, top, bottom, width: right - left, height: bottom - top };
+                }
                 if (rect.width && rect.height) fragments.push({ rect, node, element: node.parentElement, label: (node.parentElement.className || node.parentElement.tagName) + ':' + node.textContent.trim().slice(0, 35) });
               }
             }
