@@ -10,6 +10,8 @@ import CalendarButtons from '@/components/CalendarButtons';
 import Countdown from '@/components/Countdown';
 import { withBasePath } from '@/lib/public-path.mjs';
 import { getTheme, getThemeAsset } from '@/lib/theme.mjs';
+import CompactScrollHint from '@/components/CompactScrollHint';
+import { useCompactScrollHint } from '@/components/useCompactScrollHint';
 
 const HOVER_CLOSE_DELAY_MS = 180;
 
@@ -20,6 +22,7 @@ export default function InsideRight({ themeId, initialLocationOpen = false, onLo
   const [isPinnedOpen, setIsPinnedOpen] = useState(Boolean(initialLocationOpen));
   const [isHoverOpen, setIsHoverOpen] = useState(false);
   const closeTimerRef = useRef(null);
+  const { scrollRef: detailsScrollRef, showScrollHint } = useCompactScrollHint(`${language}:${themeId}`);
   const isLocationOpen = isPinnedOpen || isHoverOpen;
 
   function clearCloseTimer() {
@@ -75,6 +78,7 @@ export default function InsideRight({ themeId, initialLocationOpen = false, onLo
 
   useEffect(() => () => clearCloseTimer(), []);
 
+
   return (
     <article className="invitePage exactInsideRight" aria-label={t("Inside right — reception details")}>
       <Artwork
@@ -95,7 +99,7 @@ export default function InsideRight({ themeId, initialLocationOpen = false, onLo
       {language !== 'en' && themeId === 'classic' && <p className="localizedDetailsClosing">{t('We would be honored by your presence on this joyous evening.')}</p>}
       </div>
 
-      <section className="receptionDetailsOverlay" aria-label={t("Reception details")}>
+      <section ref={detailsScrollRef} data-compact-scroll-region="inside-right" className="receptionDetailsOverlay" aria-label={t("Reception details")}>
         <div className="receptionDetailItem">
           <p className="receptionDetailLabel">{t("Day & Date")}</p>
           <p className="receptionDetailValue">{EVENT.dateLabel}</p>
@@ -140,6 +144,8 @@ export default function InsideRight({ themeId, initialLocationOpen = false, onLo
           <p className="receptionDetailLabel">{t("Until We Celebrate")}</p>
           <Countdown target={EVENT.start} />
         </div>
+
+        <CompactScrollHint visible={showScrollHint} label={t("Scroll for more")} />
       </section>
 
       <div className={!theme.dynamicLocationLabel ? 'localizedArtworkCoordinates' : 'dynamicLocationContainer'}>

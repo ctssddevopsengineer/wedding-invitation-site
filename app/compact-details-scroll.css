@@ -1,14 +1,20 @@
 /* ========================================================================== */
-/* COMPACT INSIDE-RIGHT SCROLL FALLBACK                                       */
+/* COMPACT ALL-PAGE PARCHMENT SCROLL FALLBACK                                 */
 /*                                                                            */
-/* Viewports below 375 CSS px keep the approved parchment/artwork geometry    */
-/* while the dense reception-details column becomes independently scrollable. */
-/* This prevents translated/long content from being compressed into overlapping */
-/* flex items. The 375px-and-up layout is intentionally untouched.            */
+/* Below 375 CSS px, each invitation page keeps its artwork fixed while its   */
+/* semantic copy region may scroll vertically when content needs more room.   */
+/* At 375px and above the approved fixed-layout geometry remains untouched.    */
 /* ========================================================================== */
 
+.compactScrollHint {
+  display: none;
+}
+
 @media (max-width: 374px) {
-  .bookStage.page-inside-right .receptionDetailsOverlay {
+  .bookStage.page-front .dynamicFrontCopy,
+  .bookStage.page-inside-left .familyBlessingsContent,
+  .bookStage.page-inside-right .receptionDetailsOverlay,
+  .bookStage.page-back .heritageBackContent {
     box-sizing: border-box;
     overflow-y: auto;
     overflow-x: hidden;
@@ -16,29 +22,341 @@
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     scrollbar-color: rgba(169, 119, 40, .55) transparent;
-    justify-content: flex-start !important;
-    padding-bottom: .45rem;
   }
 
-  /* Flex children must keep their natural painted height. Otherwise the flex
-     algorithm can compress long Bengali/Nepali/address content and make one
-     item's text paint into the next item instead of producing scroll overflow. */
+  /* Keep legacy pointer-event behavior unless the region actually needs to
+     scroll. This avoids creating invisible interaction layers on compact pages. */
+  .bookStage [data-compact-scroll-region][data-compact-overflow="true"] {
+    pointer-events: auto;
+  }
+
+  /* Front: convert fixed text coordinates into a compact semantic stack.
+     Artwork, monogram and Open Invitation control remain outside the scroller. */
+  .bookStage.page-front .dynamicFrontCopy {
+    inset: auto !important;
+    top: var(--compact-front-safe-top, 25%) !important;
+    right: auto !important;
+    bottom: 12% !important;
+    left: 50% !important;
+    width: 76% !important;
+    height: auto !important;
+    transform: translateX(-50%) !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start !important;
+    gap: .28rem;
+    padding: .18rem .08rem .9rem;
+  }
+
+  /* Front artwork safe zones differ by theme. The compact scroller begins below
+     the crest/ornament area instead of using one aggressive top value for all art. */
+  .bookApp[data-invitation-theme="classic"] .bookStage.page-front { --compact-front-safe-top: 25%; }
+  .bookApp[data-invitation-theme="blush"] .bookStage.page-front { --compact-front-safe-top: 25%; }
+  .bookApp[data-invitation-theme="magenta"] .bookStage.page-front { --compact-front-safe-top: 25%; }
+  .bookApp[data-invitation-theme="saffron"] .bookStage.page-front { --compact-front-safe-top: 26%; }
+  .bookApp:is([data-invitation-theme="navy"], [data-invitation-theme="plum"]) .bookStage.page-front { --compact-front-safe-top: 32%; }
+
+  /* Classic/Blush reserve emblem space in their normal-flow desktop layout.
+     The compact scroller already starts below the emblem, so retaining the
+     32cqw spacer would push the heading unnecessarily far down. */
+  .bookStage.page-front .weddingMonogramSpacer {
+    display: none !important;
+  }
+
+  .bookStage.page-front .dynamicFrontCopy > :is(
+    .weddingMonogramSpacer,
+    .dynamicFrontHeading,
+    .dynamicFrontRule,
+    .dynamicFrontTagline,
+    .dynamicFrontNames,
+    .dynamicFrontClosing
+  ) {
+    position: static !important;
+    inset: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+    flex: 0 0 auto;
+  }
+
+  .bookStage.page-front .dynamicFrontHeading,
+  .bookStage.page-front .dynamicFrontTagline,
+  .bookStage.page-front .dynamicFrontNames,
+  .bookStage.page-front .dynamicFrontClosing {
+    width: 100% !important;
+    margin-inline: 0 !important;
+  }
+
+  .bookStage.page-front .dynamicFrontRule {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    margin-block: .08rem !important;
+  }
+
+  /* Theme front rules normally position the ✥ ornament absolutely inside an
+     absolutely positioned separator. Compact mode converts the separator itself
+     into normal flow, so the ornament must be returned to that same flow as
+     well. Otherwise the line remains in place while the ✥ becomes orphaned near
+     the lower artwork, which is the extra ornament seen above the bride/groom. */
+  .bookStage.page-front .dynamicFrontRule > span {
+    position: static !important;
+    inset: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+    flex: 0 0 auto;
+  }
+
+  .bookStage.page-front .coverAction {
+    z-index: 8;
+  }
+
+  /* Inside Left: the monogram remains fixed in the artwork safe zone while
+     family copy becomes a natural-height stack that can scroll independently. */
+  .bookStage.page-inside-left .familyBlessingsContent {
+    /* Preserve the artwork's crest/bell safe zone. The original heading begins
+       around 28.55%; starting the compact scroller near that same landmark
+       prevents the first line from sliding under the hanging bells. */
+    inset: 28% 8% 5% !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: .35rem;
+    padding: .15rem .1rem .9rem;
+  }
+
+  .bookStage.page-inside-left .familyBlessingsContent > :is(
+    .familyBlessingsIntro,
+    .familyCoupleNames,
+    .familyGoldDivider,
+    .familyBlock,
+    .familyBlessingsClosing
+  ) {
+    position: static !important;
+    inset: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+    flex: 0 0 auto;
+  }
+
+  .bookStage.page-inside-left .familyBlessingsIntro,
+  .bookStage.page-inside-left .familyCoupleNames,
+  .bookStage.page-inside-left .familyBlock,
+  .bookStage.page-inside-left .familyBlessingsClosing {
+    width: 100% !important;
+    margin-inline: 0 !important;
+  }
+
+  .bookStage.page-inside-left .familyGoldDivider {
+    width: 64% !important;
+    margin-block: .06rem !important;
+  }
+
+  /* Inside Right already uses normal-flow flex items; keep their natural
+     painted height so long translated values create scroll instead of overlap. */
+  .bookStage.page-inside-right .receptionDetailsOverlay {
+    justify-content: flex-start !important;
+    padding-bottom: .9rem;
+  }
+
   .bookStage.page-inside-right .receptionDetailsOverlay > .receptionDetailItem,
   .bookStage.page-inside-right .receptionDetailsOverlay > .receptionDetailDivider,
   .bookStage.page-inside-right .receptionDetailsOverlay > br {
     flex: 0 0 auto;
   }
 
-  .bookStage.page-inside-right .receptionDetailsOverlay::-webkit-scrollbar {
+  /* Saffron's phone layout previously relied on space-between inside a fixed
+     height. Compact mode deliberately switches to a scrollable natural-height
+     stack, so the old zero-margin dividers made Day/Date → Countdown look
+     cramped. Below 375px we can spend vertical space on readability because
+     overflow is reachable by scrolling. Keep the artwork coordinates intact
+     and add rhythm only inside the details scrollport. */
+  .bookApp[data-invitation-theme="saffron"] .bookStage.page-inside-right .receptionDetailsOverlay {
+    gap: .32rem !important;
+    padding-top: .28rem !important;
+    padding-bottom: 1.15rem !important;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .bookStage.page-inside-right .receptionDetailsOverlay > br {
+    display: none !important;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .bookStage.page-inside-right .receptionDetailItem {
+    padding-block: .04rem;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .bookStage.page-inside-right .receptionDetailLabel {
+    margin-bottom: .16rem;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .bookStage.page-inside-right .receptionDetailDivider {
+    width: 38%;
+    margin-block: .02rem !important;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .bookStage.page-inside-right .receptionCalendarItem .actionRow,
+  .bookApp[data-invitation-theme="saffron"] .bookStage.page-inside-right .receptionCountdownItem .countdown {
+    margin-top: .22rem;
+  }
+
+  /* Baby Pink uses the same compact scroll model but its dense phone artwork
+     makes the normal-flow detail stack feel visually compressed. Give the
+     Day/Date → Countdown sequence a little more breathing room below 375px.
+     This is intentionally scoped to the scrollport so the approved artwork,
+     title, crest and Location/Map geometry remain untouched. */
+  .bookApp[data-invitation-theme="blush"] .bookStage.page-inside-right .receptionDetailsOverlay {
+    gap: .34rem !important;
+    padding-top: .3rem !important;
+    padding-bottom: 1.18rem !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .bookStage.page-inside-right .receptionDetailsOverlay > br {
+    display: none !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .bookStage.page-inside-right .receptionDetailItem {
+    padding-block: .05rem;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .bookStage.page-inside-right .receptionDetailLabel {
+    margin-bottom: .18rem;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .bookStage.page-inside-right .receptionDetailDivider {
+    width: 40%;
+    margin-block: .03rem !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .bookStage.page-inside-right .receptionCalendarItem .actionRow,
+  .bookApp[data-invitation-theme="blush"] .bookStage.page-inside-right .receptionCountdownItem .countdown {
+    margin-top: .24rem;
+  }
+
+  /* Back: preserve artwork/monogram and stack gratitude, names, journey and
+     assistance content inside the compact scroll region. */
+  .bookStage.page-back .heritageBackContent {
+    inset: 20% 7% 5% !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: .35rem;
+    padding: .15rem .1rem .9rem;
+  }
+
+  .bookStage.page-back .heritageBackContent > :is(
+    .heritageBackIntro,
+    .heritageCoupleNames,
+    .heritageGoldRule,
+    .heritageJourneyMessage,
+    .heritageLotusMark,
+    .heritageAssistance
+  ) {
+    position: static !important;
+    inset: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+    flex: 0 0 auto;
+  }
+
+  .bookStage.page-back .heritageBackIntro,
+  .bookStage.page-back .heritageCoupleNames,
+  .bookStage.page-back .heritageJourneyMessage,
+  .bookStage.page-back .heritageAssistance {
+    width: 100% !important;
+    margin-inline: 0 !important;
+  }
+
+  .bookStage.page-back .heritageGoldRule {
+    width: 62% !important;
+    margin-block: .06rem !important;
+  }
+
+  .bookStage.page-back .heritageAssistance {
+    pointer-events: auto;
+  }
+
+  /* Shared overflow guidance. It is transient UI and never affects layout. */
+  .bookStage [data-compact-scroll-region] .compactScrollHint {
+    position: absolute;
+    z-index: 9;
+    left: 50%;
+    bottom: .12rem;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .18rem;
+    max-width: calc(100% - .4rem);
+    padding: .18rem .38rem;
+    border: 1px solid color-mix(in srgb, var(--theme-gold) 38%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--theme-soft) 92%, white 8%);
+    box-shadow: 0 .18rem .45rem rgba(45, 25, 15, .14);
+    color: var(--theme-accent-dark);
+    font-size: clamp(.42rem, 1.7cqw, .58rem);
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .16s ease, visibility .16s ease;
+  }
+
+  .bookStage [data-compact-scroll-region] .compactScrollHint[data-visible="true"] {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .bookStage [data-compact-scroll-region] .compactScrollHintArrow {
+    display: inline-block;
+    font-size: 1.08em;
+    line-height: 1;
+  }
+
+  .bookStage [data-compact-scroll-region]::-webkit-scrollbar {
     width: 3px;
   }
 
-  .bookStage.page-inside-right .receptionDetailsOverlay::-webkit-scrollbar-track {
+  .bookStage [data-compact-scroll-region]::-webkit-scrollbar-track {
     background: transparent;
   }
 
-  .bookStage.page-inside-right .receptionDetailsOverlay::-webkit-scrollbar-thumb {
+  .bookStage [data-compact-scroll-region]::-webkit-scrollbar-thumb {
     background: rgba(169, 119, 40, .55);
     border-radius: 999px;
+  }
+}
+
+
+/* Watch-class screens need a larger reserved footer because the Open Invitation
+   control is intentionally fixed over the artwork. Keep the compact copy in a
+   scrollport above that control instead of allowing the last line to paint
+   underneath the button. */
+@media (max-width: 200px) {
+  .bookStage.page-front .dynamicFrontCopy {
+    bottom: 27% !important;
+  }
+
+  .bookStage.page-front .openButton {
+    min-height: 44px;
+    max-width: 86%;
+    padding: .5rem .65rem;
+    font-size: .72rem;
+    line-height: 1.15;
   }
 }
