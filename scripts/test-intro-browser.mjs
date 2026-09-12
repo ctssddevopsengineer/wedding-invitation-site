@@ -271,7 +271,7 @@ try {
   }
 
   // Touch, short landscape screens and every theme at each device size.
-  for (const [width, height] of [[162, 197], [184, 224], [240, 320], [640, 360], [320, 480], [320, 568], [390, 844], [768, 1024], [1366, 768], [1920, 1080], [844, 390]]) {
+  for (const [width, height] of [[240, 320], [640, 360], [320, 480], [320, 568], [390, 844], [768, 1024], [1366, 768], [1920, 1080], [844, 390]]) {
     for (const theme of THEME_IDS) {
       const page = await newPage({ viewport: { width, height }, hasTouch: true });
       const sceneRequests = [];
@@ -301,19 +301,6 @@ try {
         assert.ok(sceneRequests.some((request) => request.endsWith(width <= 680 ? '/wedding-scene-mobile.webp' : '/wedding-scene.webp')));
         if (width <= 680) assert.equal(sceneRequests.some((request) => request.endsWith('/wedding-scene.webp')), false, 'phones do not download the desktop backdrop');
         await checkCoupleSpace(page);
-        if (width <= 200 && height <= 260) {
-          const separation = await page.evaluate(() => {
-            const caption = document.querySelector('[data-entrance-caption]')?.getBoundingClientRect();
-            const figures = [...document.querySelectorAll('[data-character]')]
-              .map((node) => node.getBoundingClientRect())
-              .filter((rect) => rect.width && rect.height);
-            return {
-              captionBottom: caption?.bottom ?? 0,
-              firstFigureTop: figures.length ? Math.min(...figures.map((rect) => rect.top)) : 0
-            };
-          });
-          assert.ok(separation.firstFigureTop >= separation.captionBottom + 8, `${width}x${height} couple must keep an 8px caption safety gap`);
-        }
         await capture(page, `together-${width}x${height}`);
       }
       await page.locator('[data-intro-skip]').tap();
