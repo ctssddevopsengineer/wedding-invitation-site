@@ -175,6 +175,40 @@
     flex: 0 0 auto;
   }
 
+  /* Saffron's phone layout previously relied on space-between inside a fixed
+     height. Compact mode deliberately switches to a scrollable natural-height
+     stack, so the old zero-margin dividers made Day/Date → Countdown look
+     cramped. Below 375px we can spend vertical space on readability because
+     overflow is reachable by scrolling. Keep the artwork coordinates intact
+     and add rhythm only inside the details scrollport. */
+  .bookApp[data-invitation-theme="saffron"] .bookStage.page-inside-right .receptionDetailsOverlay {
+    gap: .32rem !important;
+    padding-top: .28rem !important;
+    padding-bottom: 1.15rem !important;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .bookStage.page-inside-right .receptionDetailsOverlay > br {
+    display: none !important;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .bookStage.page-inside-right .receptionDetailItem {
+    padding-block: .04rem;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .bookStage.page-inside-right .receptionDetailLabel {
+    margin-bottom: .16rem;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .bookStage.page-inside-right .receptionDetailDivider {
+    width: 38%;
+    margin-block: .02rem !important;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .bookStage.page-inside-right .receptionCalendarItem .actionRow,
+  .bookApp[data-invitation-theme="saffron"] .bookStage.page-inside-right .receptionCountdownItem .countdown {
+    margin-top: .22rem;
+  }
+
   /* Back: preserve artwork/monogram and stack gratitude, names, journey and
      assistance content inside the compact scroll region. */
   .bookStage.page-back .heritageBackContent {

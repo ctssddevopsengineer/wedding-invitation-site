@@ -335,6 +335,41 @@ try {
               assert.equal(scrollState.overscrollBehaviorY, 'contain', `${width}px/${pageName} scrolling must not chain into the page`);
               assert.ok(scrollState.scrollWidth <= scrollState.clientWidth + 1, `${width}px/${pageName} scrollport has horizontal overflow`);
 
+              if (pageName === 'details' && theme === 'saffron') {
+                const saffronSpacing = await page.evaluate(() => {
+                  const overlay = document.querySelector('.receptionDetailsOverlay');
+                  const items = [...overlay.querySelectorAll(':scope > .receptionDetailItem')]
+                    .map((node) => node.getBoundingClientRect())
+                    .filter((rect) => rect.width && rect.height);
+                  const style = getComputedStyle(overlay);
+                  const itemGaps = items.slice(1).map((rect, index) => rect.top - items[index].bottom);
+                  const labels = [...overlay.querySelectorAll('.receptionDetailLabel')]
+                    .map((node) => ({
+                      marginBottom: Number.parseFloat(getComputedStyle(node).marginBottom) || 0,
+                      lineHeight: Number.parseFloat(getComputedStyle(node).lineHeight) || 0
+                    }));
+                  return {
+                    gap: Number.parseFloat(style.rowGap || style.gap) || 0,
+                    itemGaps,
+                    labelMargins: labels.map((entry) => entry.marginBottom),
+                    labelLineHeights: labels.map((entry) => entry.lineHeight)
+                  };
+                });
+                assert.ok(saffronSpacing.gap >= 4, `${width}px/saffron/${language} details must keep readable vertical rhythm`);
+                assert.ok(
+                  saffronSpacing.itemGaps.every((gap) => gap >= 8),
+                  `${width}px/saffron/${language} detail groups must remain visibly separated`
+                );
+                assert.ok(
+                  saffronSpacing.labelMargins.every((margin) => margin >= 2),
+                  `${width}px/saffron/${language} labels need breathing room above values`
+                );
+                assert.ok(
+                  saffronSpacing.labelLineHeights.every((lineHeight) => lineHeight > 0),
+                  `${width}px/saffron/${language} labels must retain measurable line height`
+                );
+              }
+
               if (pageName === 'front') {
                 const frontOrnaments = await page.evaluate(() => {
                   const rules = [...document.querySelectorAll('.frontCover .dynamicFrontRule')];

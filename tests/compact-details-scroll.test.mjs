@@ -69,6 +69,16 @@ test('compact front keeps all three ornaments attached to their separators', () 
   assert.match(browserRegression, /front separator \$\{index \+ 1\} ornament must remain horizontally centred/);
 });
 
+test('Saffron inside-right uses readable natural spacing below 375px', () => {
+  assert.match(css, /data-invitation-theme="saffron"[\s\S]*?page-inside-right \.receptionDetailsOverlay[\s\S]*?gap:\s*\.32rem\s*!important/);
+  assert.match(css, /data-invitation-theme="saffron"[\s\S]*?receptionDetailLabel[\s\S]*?margin-bottom:\s*\.16rem/);
+  assert.match(css, /data-invitation-theme="saffron"[\s\S]*?receptionDetailDivider[\s\S]*?width:\s*38%[\s\S]*?margin-block:\s*\.02rem\s*!important/);
+  assert.match(css, /data-invitation-theme="saffron"[\s\S]*?receptionCalendarItem \.actionRow,[\s\S]*?receptionCountdownItem \.countdown[\s\S]*?margin-top:\s*\.22rem/);
+  assert.match(browserRegression, /details must keep readable vertical rhythm/);
+  assert.match(browserRegression, /detail groups must remain visibly separated/);
+  assert.match(browserRegression, /labels need breathing room above values/);
+});
+
 test('compact inside-left preserves the crest and bell artwork safe zone', () => {
   assert.match(css, /page-inside-left \.familyBlessingsContent[\s\S]*?inset:\s*28% 8% 5%\s*!important/);
   assert.match(browserRegression, /inside-left heading enters crest\/bell safe zone/);
