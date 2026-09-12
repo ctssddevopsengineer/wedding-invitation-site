@@ -209,6 +209,39 @@
     margin-top: .22rem;
   }
 
+  /* Baby Pink uses the same compact scroll model but its dense phone artwork
+     makes the normal-flow detail stack feel visually compressed. Give the
+     Day/Date → Countdown sequence a little more breathing room below 375px.
+     This is intentionally scoped to the scrollport so the approved artwork,
+     title, crest and Location/Map geometry remain untouched. */
+  .bookApp[data-invitation-theme="blush"] .bookStage.page-inside-right .receptionDetailsOverlay {
+    gap: .34rem !important;
+    padding-top: .3rem !important;
+    padding-bottom: 1.18rem !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .bookStage.page-inside-right .receptionDetailsOverlay > br {
+    display: none !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .bookStage.page-inside-right .receptionDetailItem {
+    padding-block: .05rem;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .bookStage.page-inside-right .receptionDetailLabel {
+    margin-bottom: .18rem;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .bookStage.page-inside-right .receptionDetailDivider {
+    width: 40%;
+    margin-block: .03rem !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .bookStage.page-inside-right .receptionCalendarItem .actionRow,
+  .bookApp[data-invitation-theme="blush"] .bookStage.page-inside-right .receptionCountdownItem .countdown {
+    margin-top: .24rem;
+  }
+
   /* Back: preserve artwork/monogram and stack gratitude, names, journey and
      assistance content inside the compact scroll region. */
   .bookStage.page-back .heritageBackContent {
