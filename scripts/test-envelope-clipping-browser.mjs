@@ -40,8 +40,13 @@ try {
       await page.goto(`http://127.0.0.1:${server.address().port}${basePath}/?theme=${theme}&lang=en`);
       await page.waitForSelector('main[data-theme-ready="true"]');
       // Hold phase timers while sampling the actual CSS keyframes deterministically.
-      await page.clock.install();
-      await page.clock.pauseAt(new Date());
+      // Use a fixed clock origin and pause slightly in its future. Calling pauseAt(new Date())
+      // after install is race-prone on fast CI runners because the installed browser clock may
+      // already be a few milliseconds ahead of the host timestamp, which Playwright rejects as
+      // "Cannot fast-forward to the past".
+      const clockOrigin = new Date('2030-01-01T00:00:00.000Z');
+      await page.clock.install({ time: clockOrigin });
+      await page.clock.pauseAt(new Date(clockOrigin.getTime() + 1000));
       await page.locator('[data-intro-open]').click();
       await page.evaluate(() => {
         const scene = document.querySelector('[data-envelope-scene]');

@@ -302,3 +302,84 @@
 .preferenceOption > span { flex: 0 0 1em; }
 .preferenceOption:hover, .preferenceOption:focus-visible { background: #713342; outline: 2px solid #dcb879; outline-offset: -2px; }
 .preferenceOption[aria-selected='true'] { background: #592532; }
+
+
+/* Apple Watch-class closed intro: keep every interactive control visible without
+   horizontal overflow. The decorative heading is omitted only on the tiny
+   pre-open screen; the cinematic walking caption remains handled separately in
+   WeddingEntrance.module.css. */
+@media (max-width: 200px) and (max-height: 260px) {
+  .overlay {
+    justify-content: flex-start;
+    gap: 4px;
+    padding: 52px 6px 6px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+  }
+
+  .border { inset: 3px; }
+
+  .overlay[data-cinematic-intro='closed'] .heading {
+    display: none;
+  }
+
+  .scene {
+    width: min(38vw, 20svh);
+    max-width: calc(100vw - 12px);
+    margin-top: 0;
+  }
+
+  .footer {
+    width: 100%;
+    padding-bottom: 0;
+  }
+
+  .preferences {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    margin: 0 0 4px;
+    padding: 3px;
+    border-radius: 10px;
+  }
+
+  .preferenceField {
+    display: block;
+    min-width: 0;
+  }
+
+  .preferenceField > label {
+    display: none;
+  }
+
+  .preferenceTrigger {
+    min-width: 0;
+    min-height: 44px;
+    padding: 0 6px;
+    font-size: .58rem;
+    line-height: 1.05;
+    text-align: center;
+  }
+
+  .open {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 8px;
+    font-size: .64rem;
+    line-height: 1.05;
+  }
+
+  .skip {
+    top: max(6px, env(safe-area-inset-top));
+    right: max(6px, env(safe-area-inset-right));
+    max-width: calc(100vw - 62px);
+    padding: 6px 8px;
+    font-size: .62rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .skip span { margin-left: 4px; }
+  .hint { display: none; }
+}
