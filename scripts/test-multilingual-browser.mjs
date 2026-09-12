@@ -335,8 +335,8 @@ try {
               assert.equal(scrollState.overscrollBehaviorY, 'contain', `${width}px/${pageName} scrolling must not chain into the page`);
               assert.ok(scrollState.scrollWidth <= scrollState.clientWidth + 1, `${width}px/${pageName} scrollport has horizontal overflow`);
 
-              if (pageName === 'details' && theme === 'saffron') {
-                const saffronSpacing = await page.evaluate(() => {
+              if (pageName === 'details' && ['saffron', 'blush'].includes(theme)) {
+                const compactDetailsSpacing = await page.evaluate(() => {
                   const overlay = document.querySelector('.receptionDetailsOverlay');
                   const items = [...overlay.querySelectorAll(':scope > .receptionDetailItem')]
                     .map((node) => node.getBoundingClientRect())
@@ -355,18 +355,18 @@ try {
                     labelLineHeights: labels.map((entry) => entry.lineHeight)
                   };
                 });
-                assert.ok(saffronSpacing.gap >= 4, `${width}px/saffron/${language} details must keep readable vertical rhythm`);
+                assert.ok(compactDetailsSpacing.gap >= 4, `${width}px/${theme}/${language} details must keep readable vertical rhythm`);
                 assert.ok(
-                  saffronSpacing.itemGaps.every((gap) => gap >= 8),
-                  `${width}px/saffron/${language} detail groups must remain visibly separated`
+                  compactDetailsSpacing.itemGaps.every((gap) => gap >= 8),
+                  `${width}px/${theme}/${language} detail groups must remain visibly separated`
                 );
                 assert.ok(
-                  saffronSpacing.labelMargins.every((margin) => margin >= 2),
-                  `${width}px/saffron/${language} labels need breathing room above values`
+                  compactDetailsSpacing.labelMargins.every((margin) => margin >= 2),
+                  `${width}px/${theme}/${language} labels need breathing room above values`
                 );
                 assert.ok(
-                  saffronSpacing.labelLineHeights.every((lineHeight) => lineHeight > 0),
-                  `${width}px/saffron/${language} labels must retain measurable line height`
+                  compactDetailsSpacing.labelLineHeights.every((lineHeight) => lineHeight > 0),
+                  `${width}px/${theme}/${language} labels must retain measurable line height`
                 );
               }
 
