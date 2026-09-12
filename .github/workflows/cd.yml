@@ -75,7 +75,11 @@ jobs:
           VENUE_NAME: ${{ vars.VENUE_NAME }}
           VENUE_ADDRESS: ${{ vars.VENUE_ADDRESS }}
           GROOM_NAME: ${{ vars.GROOM_NAME }}
+          GROOM_NAME_BN: ${{ vars.GROOM_NAME_BN }}
+          GROOM_NAME_NE: ${{ vars.GROOM_NAME_NE }}
           BRIDE_NAME: ${{ vars.BRIDE_NAME }}
+          BRIDE_NAME_BN: ${{ vars.BRIDE_NAME_BN }}
+          BRIDE_NAME_NE: ${{ vars.BRIDE_NAME_NE }}
           GROOM_FATHER_NAME: ${{ vars.GROOM_FATHER_NAME }}
           GROOM_MOTHER_NAME: ${{ vars.GROOM_MOTHER_NAME }}
           BRIDE_FATHER_NAME: ${{ vars.BRIDE_FATHER_NAME }}
