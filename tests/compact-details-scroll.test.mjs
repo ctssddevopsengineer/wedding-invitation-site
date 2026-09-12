@@ -61,6 +61,14 @@ test('compact front preserves theme-specific crest and ornament safe zones', () 
   assert.match(browserRegression, /saffron:\s*0\.25/);
 });
 
+test('compact front keeps all three ornaments attached to their separators', () => {
+  assert.match(css, /page-front \.dynamicFrontRule\s*\{[\s\S]*?display:\s*flex\s*!important[\s\S]*?align-items:\s*center[\s\S]*?justify-content:\s*center/);
+  assert.match(css, /page-front \.dynamicFrontRule > span\s*\{[\s\S]*?position:\s*static\s*!important[\s\S]*?transform:\s*none\s*!important/);
+  assert.match(browserRegression, /front must render exactly three intended separators/);
+  assert.match(browserRegression, /compact front ornament must stay attached to its separator/);
+  assert.match(browserRegression, /front separator \$\{index \+ 1\} ornament must remain horizontally centred/);
+});
+
 test('compact inside-left preserves the crest and bell artwork safe zone', () => {
   assert.match(css, /page-inside-left \.familyBlessingsContent[\s\S]*?inset:\s*28% 8% 5%\s*!important/);
   assert.match(browserRegression, /inside-left heading enters crest\/bell safe zone/);
