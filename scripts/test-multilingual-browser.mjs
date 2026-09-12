@@ -335,6 +335,38 @@ try {
               assert.equal(scrollState.overscrollBehaviorY, 'contain', `${width}px/${pageName} scrolling must not chain into the page`);
               assert.ok(scrollState.scrollWidth <= scrollState.clientWidth + 1, `${width}px/${pageName} scrollport has horizontal overflow`);
 
+              if (pageName === 'front') {
+                const frontOrnaments = await page.evaluate(() => {
+                  const rules = [...document.querySelectorAll('.frontCover .dynamicFrontRule')];
+                  return {
+                    ruleCount: rules.length,
+                    ornaments: rules.map((rule) => {
+                      const ruleRect = rule.getBoundingClientRect();
+                      const ornament = rule.querySelector(':scope > span');
+                      const ornamentRect = ornament?.getBoundingClientRect();
+                      const style = ornament ? getComputedStyle(ornament) : null;
+                      return {
+                        hasOrnament: Boolean(ornament && ornamentRect?.width && ornamentRect?.height),
+                        position: style?.position || '',
+                        centerDelta: ornamentRect
+                          ? Math.abs((ornamentRect.left + ornamentRect.width / 2) - (ruleRect.left + ruleRect.width / 2))
+                          : Number.POSITIVE_INFINITY,
+                        verticalDelta: ornamentRect
+                          ? Math.abs((ornamentRect.top + ornamentRect.height / 2) - (ruleRect.top + ruleRect.height / 2))
+                          : Number.POSITIVE_INFINITY
+                      };
+                    })
+                  };
+                });
+                assert.equal(frontOrnaments.ruleCount, 3, `${width}px/${theme}/${language} front must render exactly three intended separators`);
+                for (const [index, ornament] of frontOrnaments.ornaments.entries()) {
+                  assert.equal(ornament.hasOrnament, true, `${width}px/${theme}/${language} front separator ${index + 1} must retain its ornament`);
+                  assert.notEqual(ornament.position, 'absolute', `${width}px/${theme}/${language} compact front ornament must stay attached to its separator`);
+                  assert.ok(ornament.centerDelta <= 2, `${width}px/${theme}/${language} front separator ${index + 1} ornament must remain horizontally centred`);
+                  assert.ok(ornament.verticalDelta <= 8, `${width}px/${theme}/${language} front separator ${index + 1} ornament must remain on its rule`);
+                }
+              }
+
               // Stress representative compact widths across every theme/language/page state.
               // Normal content may fit and should not show a false hint; the stress fixture
               // deliberately proves overflow, reachability and hint dismissal.
