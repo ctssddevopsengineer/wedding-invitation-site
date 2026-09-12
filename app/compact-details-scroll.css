@@ -91,7 +91,26 @@
   }
 
   .bookStage.page-front .dynamicFrontRule {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
     margin-block: .08rem !important;
+  }
+
+  /* Theme front rules normally position the ✥ ornament absolutely inside an
+     absolutely positioned separator. Compact mode converts the separator itself
+     into normal flow, so the ornament must be returned to that same flow as
+     well. Otherwise the line remains in place while the ✥ becomes orphaned near
+     the lower artwork, which is the extra ornament seen above the bride/groom. */
+  .bookStage.page-front .dynamicFrontRule > span {
+    position: static !important;
+    inset: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+    flex: 0 0 auto;
   }
 
   .bookStage.page-front .coverAction {
