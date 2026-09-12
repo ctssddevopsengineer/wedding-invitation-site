@@ -1,17 +1,12 @@
-'use client';
-
 import WeddingMonogram from '@/components/WeddingMonogram';
 import Artwork from '@/components/Artwork';
 import { useLanguage } from '@/components/LanguageProvider';
 import ContactDetails from '@/components/ContactDetails';
 import { getThemeAsset } from '@/lib/theme.mjs';
-import CompactScrollHint from '@/components/CompactScrollHint';
-import { useCompactScrollHint } from '@/components/useCompactScrollHint';
 
 export default function BackCover({ themeId }) {
   const { language, t, event: EVENT } = useLanguage();
   const copy = EVENT.backCover;
-  const { scrollRef, showScrollHint } = useCompactScrollHint(`${language}:${themeId}`);
 
   return (
     <article
@@ -25,7 +20,7 @@ export default function BackCover({ themeId }) {
       />
       <WeddingMonogram themeId={themeId} page="back" />
 
-      <div ref={scrollRef} data-compact-scroll-region="back" className="heritageBackContent">
+      <div className="heritageBackContent">
 
         <section className="heritageBackIntro" aria-labelledby="back-gratitude-title">
           <h2 id="back-gratitude-title">{copy.heading}</h2>
@@ -59,7 +54,7 @@ export default function BackCover({ themeId }) {
           <ContactDetails contacts={EVENT.contacts} />
         </section>
 
-        <CompactScrollHint visible={showScrollHint} label={t("Scroll for more")} />
+
       </div>
     </article>
   );

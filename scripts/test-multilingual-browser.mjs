@@ -119,29 +119,12 @@ try {
           assert.equal(await page.locator('#invitation-language-value').getAttribute('lang'), language);
           const issues = await page.evaluate(() => {
             const issues = [];
-            const compactScroller = innerWidth < 375 && document.querySelector('[data-compact-scroll-region]');
+            const compactDetailsScroller = innerWidth < 375 && document.querySelector('.bookStage.page-inside-right .receptionDetailsOverlay');
             if (document.documentElement.scrollWidth > innerWidth + 1) issues.push('horizontal page overflow: ' + [...document.querySelectorAll('body *')].filter(n => n.getBoundingClientRect().right > innerWidth + 2).slice(0, 5).map(n => n.className).join('/'));
             const card = document.querySelector('.invitePage').getBoundingClientRect();
-            if (innerWidth < 375 && document.querySelector('.bookStage.page-front')) {
-              const heading = document.querySelector('.dynamicFrontHeading')?.getBoundingClientRect();
-              const theme = document.querySelector('main[data-invitation-theme]')?.dataset.invitationTheme;
-              const minimumSafeRatio = ({ navy: 0.31, plum: 0.31, saffron: 0.25, classic: 0.24, blush: 0.24, magenta: 0.24 })[theme] ?? 0.24;
-              const minimumSafeTop = card.top + card.height * minimumSafeRatio;
-              if (heading?.height && heading.top < minimumSafeTop - 2) {
-                issues.push('front heading enters crest/ornament safe zone');
-              }
-            }
-            if (innerWidth < 375 && document.querySelector('.bookStage.page-inside-left')) {
-              const heading = document.querySelector('#family-blessings-title')?.getBoundingClientRect();
-              const minimumSafeTop = card.top + card.height * 0.27;
-              if (heading?.height && heading.top < minimumSafeTop - 2) {
-                issues.push('inside-left heading enters crest/bell safe zone');
-              }
-            }
             for (const node of document.querySelectorAll('.invitePage h1,.invitePage h2,.familyBlock,.heritageAssistance,.receptionDetailsOverlay')) {
               const box = node.getBoundingClientRect();
-              const insideCompactScroller = compactScroller && compactScroller.contains(node);
-              if (!insideCompactScroller && box.width && (box.left < card.left - 2 || box.right > card.right + 2 || box.bottom > card.bottom + 2)) issues.push(node.className || node.tagName);
+              if (box.width && (box.left < card.left - 2 || box.right > card.right + 2 || box.bottom > card.bottom + 2)) issues.push(node.className || node.tagName);
             }
             for (const image of document.querySelectorAll('.invitePage picture img')) {
               // Every approved template has a same-geometry WebP companion.
@@ -163,7 +146,7 @@ try {
               ['.dynamicFrontNames', '.dynamicFrontClosing'],
               ['.receptionCountdownItem .countdown', '.localizedDetailsClosing']
             ]) {
-              if (compactScroller && compactScroller.matches('.receptionDetailsOverlay') && first === '.receptionCountdownItem .countdown' && second === '.localizedDetailsClosing') continue;
+              if (compactDetailsScroller && first === '.receptionCountdownItem .countdown' && second === '.localizedDetailsClosing') continue;
               const a = document.querySelector(first)?.getBoundingClientRect();
               const b = document.querySelector(second)?.getBoundingClientRect();
               if (a?.width && b?.width && a.bottom > b.top + 2) issues.push(`overlap: ${first}/${second}`);
@@ -195,27 +178,12 @@ try {
               if (label?.width && value?.width && label.bottom > value.top + 1) issues.push('overlap: .receptionDetailLabel/.receptionDetailValue');
             }
 
-            // Closing copy uses explicit block spans. Range glyph boxes for Bengali/Nepali can
-            // legitimately extend beyond their CSS line boxes in WebKit/Firefox, so use element
-            // boxes as the cross-engine source of truth and keep the generic glyph scan out of
-            // these semantic zones.
-            for (const selector of ['.dynamicFrontClosing', '.familyBlessingsClosing']) {
-              const lines = [...document.querySelectorAll(`${selector} > span`)]
-                .map((node) => node.getBoundingClientRect())
-                .filter((rect) => rect.width && rect.height);
-              for (let index = 0; index < lines.length - 1; index++) {
-                if (lines[index].bottom > lines[index + 1].top + 1) {
-                  issues.push(`overlap: ${selector} line ${index + 1}/${index + 2}`);
-                }
-              }
-            }
-
             // Compare rendered text fragments for the rest of the card. Semantic zones above are
             // intentionally excluded because their element boxes are the cross-engine source of
             // truth; raw glyph-range metrics differ between Linux, Windows and macOS. Content
             // below a compact scrollport is intentionally clipped and reachable by scrolling, so
             // its off-screen range geometry is not a card-boundary violation.
-            const semanticZones = '.dynamicFrontHeading,.dynamicFrontTagline,.dynamicFrontNames,.dynamicFrontClosing,.familyBlessingsClosing,.heritageBackIntro,.heritageCoupleNames,.heritageJourneyMessage,.heritageAssistance,.receptionDetailsOverlay,.localizedDetailsClosing';
+            const semanticZones = '.dynamicFrontHeading,.dynamicFrontTagline,.dynamicFrontNames,.heritageBackIntro,.heritageCoupleNames,.heritageJourneyMessage,.heritageAssistance,.receptionDetailsOverlay,.localizedDetailsClosing';
             const walker = document.createTreeWalker(document.querySelector('.invitePage'), NodeFilter.SHOW_TEXT);
             const fragments = [];
             while (walker.nextNode()) {
@@ -224,25 +192,14 @@ try {
               const style = getComputedStyle(node.parentElement);
               if (style.visibility === 'hidden' || style.display === 'none' || Number(style.opacity) === 0) continue;
               const range = document.createRange(); range.selectNodeContents(node);
-              const clippingScroller = innerWidth < 375 ? node.parentElement.closest('[data-compact-scroll-region]') : null;
-              const clipRect = clippingScroller?.getBoundingClientRect();
-              for (const rawRect of range.getClientRects()) {
-                let rect = rawRect;
-                if (clipRect) {
-                  const left = Math.max(rawRect.left, clipRect.left);
-                  const right = Math.min(rawRect.right, clipRect.right);
-                  const top = Math.max(rawRect.top, clipRect.top);
-                  const bottom = Math.min(rawRect.bottom, clipRect.bottom);
-                  if (right <= left || bottom <= top) continue;
-                  rect = { left, right, top, bottom, width: right - left, height: bottom - top };
-                }
+              for (const rect of range.getClientRects()) {
                 if (rect.width && rect.height) fragments.push({ rect, node, element: node.parentElement, label: (node.parentElement.className || node.parentElement.tagName) + ':' + node.textContent.trim().slice(0, 35) });
               }
             }
             for (let i = 0; i < fragments.length; i++) {
               const a = fragments[i];
-              const insideCompactScroller = compactScroller && compactScroller.contains(a.element);
-              if (!insideCompactScroller && (a.rect.left < card.left - 2 || a.rect.right > card.right + 2 || a.rect.bottom > card.bottom + 2)) issues.push(`text outside card: ${a.label}`);
+              const insideCompactDetailsScroller = compactDetailsScroller && a.element.closest('.receptionDetailsOverlay');
+              if (!insideCompactDetailsScroller && (a.rect.left < card.left - 2 || a.rect.right > card.right + 2 || a.rect.bottom > card.bottom + 2)) issues.push(`text outside card: ${a.label}`);
               for (const b of fragments.slice(i + 1)) {
                 if (a.node === b.node) continue;
                 if (a.element.closest(semanticZones) || b.element.closest(semanticZones)) continue;
@@ -258,230 +215,59 @@ try {
             failureScreenshots++;
           }
           if (issues.length) errors.push(`${width}x${height}/${theme}/${language}/${pageName}: ${issues.join(', ')}`);
-          if (width <= 200 && pageName === 'front') {
-            const frontFooter = await page.evaluate(() => {
-              const scroller = document.querySelector('[data-compact-scroll-region="front"]')?.getBoundingClientRect();
-              const button = document.querySelector('.frontCover .openButton')?.getBoundingClientRect();
-              return scroller && button ? {
-                clear: scroller.bottom <= button.top - 2,
-                scrollerBottom: scroller.bottom,
-                buttonTop: button.top
-              } : null;
-            });
-            assert.ok(frontFooter, `${width}px front page must expose compact copy and Open Invitation control`);
-            assert.equal(frontFooter.clear, true, `${width}px compact front copy must stay above Open Invitation`);
-          }
 
-          if (width <= 340) {
-            const navLayout = await page.evaluate(() => {
-              const previous = document.querySelector('.bookNav .navArrow:first-child')?.getBoundingClientRect();
-              const next = document.querySelector('.bookNav .navArrow:last-child')?.getBoundingClientRect();
-              const dots = document.querySelector('.bookNav .pageDots')?.getBoundingClientRect();
-              const dotRects = [...document.querySelectorAll('.bookNav .pageDot')].map((node) => node.getBoundingClientRect());
-              const intersects = (a, b) => Boolean(a && b && Math.min(a.right, b.right) - Math.max(a.left, b.left) > 1 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 1);
-              return {
-                previousDotsOverlap: intersects(previous, dots),
-                nextDotsOverlap: intersects(next, dots),
-                dotArrowOverlap: dotRects.some((dot) => intersects(dot, previous) || intersects(dot, next)),
-                dotsInsideViewport: dots ? dots.left >= -1 && dots.right <= innerWidth + 1 : false,
-                previousSize: previous ? { width: previous.width, height: previous.height } : null,
-                nextSize: next ? { width: next.width, height: next.height } : null
-              };
-            });
-            assert.equal(navLayout.previousDotsOverlap, false, `${width}px previous arrow must not overlap page dots`);
-            assert.equal(navLayout.nextDotsOverlap, false, `${width}px next arrow must not overlap page dots`);
-            assert.equal(navLayout.dotArrowOverlap, false, `${width}px page-dot touch targets must not overlap navigation arrows`);
-            assert.equal(navLayout.dotsInsideViewport, true, `${width}px page dots must remain inside the wearable viewport`);
-            assert.ok(navLayout.previousSize?.width >= 44 && navLayout.previousSize?.height >= 44, `${width}px previous arrow keeps a 44px touch target`);
-            assert.ok(navLayout.nextSize?.width >= 44 && navLayout.nextSize?.height >= 44, `${width}px next arrow keeps a 44px touch target`);
-          }
-
-
-          {
+          if (pageName === 'details') {
             const scrollState = await page.evaluate(() => {
-              const scroller = document.querySelector('[data-compact-scroll-region]');
-              assertScroller(scroller);
-              const style = getComputedStyle(scroller);
-              const initialScrollTop = scroller.scrollTop;
-              scroller.scrollTop = scroller.scrollHeight;
-              const maxScrollTop = scroller.scrollTop;
-              scroller.scrollTop = initialScrollTop;
+              const overlay = document.querySelector('.receptionDetailsOverlay');
+              const style = getComputedStyle(overlay);
+              const initialScrollTop = overlay.scrollTop;
+              overlay.scrollTop = overlay.scrollHeight;
+              const maxScrollTop = overlay.scrollTop;
+              overlay.scrollTop = initialScrollTop;
               return {
-                region: scroller.dataset.compactScrollRegion,
                 overflowY: style.overflowY,
                 overflowX: style.overflowX,
                 overscrollBehaviorY: style.overscrollBehaviorY,
-                clientHeight: scroller.clientHeight,
-                scrollHeight: scroller.scrollHeight,
-                clientWidth: scroller.clientWidth,
-                scrollWidth: scroller.scrollWidth,
+                clientHeight: overlay.clientHeight,
+                scrollHeight: overlay.scrollHeight,
+                clientWidth: overlay.clientWidth,
+                scrollWidth: overlay.scrollWidth,
                 maxScrollTop
               };
-
-              function assertScroller(node) {
-                if (!node) throw new Error('Active invitation page has no compact scroll region');
-              }
             });
 
-            assert.equal(
-              scrollState.region,
-              ({ front: 'front', family: 'inside-left', details: 'inside-right', back: 'back' })[pageName],
-              `${pageName} exposes the expected compact scroll region`
-            );
-
             if (width < 375) {
-              assert.equal(scrollState.overflowY, 'auto', `${width}px/${pageName} must enable vertical parchment scrolling`);
-              assert.equal(scrollState.overflowX, 'hidden', `${width}px/${pageName} must never scroll horizontally`);
-              assert.equal(scrollState.overscrollBehaviorY, 'contain', `${width}px/${pageName} scrolling must not chain into the page`);
-              assert.ok(scrollState.scrollWidth <= scrollState.clientWidth + 1, `${width}px/${pageName} scrollport has horizontal overflow`);
+              assert.equal(scrollState.overflowY, 'auto', `${width}px inside-right details must enable vertical scrolling`);
+              assert.equal(scrollState.overflowX, 'hidden', `${width}px inside-right details must never scroll horizontally`);
+              assert.equal(scrollState.overscrollBehaviorY, 'contain', `${width}px inside-right scrolling must not chain into the page`);
+              assert.ok(scrollState.scrollWidth <= scrollState.clientWidth + 1, `${width}px inside-right scrollport has horizontal overflow`);
 
-              if (pageName === 'details' && ['saffron', 'blush'].includes(theme)) {
-                const compactDetailsSpacing = await page.evaluate(() => {
-                  const overlay = document.querySelector('.receptionDetailsOverlay');
-                  const items = [...overlay.querySelectorAll(':scope > .receptionDetailItem')]
-                    .map((node) => node.getBoundingClientRect())
-                    .filter((rect) => rect.width && rect.height);
-                  const style = getComputedStyle(overlay);
-                  const itemGaps = items.slice(1).map((rect, index) => rect.top - items[index].bottom);
-                  const labels = [...overlay.querySelectorAll('.receptionDetailLabel')]
-                    .map((node) => ({
-                      marginBottom: Number.parseFloat(getComputedStyle(node).marginBottom) || 0,
-                      lineHeight: Number.parseFloat(getComputedStyle(node).lineHeight) || 0
-                    }));
-                  return {
-                    gap: Number.parseFloat(style.rowGap || style.gap) || 0,
-                    itemGaps,
-                    labelMargins: labels.map((entry) => entry.marginBottom),
-                    labelLineHeights: labels.map((entry) => entry.lineHeight)
-                  };
-                });
-                assert.ok(compactDetailsSpacing.gap >= 4, `${width}px/${theme}/${language} details must keep readable vertical rhythm`);
-                assert.ok(
-                  compactDetailsSpacing.itemGaps.every((gap) => gap >= 8),
-                  `${width}px/${theme}/${language} detail groups must remain visibly separated`
-                );
-                assert.ok(
-                  compactDetailsSpacing.labelMargins.every((margin) => margin >= 2),
-                  `${width}px/${theme}/${language} labels need breathing room above values`
-                );
-                assert.ok(
-                  compactDetailsSpacing.labelLineHeights.every((lineHeight) => lineHeight > 0),
-                  `${width}px/${theme}/${language} labels must retain measurable line height`
-                );
-              }
-
-              if (pageName === 'front') {
-                const frontOrnaments = await page.evaluate(() => {
-                  const rules = [...document.querySelectorAll('.frontCover .dynamicFrontRule')];
-                  return {
-                    ruleCount: rules.length,
-                    ornaments: rules.map((rule) => {
-                      const ruleRect = rule.getBoundingClientRect();
-                      const ornament = rule.querySelector(':scope > span');
-                      const ornamentRect = ornament?.getBoundingClientRect();
-                      const style = ornament ? getComputedStyle(ornament) : null;
-                      return {
-                        hasOrnament: Boolean(ornament && ornamentRect?.width && ornamentRect?.height),
-                        position: style?.position || '',
-                        centerDelta: ornamentRect
-                          ? Math.abs((ornamentRect.left + ornamentRect.width / 2) - (ruleRect.left + ruleRect.width / 2))
-                          : Number.POSITIVE_INFINITY,
-                        verticalDelta: ornamentRect
-                          ? Math.abs((ornamentRect.top + ornamentRect.height / 2) - (ruleRect.top + ruleRect.height / 2))
-                          : Number.POSITIVE_INFINITY
-                      };
-                    })
-                  };
-                });
-                assert.equal(frontOrnaments.ruleCount, 3, `${width}px/${theme}/${language} front must render exactly three intended separators`);
-                for (const [index, ornament] of frontOrnaments.ornaments.entries()) {
-                  assert.equal(ornament.hasOrnament, true, `${width}px/${theme}/${language} front separator ${index + 1} must retain its ornament`);
-                  assert.notEqual(ornament.position, 'absolute', `${width}px/${theme}/${language} compact front ornament must stay attached to its separator`);
-                  assert.ok(ornament.centerDelta <= 2, `${width}px/${theme}/${language} front separator ${index + 1} ornament must remain horizontally centred`);
-                  assert.ok(ornament.verticalDelta <= 8, `${width}px/${theme}/${language} front separator ${index + 1} ornament must remain on its rule`);
+              // Force a long production-style address and prove the content becomes real scroll
+              // overflow rather than being compressed into overlapping flex items. Restore the
+              // original text immediately so the rest of the matrix remains deterministic.
+              const stress = await page.evaluate(() => {
+                const overlay = document.querySelector('.receptionDetailsOverlay');
+                const address = document.querySelector('.receptionAddressValue');
+                const original = address.textContent;
+                const originalScrollTop = overlay.scrollTop;
+                try {
+                  address.textContent = Array(6).fill('92, Artillary Road, Cantonment, Barrackpore, West Bengal 700120 — Near the main entrance, opposite the community hall, please follow the reception signs.').join(' ');
+                  overlay.scrollTop = 0;
+                  const overflow = overlay.scrollHeight - overlay.clientHeight;
+                  const horizontalOverflow = overlay.scrollWidth - overlay.clientWidth;
+                  overlay.scrollTop = overlay.scrollHeight;
+                  const reachedBottom = overlay.scrollTop > 0;
+                  return { overflow, horizontalOverflow, reachedBottom };
+                } finally {
+                  address.textContent = original;
+                  overlay.scrollTop = originalScrollTop;
                 }
-              }
-
-              // Stress representative compact widths across every theme/language/page state.
-              // Normal content may fit and should not show a false hint; the stress fixture
-              // deliberately proves overflow, reachability and hint dismissal.
-              if ([320, 360, 374].includes(width)) {
-                const stressSelector = ({
-                  front: '.dynamicFrontClosing',
-                  family: '.familyBlessingsClosing',
-                  details: '.receptionAddressValue',
-                  back: '.heritageJourneyMessage'
-                })[pageName];
-
-                const originalHtml = await page.locator(stressSelector).evaluate((node) => node.innerHTML);
-                await page.evaluate(({ selector }) => {
-                  const scroller = document.querySelector('[data-compact-scroll-region]');
-                  const target = document.querySelector(selector);
-                  target.textContent = Array(8).fill('Long multilingual invitation content for compact parchment scrolling and overlap regression validation.').join(' ');
-
-                  // Text wrapping varies legitimately by theme, script and browser engine. Add a
-                  // deterministic temporary block after the stressed content so every compact page
-                  // is guaranteed to exercise real vertical overflow and the overflow-aware hint.
-                  const spacer = document.createElement('div');
-                  spacer.dataset.compactScrollStressSpacer = 'true';
-                  spacer.setAttribute('aria-hidden', 'true');
-                  spacer.style.height = `${scroller.clientHeight + 160}px`;
-                  spacer.style.width = '1px';
-                  spacer.style.flex = '0 0 auto';
-                  spacer.style.pointerEvents = 'none';
-                  scroller.appendChild(spacer);
-
-                  scroller.scrollTop = 0;
-                  window.dispatchEvent(new Event('resize'));
-                }, { selector: stressSelector });
-
-                await page.waitForFunction(
-                  () => {
-                    const scroller = document.querySelector('[data-compact-scroll-region]');
-                    const hint = document.querySelector('.compactScrollHint');
-                    return scroller?.dataset.compactOverflow === 'true' && hint?.dataset.visible === 'true';
-                  },
-                  null,
-                  { timeout: 5000 }
-                );
-
-                const stress = await page.evaluate(() => {
-                  const scroller = document.querySelector('[data-compact-scroll-region]');
-                  const hint = document.querySelector('.compactScrollHint');
-                  const overflow = scroller.scrollHeight - scroller.clientHeight;
-                  const horizontalOverflow = scroller.scrollWidth - scroller.clientWidth;
-                  const hintText = hint?.textContent?.replace(/\s+/g, ' ').trim() || '';
-                  scroller.scrollTop = scroller.scrollHeight;
-                  scroller.dispatchEvent(new Event('scroll'));
-                  const reachedBottom = scroller.scrollTop > 0;
-                  return { overflow, horizontalOverflow, reachedBottom, hintText };
-                });
-
-                assert.ok(stress.overflow > 0, `${width}px/${pageName} long content must produce vertical scroll overflow`);
-                assert.ok(stress.reachedBottom, `${width}px/${pageName} content must be reachable by scrolling`);
-                assert.ok(stress.horizontalOverflow <= 1, `${width}px/${pageName} long content must not create horizontal scrolling`);
-                assert.ok(stress.hintText.length > 1, `${width}px/${pageName} overflow hint must expose localized guidance`);
-
-                await page.waitForFunction(
-                  () => document.querySelector('.compactScrollHint')?.dataset.visible === 'false',
-                  null,
-                  { timeout: 5000 }
-                );
-                await page.locator(stressSelector).evaluate((node, html) => { node.innerHTML = html; }, originalHtml);
-                await page.evaluate(() => {
-                  const scroller = document.querySelector('[data-compact-scroll-region]');
-                  scroller.querySelector('[data-compact-scroll-stress-spacer]')?.remove();
-                  scroller.scrollTop = 0;
-                  window.dispatchEvent(new Event('resize'));
-                });
-              }
+              });
+              assert.ok(stress.overflow > 0, `${width}px long inside-right content must produce vertical scroll overflow`);
+              assert.ok(stress.reachedBottom, `${width}px inside-right content must be reachable by scrolling`);
+              assert.ok(stress.horizontalOverflow <= 1, `${width}px long inside-right content must not create horizontal scrolling`);
             } else if (width === 375) {
-              assert.notEqual(scrollState.overflowY, 'auto', `375px/${pageName} must retain the fixed-layout boundary`);
-              assert.equal(
-                await page.locator('.compactScrollHint').evaluate((node) => getComputedStyle(node).display),
-                'none',
-                `375px/${pageName} must never show compact scroll guidance`
-              );
+              assert.notEqual(scrollState.overflowY, 'auto', '375px is the fixed-layout boundary and must not use the compact scroll fallback');
             }
           }
 

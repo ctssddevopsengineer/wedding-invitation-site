@@ -98,7 +98,6 @@ try {
       await page.addStyleTag({ content: `
         *, *::before, *::after { animation: none !important; transition: none !important; caret-color: transparent !important; }
         .countdown strong { visibility: hidden !important; }
-        .compactScrollHint { visibility: hidden !important; }
       ` });
 
       for (const visualCase of cases) {
