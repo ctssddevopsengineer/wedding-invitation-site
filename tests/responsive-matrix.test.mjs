@@ -26,6 +26,17 @@ test('existing responsive CSS keeps the approved template geometry guards', () =
   assert.match(css, /@media \(min-width: 681px\) and \(max-width: 1024px\)/);
 });
 
+test('Classic Bengali and Nepali laptop typography has readable floors without changing geometry', () => {
+  const css = fs.readFileSync(new URL('../app/classic-multilingual-laptop.css', import.meta.url), 'utf8');
+  assert.match(css, /@media \(min-width:\s*681px\)/);
+  assert.match(css, /dynamicFrontHeading > span[\s\S]*?font-size:\s*clamp\(1\.85rem, 7\.1cqw, 4rem\)\s*!important/);
+  assert.match(css, /dynamicFrontHeading > em[\s\S]*?font-size:\s*clamp\(1\.45rem, 5\.5cqw, 3\.05rem\)\s*!important/);
+  assert.match(css, /dynamicFrontTagline[\s\S]*?font-size:\s*clamp\(\.92rem, 2\.4cqw, 1\.35rem\)\s*!important/);
+  assert.match(css, /dynamicFrontNames[\s\S]*?font-size:\s*clamp\(1\.5rem, 5\.35cqw, 3\.05rem\)\s*!important/);
+  assert.match(css, /dynamicFrontClosing[\s\S]*?font-size:\s*clamp\(\.9rem, 2\.2cqw, 1\.28rem\)\s*!important/);
+  assert.doesNotMatch(css, /\b(top|left|right|bottom|width|height|transform|position)\s*:/);
+});
+
 test('typography hardening remains geometry-free and mobile overlap fixes load after it', () => {
   assert.match(layout, /import '\.\/classic-front\.css';\s*\nimport '\.\/device-hardening\.css';\s*\nimport '\.\/mobile-overlap-fixes\.css';/);
   assert.match(hardeningCss, /font-size:\s*clamp\(/);
