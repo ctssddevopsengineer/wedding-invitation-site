@@ -1,5 +1,5 @@
 /* ========================================================================== */
-/* CLASSIC FRONT — MULTILINGUAL LAPTOP TYPOGRAPHY                             */
+/* CLASSIC — MULTILINGUAL LAPTOP TYPOGRAPHY                                   */
 /*                                                                            */
 /* Bengali and Nepali need a stronger desktop/laptop scale than the generic   */
 /* typography-hardening layer. This file intentionally changes typography     */
@@ -96,5 +96,69 @@
   .bookApp[data-invitation-theme="classic"] .receptionCountdownItem .countdownUnit span {
     font-size: clamp(.75rem, 1.3cqw, .9375rem) !important;
     line-height: 1.5;
+  }
+}
+
+
+/* Back page: the landscape composition has substantially more horizontal
+   space than the portrait pages, but the original cqw scale rendered the
+   gratitude copy and assistance details too small on laptops. Strengthen only
+   the Classic back-page type hierarchy at laptop/desktop widths; do not move
+   artwork, overlays, rules, the assistance panel or compact-phone geometry. */
+@media (min-width: 1024px) {
+  .bookApp[data-invitation-theme="classic"] .heritageBackIntro h2 {
+    font-size: clamp(1.75rem, 3cqw, 2.75rem) !important;
+    line-height: 1.12;
+    font-weight: 700;
+    letter-spacing: .01em;
+  }
+
+  .bookApp[data-invitation-theme="classic"] .heritageBackMessage {
+    font-size: clamp(.95rem, 1.6cqw, 1.35rem) !important;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+
+  .bookApp[lang="en"][data-invitation-theme="classic"] .heritageCoupleNames {
+    font-size: clamp(2.15rem, 4.35cqw, 3.75rem) !important;
+    line-height: 1;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .heritageCoupleNames {
+    font-size: clamp(1.85rem, 3.45cqw, 2.9rem) !important;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+
+  .bookApp[data-invitation-theme="classic"] .heritageJourneyMessage {
+    font-size: clamp(.9rem, 1.48cqw, 1.25rem) !important;
+    line-height: 1.48;
+    font-weight: 500;
+  }
+
+  .bookApp[data-invitation-theme="classic"] .heritageAssistance > h3 {
+    font-size: clamp(1.05rem, 1.72cqw, 1.5rem) !important;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+
+  .bookApp[data-invitation-theme="classic"] .heritageAssistance .contactCard .eyebrow {
+    font-size: clamp(.78rem, 1.02cqw, .95rem) !important;
+    line-height: 1.25;
+    font-weight: 800;
+    letter-spacing: .055em;
+  }
+
+  .bookApp[data-invitation-theme="classic"] .heritageAssistance .contactCard h3 {
+    font-size: clamp(.86rem, 1.18cqw, 1.05rem) !important;
+    line-height: 1.25;
+    font-weight: 700;
+  }
+
+  .bookApp[data-invitation-theme="classic"] .heritageAssistance .contactCard a,
+  .bookApp[data-invitation-theme="classic"] .heritageAssistance .contactCard p.muted {
+    font-size: clamp(.82rem, 1.1cqw, 1rem) !important;
+    line-height: 1.25;
+    font-weight: 700;
   }
 }

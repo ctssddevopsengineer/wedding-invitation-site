@@ -6,6 +6,7 @@ const component = fs.readFileSync(new URL('../components/BackCover.js', import.m
 const css = fs.readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8');
 const event = fs.readFileSync(new URL('../lib/event.mjs', import.meta.url), 'utf8');
 const theme = fs.readFileSync(new URL('../lib/theme.mjs', import.meta.url), 'utf8');
+const classicLaptopCss = fs.readFileSync(new URL('../app/classic-multilingual-laptop.css', import.meta.url), 'utf8');
 
 test('back cover uses the supplied blank Heritage Landscape artwork', () => {
   assert.match(component, /getThemeAsset\(themeId, 'back'\)/);
@@ -60,4 +61,31 @@ test('assistance contacts have a high-contrast readability treatment', () => {
   assert.match(css, /\.heritageAssistance \.contactCard h3[\s\S]*?font-weight:\s*700/);
   assert.match(css, /\.heritageAssistance \.contactCard a,[\s\S]*?font-weight:\s*700/);
   assert.match(css, /\.heritageAssistance \.contactCard p\.muted/);
+});
+
+
+test('Classic back cover uses readable laptop typography for English, Bengali and Nepali without moving geometry', () => {
+  assert.match(classicLaptopCss, /@media \(min-width:\s*1024px\)/);
+  assert.match(classicLaptopCss, /heritageBackIntro h2[\s\S]*?font-size:\s*clamp\(1\.75rem, 3cqw, 2\.75rem\)\s*!important/);
+  assert.match(classicLaptopCss, /heritageBackMessage[\s\S]*?font-size:\s*clamp\(\.95rem, 1\.6cqw, 1\.35rem\)\s*!important/);
+  assert.match(classicLaptopCss, /\[lang="en"\][\s\S]*?heritageCoupleNames[\s\S]*?font-size:\s*clamp\(2\.15rem, 4\.35cqw, 3\.75rem\)\s*!important/);
+  assert.match(classicLaptopCss, /:is\(\[lang="bn"\], \[lang="ne"\]\)[\s\S]*?heritageCoupleNames[\s\S]*?font-size:\s*clamp\(1\.85rem, 3\.45cqw, 2\.9rem\)\s*!important/);
+  assert.match(classicLaptopCss, /heritageJourneyMessage[\s\S]*?font-size:\s*clamp\(\.9rem, 1\.48cqw, 1\.25rem\)\s*!important/);
+  assert.match(classicLaptopCss, /heritageAssistance > h3[\s\S]*?font-size:\s*clamp\(1\.05rem, 1\.72cqw, 1\.5rem\)\s*!important/);
+  assert.match(classicLaptopCss, /contactCard \.eyebrow[\s\S]*?font-size:\s*clamp\(\.78rem, 1\.02cqw, \.95rem\)\s*!important/);
+  assert.match(classicLaptopCss, /contactCard h3[\s\S]*?font-size:\s*clamp\(\.86rem, 1\.18cqw, 1\.05rem\)\s*!important/);
+  assert.match(classicLaptopCss, /contactCard a,[\s\S]*?contactCard p\.muted[\s\S]*?font-size:\s*clamp\(\.82rem, 1\.1cqw, 1rem\)\s*!important/);
+
+  const declarations = classicLaptopCss
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .split(/\n/)
+    .map((line) => line.trim());
+
+  for (const forbidden of ['top:', 'left:', 'right:', 'bottom:', 'width:', 'height:', 'transform:', 'position:']) {
+    assert.equal(
+      declarations.some((line) => line.startsWith(forbidden)),
+      false,
+      `Classic laptop typography must not alter back-page geometry with ${forbidden}`
+    );
+  }
 });
