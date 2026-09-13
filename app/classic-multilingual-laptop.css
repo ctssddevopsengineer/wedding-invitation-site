@@ -69,6 +69,72 @@
 
 }
 
+/* Front page: strengthen the full Classic hierarchy on actual laptop/desktop
+   screens for all languages. These rules change typography only; the existing
+   artwork safe zones, flex flow, separators and overlay coordinates stay fixed. */
+@media (min-width: 1024px) {
+  .bookApp[data-invitation-theme="classic"] .frontCover .dynamicFrontHeading > span {
+    font-size: clamp(1.9rem, 7.6cqw, 4.4rem) !important;
+    line-height: 1.04;
+    font-weight: 700;
+    letter-spacing: -.02em;
+  }
+
+  .bookApp[data-invitation-theme="classic"] .frontCover .dynamicFrontHeading > em {
+    font-size: clamp(1.55rem, 6.35cqw, 3.8rem) !important;
+    line-height: 1.08;
+    font-weight: 500;
+  }
+
+  .bookApp[data-invitation-theme="classic"] .frontCover .dynamicFrontTagline {
+    font-size: clamp(1rem, 2.65cqw, 1.5rem) !important;
+    line-height: 1.45;
+    font-weight: 600;
+  }
+
+  .bookApp[lang="en"][data-invitation-theme="classic"] .frontCover .dynamicFrontNames {
+    font-size: clamp(1.85rem, 6.9cqw, 4rem) !important;
+    line-height: 1.04;
+    font-weight: 500;
+  }
+
+  .bookApp[data-invitation-theme="classic"] .frontCover .dynamicFrontClosing {
+    font-size: clamp(.9rem, 2.3cqw, 1.35rem) !important;
+    line-height: 1.5;
+    font-weight: 600;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .frontCover .dynamicFrontHeading > span {
+    font-size: clamp(2rem, 7.3cqw, 4.2rem) !important;
+    line-height: 1.18;
+    letter-spacing: 0;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .frontCover .dynamicFrontHeading > em {
+    font-size: clamp(1.55rem, 5.8cqw, 3.3rem) !important;
+    line-height: 1.22;
+    font-weight: 700;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .frontCover .dynamicFrontTagline {
+    font-size: clamp(1rem, 2.55cqw, 1.45rem) !important;
+    line-height: 1.55;
+    font-weight: 600;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .frontCover .dynamicFrontNames {
+    font-size: clamp(1.65rem, 5.6cqw, 3.2rem) !important;
+    line-height: 1.24;
+    font-weight: 700;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .frontCover .dynamicFrontClosing {
+    font-size: clamp(.95rem, 2.35cqw, 1.35rem) !important;
+    line-height: 1.58;
+    font-weight: 600;
+  }
+}
+
 /* Reception details need readable UI text at laptop sizes, especially the
    calendar actions and countdown captions. Preserve phone/tablet geometry. */
 @media (min-width: 1024px) {

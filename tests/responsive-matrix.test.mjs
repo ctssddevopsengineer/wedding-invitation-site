@@ -57,6 +57,30 @@ test('Classic Bengali and Nepali laptop typography has readable floors without c
   }
 });
 
+test('Classic front has readable laptop typography for English, Bengali and Nepali without moving artwork', () => {
+  const classicLaptopCss = fs.readFileSync(new URL('../app/classic-multilingual-laptop.css', import.meta.url), 'utf8');
+  assert.match(classicLaptopCss, /@media \(min-width:\s*1024px\)/);
+  assert.match(classicLaptopCss, /dynamicFrontHeading > span[\s\S]*?font-size:\s*clamp\(1\.9rem, 7\.6cqw, 4\.4rem\)\s*!important/);
+  assert.match(classicLaptopCss, /dynamicFrontHeading > em[\s\S]*?font-size:\s*clamp\(1\.55rem, 6\.35cqw, 3\.8rem\)\s*!important/);
+  assert.match(classicLaptopCss, /dynamicFrontTagline[\s\S]*?font-size:\s*clamp\(1rem, 2\.65cqw, 1\.5rem\)\s*!important/);
+  assert.match(classicLaptopCss, /\[lang="en"\][\s\S]*?dynamicFrontNames[\s\S]*?font-size:\s*clamp\(1\.85rem, 6\.9cqw, 4rem\)\s*!important/);
+  assert.match(classicLaptopCss, /dynamicFrontClosing[\s\S]*?font-size:\s*clamp\(\.9rem, 2\.3cqw, 1\.35rem\)\s*!important/);
+  assert.match(classicLaptopCss, /:is\(\[lang="bn"\], \[lang="ne"\]\)[\s\S]*?dynamicFrontNames[\s\S]*?font-size:\s*clamp\(1\.65rem, 5\.6cqw, 3\.2rem\)\s*!important/);
+
+  const declarations = classicLaptopCss
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .split(/\n/)
+    .map((line) => line.trim());
+
+  for (const forbidden of ['top:', 'left:', 'right:', 'bottom:', 'width:', 'height:', 'transform:', 'position:']) {
+    assert.equal(
+      declarations.some((line) => line.startsWith(forbidden)),
+      false,
+      `Classic laptop typography must not alter front-page geometry with ${forbidden}`
+    );
+  }
+});
+
 test('typography hardening remains geometry-free and mobile overlap fixes load after it', () => {
   assert.match(layout, /import '\.\/classic-front\.css';\s*\nimport '\.\/device-hardening\.css';\s*\nimport '\.\/mobile-overlap-fixes\.css';/);
   assert.match(hardeningCss, /font-size:\s*clamp\(/);
