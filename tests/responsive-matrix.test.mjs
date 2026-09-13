@@ -34,6 +34,12 @@ test('Classic Bengali and Nepali laptop typography has readable floors without c
   assert.match(css, /dynamicFrontTagline[\s\S]*?font-size:\s*clamp\(\.92rem, 2\.4cqw, 1\.35rem\)\s*!important/);
   assert.match(css, /dynamicFrontNames[\s\S]*?font-size:\s*clamp\(1\.5rem, 5\.35cqw, 3\.05rem\)\s*!important/);
   assert.match(css, /dynamicFrontClosing[\s\S]*?font-size:\s*clamp\(\.9rem, 2\.2cqw, 1\.28rem\)\s*!important/);
+  assert.match(css, /familyBlessingsIntro h2[\s\S]*?font-size:\s*clamp\(1\.5rem, 3\.6cqw, 2\.55rem\)\s*!important/);
+  assert.match(css, /familyBlessingsIntro p[\s\S]*?font-size:\s*clamp\(\.9rem, 1\.95cqw, 1\.28rem\)\s*!important/);
+  assert.match(css, /familyCoupleNames[\s\S]*?font-size:\s*clamp\(1\.7rem, 5\.25cqw, 3\.35rem\)\s*!important/);
+  assert.match(css, /familyBlock h3[\s\S]*?font-size:\s*clamp\(1\.12rem, 2\.55cqw, 1\.7rem\)\s*!important/);
+  assert.match(css, /familyBlock p[\s\S]*?font-size:\s*clamp\(\.92rem, 1\.9cqw, 1\.22rem\)\s*!important/);
+  assert.match(css, /familyBlessingsClosing[\s\S]*?font-size:\s*clamp\(\.9rem, 1\.85cqw, 1\.18rem\)\s*!important/);
   assert.doesNotMatch(css, /\b(top|left|right|bottom|width|height|transform|position)\s*:/);
 });
 
