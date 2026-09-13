@@ -122,6 +122,23 @@ try {
             const compactScroller = innerWidth < 375 && document.querySelector('[data-compact-scroll-region]');
             if (document.documentElement.scrollWidth > innerWidth + 1) issues.push('horizontal page overflow: ' + [...document.querySelectorAll('body *')].filter(n => n.getBoundingClientRect().right > innerWidth + 2).slice(0, 5).map(n => n.className).join('/'));
             const card = document.querySelector('.invitePage').getBoundingClientRect();
+            if (innerWidth >= 1024 && document.querySelector('.bookApp[data-invitation-theme="classic"] .exactInsideRight')) {
+              for (const [selector, minimum] of [
+                ['.receptionDetailLabel', 16],
+                ['.receptionDetailValue', 16],
+                ['.receptionCalendarItem .btn', 13],
+                ['.countdownUnit strong', 16],
+                ['.countdownUnit span', 12]
+              ]) {
+                for (const node of document.querySelectorAll(selector)) {
+                  if (parseFloat(getComputedStyle(node).fontSize) < minimum - .1) issues.push(`Classic laptop text too small: ${selector}`);
+                }
+              }
+              const items = [...document.querySelectorAll('.receptionDetailItem')];
+              for (let index = 1; index < items.length; index++) {
+                if (items[index - 1].getBoundingClientRect().bottom > items[index].getBoundingClientRect().top + 1) issues.push('Classic laptop detail items overlap');
+              }
+            }
             if (innerWidth < 375 && document.querySelector('.bookStage.page-front')) {
               const heading = document.querySelector('.dynamicFrontHeading')?.getBoundingClientRect();
               const theme = document.querySelector('main[data-invitation-theme]')?.dataset.invitationTheme;
