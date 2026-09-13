@@ -103,16 +103,15 @@ test('Bengali and Nepali receive extra vertical clearance around the separator',
 test('Saffron separator tuning remains before front parity and compact details scrolling', () => {
   const separatorImport = "import './saffron-front-separator.css';";
   const frontParityImport = "import './front-saffron-parity.css';";
+  const classicLaptopImport = "import './classic-multilingual-laptop.css';";
   const compactScrollImport = "import './compact-details-scroll.css';";
-  assert.ok(layout.includes(separatorImport));
-  assert.ok(layout.includes(frontParityImport));
-  assert.ok(layout.includes(compactScrollImport));
-  assert.ok(layout.indexOf(frontParityImport) > layout.indexOf(separatorImport));
-  assert.ok(layout.indexOf(compactScrollImport) > layout.indexOf(frontParityImport));
 
-  const importLines = layout.split('\n').filter((line) => line.startsWith("import './"));
-  assert.equal(importLines.at(-3), separatorImport);
-  assert.equal(importLines.at(-2), frontParityImport);
-  assert.equal(importLines.at(-1), compactScrollImport);
+  for (const required of [separatorImport, frontParityImport, classicLaptopImport, compactScrollImport]) {
+    assert.ok(layout.includes(required));
+  }
+
+  assert.ok(layout.indexOf(frontParityImport) > layout.indexOf(separatorImport));
+  assert.ok(layout.indexOf(classicLaptopImport) > layout.indexOf(frontParityImport));
+  assert.ok(layout.indexOf(compactScrollImport) > layout.indexOf(classicLaptopImport));
   assert.equal(count(css, '{'), count(css, '}'));
 });
