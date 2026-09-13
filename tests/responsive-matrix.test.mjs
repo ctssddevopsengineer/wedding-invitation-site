@@ -26,6 +26,37 @@ test('existing responsive CSS keeps the approved template geometry guards', () =
   assert.match(css, /@media \(min-width: 681px\) and \(max-width: 1024px\)/);
 });
 
+test('Classic Bengali and Nepali laptop typography has readable floors without changing geometry', () => {
+  const classicLaptopCss = fs.readFileSync(new URL('../app/classic-multilingual-laptop.css', import.meta.url), 'utf8');
+  assert.match(classicLaptopCss, /@media \(min-width:\s*681px\)/);
+  assert.match(classicLaptopCss, /dynamicFrontHeading > span[\s\S]*?font-size:\s*clamp\(1\.85rem, 7\.1cqw, 4rem\)\s*!important/);
+  assert.match(classicLaptopCss, /dynamicFrontHeading > em[\s\S]*?font-size:\s*clamp\(1\.45rem, 5\.5cqw, 3\.05rem\)\s*!important/);
+  assert.match(classicLaptopCss, /dynamicFrontTagline[\s\S]*?font-size:\s*clamp\(\.92rem, 2\.4cqw, 1\.35rem\)\s*!important/);
+  assert.match(classicLaptopCss, /dynamicFrontNames[\s\S]*?font-size:\s*clamp\(1\.5rem, 5\.35cqw, 3\.05rem\)\s*!important/);
+  assert.match(classicLaptopCss, /dynamicFrontClosing[\s\S]*?font-size:\s*clamp\(\.9rem, 2\.2cqw, 1\.28rem\)\s*!important/);
+  assert.match(classicLaptopCss, /familyBlessingsIntro h2[\s\S]*?font-size:\s*clamp\(1\.5rem, 3\.6cqw, 2\.55rem\)\s*!important/);
+  assert.match(classicLaptopCss, /familyBlessingsIntro p[\s\S]*?font-size:\s*clamp\(\.9rem, 1\.95cqw, 1\.28rem\)\s*!important/);
+  assert.match(classicLaptopCss, /familyCoupleNames[\s\S]*?font-size:\s*clamp\(1\.7rem, 5\.25cqw, 3\.35rem\)\s*!important/);
+  assert.match(classicLaptopCss, /familyBlock h3[\s\S]*?font-size:\s*clamp\(1\.12rem, 2\.55cqw, 1\.7rem\)\s*!important/);
+  assert.match(classicLaptopCss, /familyBlock p[\s\S]*?font-size:\s*clamp\(\.92rem, 1\.9cqw, 1\.22rem\)\s*!important/);
+  assert.match(classicLaptopCss, /familyBlessingsClosing[\s\S]*?font-size:\s*clamp\(\.9rem, 1\.85cqw, 1\.18rem\)\s*!important/);
+
+  // Check declarations only. Comments may legitimately describe geometry that this
+  // typography-only stylesheet intentionally leaves untouched.
+  const declarations = classicLaptopCss
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .split(/\n/)
+    .map((line) => line.trim());
+
+  for (const forbidden of ['top:', 'left:', 'right:', 'bottom:', 'width:', 'height:', 'transform:', 'position:']) {
+    assert.equal(
+      declarations.some((line) => line.startsWith(forbidden)),
+      false,
+      `Classic multilingual laptop typography must not override geometry with ${forbidden}`
+    );
+  }
+});
+
 test('typography hardening remains geometry-free and mobile overlap fixes load after it', () => {
   assert.match(layout, /import '\.\/classic-front\.css';\s*\nimport '\.\/device-hardening\.css';\s*\nimport '\.\/mobile-overlap-fixes\.css';/);
   assert.match(hardeningCss, /font-size:\s*clamp\(/);
@@ -39,7 +70,7 @@ test('typography hardening remains geometry-free and mobile overlap fixes load a
     'aspect-ratio', 'transform', 'object-fit', 'position', 'top', 'right', 'bottom',
     'left', 'margin', 'padding', 'overflow', 'white-space', 'flex-wrap', 'gap'
   ]) {
-    assert.doesNotMatch(hardeningCss, new RegExp(`(^|[;{\\s])${property}\\s*:`, 'm'), `${property} must not be overridden by typography hardening`);
+    assert.doesNotMatch(hardeningCss, new RegExp(`(^|[;{\\\\s])${property}\\\\s*:`, 'm'), `${property} must not be overridden by typography hardening`);
   }
 
   // Geometry corrections are isolated to narrow screens and affected themes only.

@@ -1,0 +1,70 @@
+/* ========================================================================== */
+/* CLASSIC FRONT — MULTILINGUAL LAPTOP TYPOGRAPHY                             */
+/*                                                                            */
+/* Bengali and Nepali need a stronger desktop/laptop scale than the generic   */
+/* typography-hardening layer. This file intentionally changes typography     */
+/* only: artwork, safe zones, card geometry and compact <375px behavior stay  */
+/* untouched.                                                                 */
+/* ========================================================================== */
+
+@media (min-width: 681px) {
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .frontCover .dynamicFrontHeading > span {
+    font-size: clamp(1.85rem, 7.1cqw, 4rem) !important;
+    line-height: 1.16;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .frontCover .dynamicFrontHeading > em {
+    font-size: clamp(1.45rem, 5.5cqw, 3.05rem) !important;
+    line-height: 1.2;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .frontCover .dynamicFrontTagline {
+    font-size: clamp(.92rem, 2.4cqw, 1.35rem) !important;
+    line-height: 1.5;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .frontCover .dynamicFrontNames {
+    font-size: clamp(1.5rem, 5.35cqw, 3.05rem) !important;
+    line-height: 1.22;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .frontCover .dynamicFrontClosing {
+    font-size: clamp(.9rem, 2.2cqw, 1.28rem) !important;
+    line-height: 1.52;
+  }
+
+  /* Inside Left: Bengali/Nepali family content was still inheriting the
+     generic hardening sizes, which read too small on laptop/desktop cards.
+     Increase only the type scale; keep all artwork and vertical coordinates
+     untouched so the approved composition remains stable. */
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .familyBlessingsIntro h2 {
+    font-size: clamp(1.5rem, 3.6cqw, 2.55rem) !important;
+    line-height: 1.28;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .familyBlessingsIntro p {
+    font-size: clamp(.9rem, 1.95cqw, 1.28rem) !important;
+    line-height: 1.58;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .familyCoupleNames {
+    font-size: clamp(1.7rem, 5.25cqw, 3.35rem) !important;
+    line-height: 1.24;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .familyBlock h3 {
+    font-size: clamp(1.12rem, 2.55cqw, 1.7rem) !important;
+    line-height: 1.3;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .familyBlock p {
+    font-size: clamp(.92rem, 1.9cqw, 1.22rem) !important;
+    line-height: 1.52;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="classic"] .familyBlessingsClosing {
+    font-size: clamp(.9rem, 1.85cqw, 1.18rem) !important;
+    line-height: 1.55;
+  }
+
+}

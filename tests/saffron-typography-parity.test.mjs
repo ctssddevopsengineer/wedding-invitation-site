@@ -106,25 +106,28 @@ test('general Saffron typography keeps its page-layer ordering before compact de
   const insideLeftImport = "import './inside-left-saffron-parity.css';";
   const frontSeparatorImport = "import './saffron-front-separator.css';";
   const frontParityImport = "import './front-saffron-parity.css';";
+  const classicLaptopImport = "import './classic-multilingual-laptop.css';";
   const compactScrollImport = "import './compact-details-scroll.css';";
 
-  for (const required of [parityImport, insideRightImport, insideLeftImport, frontSeparatorImport, frontParityImport, compactScrollImport]) {
+  for (const required of [
+    parityImport,
+    insideRightImport,
+    insideLeftImport,
+    frontSeparatorImport,
+    frontParityImport,
+    classicLaptopImport,
+    compactScrollImport
+  ]) {
     assert.ok(layout.includes(required));
   }
+
   assert.ok(layout.indexOf(parityImport) > layout.indexOf("import './language-dropdown.css';"));
   assert.ok(layout.indexOf(insideRightImport) > layout.indexOf(parityImport));
   assert.ok(layout.indexOf(insideLeftImport) > layout.indexOf(insideRightImport));
   assert.ok(layout.indexOf(frontSeparatorImport) > layout.indexOf(insideLeftImport));
   assert.ok(layout.indexOf(frontParityImport) > layout.indexOf(frontSeparatorImport));
-  assert.ok(layout.indexOf(compactScrollImport) > layout.indexOf(frontParityImport));
-
-  const importLines = layout.split('\n').filter((line) => line.startsWith("import './"));
-  assert.equal(importLines.at(-6), parityImport);
-  assert.equal(importLines.at(-5), insideRightImport);
-  assert.equal(importLines.at(-4), insideLeftImport);
-  assert.equal(importLines.at(-3), frontSeparatorImport);
-  assert.equal(importLines.at(-2), frontParityImport);
-  assert.equal(importLines.at(-1), compactScrollImport);
+  assert.ok(layout.indexOf(classicLaptopImport) > layout.indexOf(frontParityImport));
+  assert.ok(layout.indexOf(compactScrollImport) > layout.indexOf(classicLaptopImport));
 });
 
 test('new stylesheet has balanced CSS blocks', () => {

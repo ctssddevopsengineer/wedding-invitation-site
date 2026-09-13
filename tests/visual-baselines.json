@@ -23,7 +23,7 @@
     "laptop-classic-family-en": {"viewport":"1366x768","theme":"classic","page":"family","language":"en","width":840,"height":1191,"hash":"1e295d6058560475c5669c0f4616f2a874bee88821ad235d64f774ee0401335a"},
     "laptop-navy-back-ne": {"viewport":"1366x768","theme":"navy","page":"back","language":"ne","width":1116,"height":789,"hash":"f3fd6a3c1e527fde8a0c13c719f63acf705dced7145cb24fedd26f8fed1e3452"},
     "laptop-plum-details-bn": {"viewport":"1366x768","theme":"plum","page":"details","language":"bn","width":840,"height":1191,"hash":"da78b93aeed101bbd482da5bfafaf857984c793266304b4934359d4338369ce1"},
-    "large-desktop-classic-front-ne": {"viewport":"1920x1080","theme":"classic","page":"front","language":"ne","width":840,"height":1191,"hash":"28cdc801932c41446b75d627847f9e1e6fc9a29155187932fce6157771f3407d"},
+    "large-desktop-classic-front-ne": {"viewport":"1920x1080","theme":"classic","page":"front","language":"ne","width":840,"height":1191,"hash":"a7dfaf4952c8940216352ca3ea7087d79756214205aa428936ae3e24daef6757"},
     "large-desktop-saffron-family-en": {"viewport":"1920x1080","theme":"saffron","page":"family","language":"en","width":840,"height":1191,"hash":"a5d0d4cd53a00c0c36c9a3e1d0f2a27bd8ac29e187824d5dc9d41f0cdcf97b83"},
     "large-desktop-blush-back-bn": {"viewport":"1920x1080","theme":"blush","page":"back","language":"bn","width":1116,"height":789,"hash":"8f1d437629df6b24e0ce56f68f7655df1f864380487e30b4616f911502949035"}
   }
