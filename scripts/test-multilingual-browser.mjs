@@ -139,6 +139,58 @@ try {
                 if (items[index - 1].getBoundingClientRect().bottom > items[index].getBoundingClientRect().top + 1) issues.push('Classic laptop detail items overlap');
               }
             }
+            if (innerWidth >= 681 && document.querySelector('.bookApp[data-invitation-theme="blush"]')) {
+              const pageName =
+                document.querySelector('.bookStage.page-front') ? 'front' :
+                document.querySelector('.bookStage.page-inside-left') ? 'family' :
+                document.querySelector('.bookStage.page-inside-right') ? 'details' :
+                document.querySelector('.bookStage.page-back') ? 'back' :
+                '';
+              const language = document.querySelector('main[lang]')?.getAttribute('lang') || 'en';
+              const readableFloors = {
+                front: [
+                  ['.dynamicFrontHeading > span', 27.2],
+                  ['.dynamicFrontHeading > em', 21.6],
+                  ['.dynamicFrontTagline', 14.4],
+                  ['.dynamicFrontNames', language === 'en' ? 26.4 : 24],
+                  ['.dynamicFrontClosing', 13.1]
+                ],
+                family: [
+                  ['.familyBlessingsIntro h2', 20],
+                  ['.familyBlessingsIntro p', 13.1],
+                  ['.familyCoupleNames', language === 'en' ? 24 : 22.4],
+                  ['.familyBlock h3', 14.7],
+                  ['.familyBlock p', 12.4],
+                  ['.familyBlessingsClosing', 12.1]
+                ],
+                details: [
+                  ['.insideRightDynamicTitle', 20.8],
+                  ['.receptionDetailLabel', 13.1],
+                  ['.receptionDetailValue', 12.8],
+                  ['.receptionAddressValue', 11.8],
+                  ['.receptionCalendarItem .btn', 11.5],
+                  ['.receptionCountdownItem .countdownUnit strong', 14],
+                  ['.receptionCountdownItem .countdownUnit span', 10.8]
+                ],
+                back: [
+                  ['.heritageBackIntro h2', 24],
+                  ['.heritageBackMessage', 14],
+                  ['.heritageCoupleNames', language === 'en' ? 29.6 : 24.8],
+                  ['.heritageJourneyMessage', 13.4],
+                  ['.heritageAssistance > h3', 15.2],
+                  ['.heritageAssistance .contactCard .eyebrow', 11.2],
+                  ['.heritageAssistance .contactCard h3', 12],
+                  ['.heritageAssistance .contactCard a', 12]
+                ]
+              };
+              for (const [selector, minimum] of readableFloors[pageName] || []) {
+                for (const node of document.querySelectorAll(selector)) {
+                  if (parseFloat(getComputedStyle(node).fontSize) < minimum - .1) {
+                    issues.push(`Baby Pink ${pageName} text too small: ${selector}`);
+                  }
+                }
+              }
+            }
             if (innerWidth < 375 && document.querySelector('.bookStage.page-front')) {
               const heading = document.querySelector('.dynamicFrontHeading')?.getBoundingClientRect();
               const theme = document.querySelector('main[data-invitation-theme]')?.dataset.invitationTheme;
