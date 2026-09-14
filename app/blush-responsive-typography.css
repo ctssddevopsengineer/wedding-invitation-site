@@ -164,6 +164,40 @@
   }
 }
 
+/* Tablet/small-laptop refinement: the application scales the root rem below
+   16px, so use absolute readable pixel floors where the rendered value matters.
+   Keep the fixed Baby Pink back-page artwork zones unchanged by fitting the
+   hierarchy inside their existing vertical separation. */
+@media (min-width: 681px) and (max-width: 1023px) {
+  .bookApp[data-invitation-theme="blush"] .receptionDetailValue {
+    font-size: clamp(13px, 1.65cqw, 17px) !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .receptionAddressValue {
+    font-size: clamp(12px, 1.45cqw, 15px) !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .heritageBackIntro h2 {
+    font-size: clamp(18px, 2.55cqw, 28px) !important;
+    line-height: 1.12;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .heritageBackMessage {
+    font-size: clamp(11px, 1.3cqw, 15px) !important;
+    line-height: 1.42;
+  }
+
+  .bookApp[lang="en"][data-invitation-theme="blush"] .heritageCoupleNames {
+    font-size: clamp(22px, 3.55cqw, 34px) !important;
+    line-height: 1.02;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="blush"] .heritageCoupleNames {
+    font-size: clamp(20px, 3.2cqw, 31px) !important;
+    line-height: 1.18;
+  }
+}
+
 @media (min-width: 1024px) {
   .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontHeading > span {
     font-size: clamp(1.9rem, 7cqw, 4.2rem) !important;
