@@ -9,18 +9,20 @@ test('critical visual regression matrix uses eight representative viewport profi
   );
 });
 
-test('visual regression matrix has three states per viewport plus full Classic front laptop language coverage', () => {
-  assert.equal(VISUAL_REGRESSION_CASES.length, 27);
+test('visual regression matrix includes full Classic front language coverage on tablet and laptop', () => {
+  assert.equal(VISUAL_REGRESSION_CASES.length, 30);
   for (const viewport of CRITICAL_VISUAL_VIEWPORTS) {
-    const expected = viewport.name === 'laptop' ? 6 : 3;
+    const expected = ['tablet', 'laptop'].includes(viewport.name) ? 6 : 3;
     assert.equal(VISUAL_REGRESSION_CASES.filter((item) => item.viewport.name === viewport.name).length, expected);
   }
 
-  const classicLaptopFrontLanguages = VISUAL_REGRESSION_CASES
-    .filter((item) => item.viewport.name === 'laptop' && item.theme === 'classic' && item.page === 'front')
-    .map((item) => item.language)
-    .sort();
-  assert.deepEqual(classicLaptopFrontLanguages, ['bn', 'en', 'ne']);
+  for (const viewportName of ['tablet', 'laptop']) {
+    const languages = VISUAL_REGRESSION_CASES
+      .filter((item) => item.viewport.name === viewportName && item.theme === 'classic' && item.page === 'front')
+      .map((item) => item.language)
+      .sort();
+    assert.deepEqual(languages, ['bn', 'en', 'ne']);
+  }
 });
 
 test('visual regression matrix represents every theme, page and language', () => {
