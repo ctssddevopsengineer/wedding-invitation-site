@@ -69,6 +69,42 @@
 
 }
 
+/* Front page small-tablet band: English previously fell back to the generic
+   typography layer between mobile and the 768px tablet rules. Give English the
+   same deliberate Classic hierarchy from the first non-mobile pixel onward. */
+@media (min-width: 681px) and (max-width: 767px) {
+  .bookApp[lang="en"][data-invitation-theme="classic"] .frontCover .dynamicFrontHeading > span {
+    font-size: clamp(1.62rem, 6.35cqw, 3.2rem) !important;
+    line-height: 1.08;
+    font-weight: 700;
+    letter-spacing: -.01em;
+  }
+
+  .bookApp[lang="en"][data-invitation-theme="classic"] .frontCover .dynamicFrontHeading > em {
+    font-size: clamp(1.34rem, 5.05cqw, 2.7rem) !important;
+    line-height: 1.12;
+    font-weight: 500;
+  }
+
+  .bookApp[lang="en"][data-invitation-theme="classic"] .frontCover .dynamicFrontTagline {
+    font-size: clamp(.9rem, 2.15cqw, 1.16rem) !important;
+    line-height: 1.48;
+    font-weight: 600;
+  }
+
+  .bookApp[lang="en"][data-invitation-theme="classic"] .frontCover .dynamicFrontNames {
+    font-size: clamp(1.55rem, 5.55cqw, 3rem) !important;
+    line-height: 1.08;
+    font-weight: 500;
+  }
+
+  .bookApp[lang="en"][data-invitation-theme="classic"] .frontCover .dynamicFrontClosing {
+    font-size: clamp(.82rem, 1.95cqw, 1.08rem) !important;
+    line-height: 1.5;
+    font-weight: 600;
+  }
+}
+
 /* Front page tablet band: improve readability from standard 768px tablets
    through 1023px without touching the <=680px mobile layout or any geometry. */
 @media (min-width: 768px) and (max-width: 1023px) {
