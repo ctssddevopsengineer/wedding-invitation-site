@@ -153,7 +153,7 @@
       "language": "en",
       "width": 726,
       "height": 1028,
-      "hash": "e8392caf09ccf88f2da4a43e3e7b5546aeb1a25c2d584718ecb7071c4a933135"
+      "hash": "93e36795a25f7802d425557064b576e3002357c32ec2b5996cdb156897d112b6"
     },
     "tablet-magenta-front-ne": {
       "viewport": "768x1024",
@@ -342,7 +342,7 @@
       "language": "bn",
       "width": 726,
       "height": 1028,
-      "hash": "16eba6ef91e7346298da2a252ee81025567e1f72128d653053268768868bb020"
+      "hash": "bd06969fcf884bfd902a0d265d882c2dc67a787f4f52a83bd495a01877ff20a8"
     },
     "tablet-blush-details-ne": {
       "viewport": "768x1024",
@@ -351,7 +351,7 @@
       "language": "ne",
       "width": 726,
       "height": 1028,
-      "hash": "5787a2fbf6d59be13d0e52ebc36ac6ef16f7b45cc17f249bade3d177c07e1b49"
+      "hash": "598d4222b8b8acc7a6bc200a6af23c83778013dd4d89cb598dfd77eb3fae458a"
     },
     "tablet-blush-back-en": {
       "viewport": "768x1024",
@@ -360,7 +360,7 @@
       "language": "en",
       "width": 726,
       "height": 513,
-      "hash": "eb2582b55567e67c4fad4dceb895a894ffdf84eea1ed592780589e22f5dcc25a"
+      "hash": "16c95072acaadc1bc9c1eb31ccec5b8c8d4fc0748a6a388574432a52f51e3fe1"
     },
     "tablet-blush-back-bn": {
       "viewport": "768x1024",
@@ -369,7 +369,7 @@
       "language": "bn",
       "width": 726,
       "height": 513,
-      "hash": "e1b24ca77f1717338b39cea3e7df6a0c0184aa038619bd505f6d970e53e6be81"
+      "hash": "55778dbb9dd839c2e210cc0f6533b077b46ec73b04cf8f48201969406b5d2e8a"
     },
     "tablet-blush-back-ne": {
       "viewport": "768x1024",
@@ -378,7 +378,7 @@
       "language": "ne",
       "width": 726,
       "height": 513,
-      "hash": "6e59b9bed6621ab38f659d5760da0e1e516aa3a7e47de4ccc0f802313eca8cc5"
+      "hash": "339025c137ce5c48063ee3ae57cb5cd0ac694be64d95321883d26e874ea1502a"
     },
     "laptop-blush-front-en": {
       "viewport": "1366x768",
