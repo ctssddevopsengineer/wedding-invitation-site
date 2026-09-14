@@ -42,6 +42,22 @@ test('Baby Pink 681px+ typography covers all four pages', () => {
   }
 });
 
+test('Baby Pink Bengali and Nepali inside-left closing blessing is laptop-readable over artwork', () => {
+  assert.match(css, /@media \(min-width:\s*1024px\)/);
+  assert.match(
+    css,
+    /:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="blush"\][\s\S]*?\.familyBlessingsClosing\s*\{[\s\S]*?font-size:\s*clamp\(18px, 1\.8cqw, 24px\)\s*!important/
+  );
+  assert.match(
+    css,
+    /\.familyBlessingsClosing\s*\{[\s\S]*?font-weight:\s*700;[\s\S]*?line-height:\s*1\.5;[\s\S]*?text-shadow:/
+  );
+  assert.match(
+    css,
+    /color:\s*color-mix\(in srgb, var\(--theme-ink\) 88%, #2b1820 12%\)\s*!important/
+  );
+});
+
 test('Baby Pink keeps native-script-specific name treatment for Bengali and Nepali', () => {
   assert.match(css, /:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="blush"\][\s\S]*?dynamicFrontNames/);
   assert.match(css, /:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="blush"\][\s\S]*?familyCoupleNames/);
