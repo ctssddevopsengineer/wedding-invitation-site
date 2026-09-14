@@ -21,6 +21,7 @@ import './inside-left-saffron-parity.css';
 import './saffron-front-separator.css';
 import './front-saffron-parity.css';
 import './classic-multilingual-laptop.css';
+import './blush-responsive-typography.css';
 import './compact-details-scroll.css';
 
 const bengali = localFont({ src: './fonts/noto-serif-bengali.ttf', variable: '--font-bengali', display: 'swap', preload: false });
