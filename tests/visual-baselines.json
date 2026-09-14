@@ -244,6 +244,33 @@
       "width": 840,
       "height": 1191,
       "hash": "4236c83c6c45c49293349349f40f019c2db63a48af50f50948576b16671ee221"
+    },
+    "tablet-classic-front-en": {
+      "viewport": "768x1024",
+      "theme": "classic",
+      "page": "front",
+      "language": "en",
+      "width": 726,
+      "height": 1028,
+      "hash": "50878cf34e66531f136ca31bba46a041d606b281eaa0fe7699f6b3e01cf8ced9"
+    },
+    "tablet-classic-front-bn": {
+      "viewport": "768x1024",
+      "theme": "classic",
+      "page": "front",
+      "language": "bn",
+      "width": 726,
+      "height": 1028,
+      "hash": "f83fdb44a19ca67c3b7474f3fcadd430e25c8f8567e898e14767bd76da26e243"
+    },
+    "tablet-classic-front-ne": {
+      "viewport": "768x1024",
+      "theme": "classic",
+      "page": "front",
+      "language": "ne",
+      "width": 726,
+      "height": 1028,
+      "hash": "4b2a487d7c58577614604f0abac36dda226a9eb4e0c25ce9b553ac3774c35f5a"
     }
   }
 }
