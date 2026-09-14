@@ -200,7 +200,7 @@ try {
                   ['.familyCoupleNames', language === 'en' ? 24 : 22.4],
                   ['.familyBlock h3', 14.7],
                   ['.familyBlock p', 12.4],
-                  ['.familyBlessingsClosing', 12.1]
+                  ['.familyBlessingsClosing', innerWidth >= 1024 && ['bn', 'ne'].includes(language) ? 18 : 12.1]
                 ],
                 details: [
                   ['.insideRightDynamicTitle', 20.8],
