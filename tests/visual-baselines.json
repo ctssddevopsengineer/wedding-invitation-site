@@ -153,7 +153,7 @@
       "language": "en",
       "width": 726,
       "height": 1028,
-      "hash": "b2c15be5e48e1146ead0198e958abc6c969231b2202a95eeeb32e674c111f79e"
+      "hash": "e8392caf09ccf88f2da4a43e3e7b5546aeb1a25c2d584718ecb7071c4a933135"
     },
     "tablet-magenta-front-ne": {
       "viewport": "768x1024",
@@ -216,7 +216,7 @@
       "language": "bn",
       "width": 1116,
       "height": 789,
-      "hash": "8f1d437629df6b24e0ce56f68f7655df1f864380487e30b4616f911502949035"
+      "hash": "e5e43b8ed7ca5afefa7f288d49988245e816f13f877cffec7f31b2afb985c7b5"
     },
     "laptop-classic-front-en": {
       "viewport": "1366x768",
@@ -280,6 +280,213 @@
       "width": 674,
       "height": 953,
       "hash": "3e53fad540ee3142e573fef3ef6dc9c84cad6ddb0804e06502f785977930b02c"
+    },
+    "tablet-blush-front-en": {
+      "viewport": "768x1024",
+      "theme": "blush",
+      "page": "front",
+      "language": "en",
+      "width": 726,
+      "height": 1028,
+      "hash": "685cd5dba93aaebdadf7dc6abd72b14708f54b648be8e5864be0add45ed6b424"
+    },
+    "tablet-blush-front-bn": {
+      "viewport": "768x1024",
+      "theme": "blush",
+      "page": "front",
+      "language": "bn",
+      "width": 726,
+      "height": 1028,
+      "hash": "9792a0da36e450f364d340c08e8769fc128266a1d9978dd37367218bf810de5b"
+    },
+    "tablet-blush-front-ne": {
+      "viewport": "768x1024",
+      "theme": "blush",
+      "page": "front",
+      "language": "ne",
+      "width": 726,
+      "height": 1028,
+      "hash": "4649eb60becfbd6b0702501ee762c22e2f434ed2ccf358678ba4f7e8368d40ca"
+    },
+    "tablet-blush-family-en": {
+      "viewport": "768x1024",
+      "theme": "blush",
+      "page": "family",
+      "language": "en",
+      "width": 726,
+      "height": 1028,
+      "hash": "56572692f46385622ad7dcc6360bbe47fd6cc47b5b136c2e382ef22e215c8774"
+    },
+    "tablet-blush-family-bn": {
+      "viewport": "768x1024",
+      "theme": "blush",
+      "page": "family",
+      "language": "bn",
+      "width": 726,
+      "height": 1028,
+      "hash": "9cc1675cd4e96173c74989c1c70e93685ff28022dcf88f7a42b3d0b741db9419"
+    },
+    "tablet-blush-family-ne": {
+      "viewport": "768x1024",
+      "theme": "blush",
+      "page": "family",
+      "language": "ne",
+      "width": 726,
+      "height": 1028,
+      "hash": "ee2e619ac227260ce067a792c0d00302de12266cda0b02847fbd06378fe12add"
+    },
+    "tablet-blush-details-bn": {
+      "viewport": "768x1024",
+      "theme": "blush",
+      "page": "details",
+      "language": "bn",
+      "width": 726,
+      "height": 1028,
+      "hash": "16eba6ef91e7346298da2a252ee81025567e1f72128d653053268768868bb020"
+    },
+    "tablet-blush-details-ne": {
+      "viewport": "768x1024",
+      "theme": "blush",
+      "page": "details",
+      "language": "ne",
+      "width": 726,
+      "height": 1028,
+      "hash": "5787a2fbf6d59be13d0e52ebc36ac6ef16f7b45cc17f249bade3d177c07e1b49"
+    },
+    "tablet-blush-back-en": {
+      "viewport": "768x1024",
+      "theme": "blush",
+      "page": "back",
+      "language": "en",
+      "width": 726,
+      "height": 513,
+      "hash": "eb2582b55567e67c4fad4dceb895a894ffdf84eea1ed592780589e22f5dcc25a"
+    },
+    "tablet-blush-back-bn": {
+      "viewport": "768x1024",
+      "theme": "blush",
+      "page": "back",
+      "language": "bn",
+      "width": 726,
+      "height": 513,
+      "hash": "e1b24ca77f1717338b39cea3e7df6a0c0184aa038619bd505f6d970e53e6be81"
+    },
+    "tablet-blush-back-ne": {
+      "viewport": "768x1024",
+      "theme": "blush",
+      "page": "back",
+      "language": "ne",
+      "width": 726,
+      "height": 513,
+      "hash": "6e59b9bed6621ab38f659d5760da0e1e516aa3a7e47de4ccc0f802313eca8cc5"
+    },
+    "laptop-blush-front-en": {
+      "viewport": "1366x768",
+      "theme": "blush",
+      "page": "front",
+      "language": "en",
+      "width": 840,
+      "height": 1191,
+      "hash": "8a40429854fec1bb85d65a1f435a9b796273f6079eb31628f235e13276901b16"
+    },
+    "laptop-blush-front-bn": {
+      "viewport": "1366x768",
+      "theme": "blush",
+      "page": "front",
+      "language": "bn",
+      "width": 840,
+      "height": 1191,
+      "hash": "17760c25531e187a036f8d8bc05f91874a9357925e2d02c2869dbf9d7b8c7d02"
+    },
+    "laptop-blush-front-ne": {
+      "viewport": "1366x768",
+      "theme": "blush",
+      "page": "front",
+      "language": "ne",
+      "width": 840,
+      "height": 1191,
+      "hash": "c738dae6ac9eb1b7cabb214561a2f8cc116656c3a13ae0c43919b547e115654c"
+    },
+    "laptop-blush-family-en": {
+      "viewport": "1366x768",
+      "theme": "blush",
+      "page": "family",
+      "language": "en",
+      "width": 840,
+      "height": 1191,
+      "hash": "a57b5378326e022e1f040d2a731157b95ab6b01bdb371a00f9877eed8fb5e706"
+    },
+    "laptop-blush-family-bn": {
+      "viewport": "1366x768",
+      "theme": "blush",
+      "page": "family",
+      "language": "bn",
+      "width": 840,
+      "height": 1191,
+      "hash": "b6f5c2f545c01f61c5ce972c01c493004e82282e21b30550f37cca2c0205205d"
+    },
+    "laptop-blush-family-ne": {
+      "viewport": "1366x768",
+      "theme": "blush",
+      "page": "family",
+      "language": "ne",
+      "width": 840,
+      "height": 1191,
+      "hash": "d1f911e6bd5f0dfc83de50cb9ea2b7b18c3263985443e744555d1bc820446694"
+    },
+    "laptop-blush-details-en": {
+      "viewport": "1366x768",
+      "theme": "blush",
+      "page": "details",
+      "language": "en",
+      "width": 840,
+      "height": 1191,
+      "hash": "96e4c2ec914e5a406689b128dcc7935852feed8b2375b02a047a3a8a4b120d8b"
+    },
+    "laptop-blush-details-bn": {
+      "viewport": "1366x768",
+      "theme": "blush",
+      "page": "details",
+      "language": "bn",
+      "width": 840,
+      "height": 1191,
+      "hash": "1c7fd7e3227e0f37a3d98eaacc290cd83b8b0a24ff9427d219bde00b2d7c86a6"
+    },
+    "laptop-blush-details-ne": {
+      "viewport": "1366x768",
+      "theme": "blush",
+      "page": "details",
+      "language": "ne",
+      "width": 840,
+      "height": 1191,
+      "hash": "22ee10f7fd96a7085432d97d580966fc23d8fc9aceb7601342384466e5887d0f"
+    },
+    "laptop-blush-back-en": {
+      "viewport": "1366x768",
+      "theme": "blush",
+      "page": "back",
+      "language": "en",
+      "width": 1116,
+      "height": 789,
+      "hash": "cc80087c45413d049cc860f4e1a96727f8b53c6f17b922c72a4b7cc88273667f"
+    },
+    "laptop-blush-back-bn": {
+      "viewport": "1366x768",
+      "theme": "blush",
+      "page": "back",
+      "language": "bn",
+      "width": 1116,
+      "height": 789,
+      "hash": "e53b3fa0102f897c34df4e812ef532d80ad55be70eb2e6307f8236c7fa8ad3d1"
+    },
+    "laptop-blush-back-ne": {
+      "viewport": "1366x768",
+      "theme": "blush",
+      "page": "back",
+      "language": "ne",
+      "width": 1116,
+      "height": 789,
+      "hash": "2b289e6dcfe1b9997bdce6f36686b425402a7ba2b74317220eeb7c997b6610b6"
     }
   }
 }
