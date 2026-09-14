@@ -2,19 +2,30 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { CRITICAL_VISUAL_VIEWPORTS, VISUAL_REGRESSION_CASES } from '../lib/visual-regression.mjs';
 
-test('critical visual regression matrix uses eight representative viewport profiles', () => {
+test('critical visual regression matrix covers phones through small tablets, tablets, laptops and large desktops', () => {
   assert.deepEqual(
     CRITICAL_VISUAL_VIEWPORTS.map(({ width, height }) => `${width}x${height}`),
-    ['320x658', '360x800', '390x844', '412x915', '640x360', '768x1024', '1366x768', '1920x1080']
+    ['320x658', '360x800', '390x844', '412x915', '640x360', '768x1024', '1366x768', '1920x1080', '712x1138']
   );
 });
 
-test('visual regression matrix includes full Classic front language coverage on tablet and laptop', () => {
-  assert.equal(VISUAL_REGRESSION_CASES.length, 30);
+test('visual regression matrix includes the English Classic 681–767px bridge plus full tablet/laptop language coverage', () => {
+  assert.equal(VISUAL_REGRESSION_CASES.length, 31);
   for (const viewport of CRITICAL_VISUAL_VIEWPORTS) {
-    const expected = ['tablet', 'laptop'].includes(viewport.name) ? 6 : 3;
+    const expected =
+      viewport.name === 'small-tablet' ? 1 :
+      ['tablet', 'laptop'].includes(viewport.name) ? 6 :
+      3;
     assert.equal(VISUAL_REGRESSION_CASES.filter((item) => item.viewport.name === viewport.name).length, expected);
   }
+
+  const smallTabletEnglish = VISUAL_REGRESSION_CASES.filter(
+    (item) => item.viewport.name === 'small-tablet' &&
+      item.theme === 'classic' &&
+      item.page === 'front' &&
+      item.language === 'en'
+  );
+  assert.equal(smallTabletEnglish.length, 1);
 
   for (const viewportName of ['tablet', 'laptop']) {
     const languages = VISUAL_REGRESSION_CASES
