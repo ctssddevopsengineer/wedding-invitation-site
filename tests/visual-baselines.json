@@ -271,6 +271,15 @@
       "width": 726,
       "height": 1028,
       "hash": "4b2a487d7c58577614604f0abac36dda226a9eb4e0c25ce9b553ac3774c35f5a"
+    },
+    "small-tablet-classic-front-en": {
+      "viewport": "712x1138",
+      "theme": "classic",
+      "page": "front",
+      "language": "en",
+      "width": 674,
+      "height": 953,
+      "hash": "3e53fad540ee3142e573fef3ef6dc9c84cad6ddb0804e06502f785977930b02c"
     }
   }
 }
