@@ -166,21 +166,21 @@ try {
                 details: [
                   ['.insideRightDynamicTitle', 20.8],
                   ['.receptionDetailLabel', 13.1],
-                  ['.receptionDetailValue', 12.8],
-                  ['.receptionAddressValue', 11.8],
+                  ['.receptionDetailValue:not(.receptionAddressValue)', innerWidth <= 1023 ? 13 : 12.8],
+                  ['.receptionAddressValue', innerWidth <= 1023 ? 12 : 11.8],
                   ['.receptionCalendarItem .btn', 11.5],
                   ['.receptionCountdownItem .countdownUnit strong', 14],
                   ['.receptionCountdownItem .countdownUnit span', 10.8]
                 ],
                 back: [
-                  ['.heritageBackIntro h2', 24],
-                  ['.heritageBackMessage', 14],
-                  ['.heritageCoupleNames', language === 'en' ? 29.6 : 24.8],
-                  ['.heritageJourneyMessage', 13.4],
-                  ['.heritageAssistance > h3', 15.2],
-                  ['.heritageAssistance .contactCard .eyebrow', 11.2],
-                  ['.heritageAssistance .contactCard h3', 12],
-                  ['.heritageAssistance .contactCard a', 12]
+                  ['.heritageBackIntro h2', innerWidth <= 1023 ? 18 : 24],
+                  ['.heritageBackMessage', innerWidth <= 1023 ? 11 : 14],
+                  ['.heritageCoupleNames', innerWidth <= 1023 ? (language === 'en' ? 22 : 20) : (language === 'en' ? 29.6 : 24.8)],
+                  ['.heritageJourneyMessage', innerWidth <= 1023 ? 10.5 : 13.4],
+                  ['.heritageAssistance > h3', innerWidth <= 1023 ? 12 : 15.2],
+                  ['.heritageAssistance .contactCard .eyebrow', innerWidth <= 1023 ? 9 : 11.2],
+                  ['.heritageAssistance .contactCard h3', innerWidth <= 1023 ? 10 : 12],
+                  ['.heritageAssistance .contactCard a', innerWidth <= 1023 ? 10 : 12]
                 ]
               };
               for (const [selector, minimum] of readableFloors[pageName] || []) {
