@@ -10,11 +10,12 @@ test('critical visual regression matrix covers phones through small tablets, tab
 });
 
 test('visual regression matrix includes the English Classic 681–767px bridge plus full tablet/laptop language coverage', () => {
-  assert.equal(VISUAL_REGRESSION_CASES.length, 31);
+  assert.equal(VISUAL_REGRESSION_CASES.length, 54);
   for (const viewport of CRITICAL_VISUAL_VIEWPORTS) {
     const expected =
       viewport.name === 'small-tablet' ? 1 :
-      ['tablet', 'laptop'].includes(viewport.name) ? 6 :
+      viewport.name === 'tablet' ? 17 :
+      viewport.name === 'laptop' ? 18 :
       3;
     assert.equal(VISUAL_REGRESSION_CASES.filter((item) => item.viewport.name === viewport.name).length, expected);
   }
@@ -26,6 +27,18 @@ test('visual regression matrix includes the English Classic 681–767px bridge p
       item.language === 'en'
   );
   assert.equal(smallTabletEnglish.length, 1);
+
+  for (const viewportName of ['tablet', 'laptop']) {
+    const babyPinkStates = VISUAL_REGRESSION_CASES
+      .filter((item) => item.viewport.name === viewportName && item.theme === 'blush')
+      .map((item) => `${item.page}:${item.language}`);
+    assert.equal(new Set(babyPinkStates).size, 12);
+    for (const page of ['front', 'family', 'details', 'back']) {
+      for (const language of ['en', 'bn', 'ne']) {
+        assert.ok(babyPinkStates.includes(`${page}:${language}`), `missing Baby Pink ${viewportName} ${page} ${language}`);
+      }
+    }
+  }
 
   for (const viewportName of ['tablet', 'laptop']) {
     const languages = VISUAL_REGRESSION_CASES
