@@ -42,6 +42,45 @@ const server = http.createServer(async (req, res) => {
 await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 const url = `http://127.0.0.1:${server.address().port}${basePath}/`;
 const animationFreezeCss = '*, *::before, *::after { animation: none !important; transition: none !important; }';
+
+async function waitForInvitationImages(page) {
+  await page.waitForFunction(
+    () => [...document.querySelectorAll('.invitePage img')].every(
+      (image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0
+    ),
+    null,
+    { timeout: 10000 }
+  );
+
+  await page.locator('.invitePage img').evaluateAll(async (images) => {
+    for (const image of images) {
+      let lastError;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          if (!image.complete || !image.naturalWidth || !image.naturalHeight) {
+            await new Promise((resolve, reject) => {
+              const cleanup = () => {
+                image.removeEventListener('load', onLoad);
+                image.removeEventListener('error', onError);
+              };
+              const onLoad = () => { cleanup(); resolve(); };
+              const onError = () => { cleanup(); reject(new Error(`Artwork failed to load: ${image.currentSrc || image.src}`)); };
+              image.addEventListener('load', onLoad, { once: true });
+              image.addEventListener('error', onError, { once: true });
+            });
+          }
+          await image.decode();
+          lastError = null;
+          break;
+        } catch (error) {
+          lastError = error;
+          await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        }
+      }
+      if (lastError) throw lastError;
+    }
+  });
+}
 let browser;
 const launchBrowser = () => browserTypes[browserTarget.engine].launch({
   headless: true,
@@ -114,7 +153,7 @@ try {
           await page.waitForSelector(`main[data-theme-ready="true"][data-invitation-theme="${theme}"][lang="${language}"]`);
           await page.waitForSelector(`.bookStage.page-${({ family: 'inside-left', details: 'inside-right' })[pageName] || pageName}`);
           await page.evaluate(async () => { await document.fonts.ready; await Promise.all(document.getAnimations().filter(a => a.effect?.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))); });
-          await page.locator('.invitePage img').evaluateAll((images) => Promise.all(images.map((image) => image.decode())));
+          await waitForInvitationImages(page);
           assert.equal(await page.locator('html').getAttribute('lang'), language);
           assert.equal(await page.locator('#invitation-language-value').getAttribute('lang'), language);
           const issues = await page.evaluate(() => {
@@ -137,6 +176,58 @@ try {
               const items = [...document.querySelectorAll('.receptionDetailItem')];
               for (let index = 1; index < items.length; index++) {
                 if (items[index - 1].getBoundingClientRect().bottom > items[index].getBoundingClientRect().top + 1) issues.push('Classic laptop detail items overlap');
+              }
+            }
+            if (innerWidth >= 681 && document.querySelector('.bookApp[data-invitation-theme="blush"]')) {
+              const pageName =
+                document.querySelector('.bookStage.page-front') ? 'front' :
+                document.querySelector('.bookStage.page-inside-left') ? 'family' :
+                document.querySelector('.bookStage.page-inside-right') ? 'details' :
+                document.querySelector('.bookStage.page-back') ? 'back' :
+                '';
+              const language = document.querySelector('main[lang]')?.getAttribute('lang') || 'en';
+              const readableFloors = {
+                front: [
+                  ['.dynamicFrontHeading > span', 27.2],
+                  ['.dynamicFrontHeading > em', 21.6],
+                  ['.dynamicFrontTagline', 14.4],
+                  ['.dynamicFrontNames', language === 'en' ? 26.4 : 24],
+                  ['.dynamicFrontClosing', 13.1]
+                ],
+                family: [
+                  ['.familyBlessingsIntro h2', 20],
+                  ['.familyBlessingsIntro p', 13.1],
+                  ['.familyCoupleNames', language === 'en' ? 24 : 22.4],
+                  ['.familyBlock h3', 14.7],
+                  ['.familyBlock p', 12.4],
+                  ['.familyBlessingsClosing', 12.1]
+                ],
+                details: [
+                  ['.insideRightDynamicTitle', 20.8],
+                  ['.receptionDetailLabel', 13.1],
+                  ['.receptionDetailValue:not(.receptionAddressValue)', innerWidth <= 1023 ? 13 : 12.8],
+                  ['.receptionAddressValue', innerWidth <= 1023 ? 12 : 11.8],
+                  ['.receptionCalendarItem .btn', 11.5],
+                  ['.receptionCountdownItem .countdownUnit strong', 14],
+                  ['.receptionCountdownItem .countdownUnit span', 10.8]
+                ],
+                back: [
+                  ['.heritageBackIntro h2', innerWidth <= 1023 ? 18 : 24],
+                  ['.heritageBackMessage', innerWidth <= 1023 ? 11 : 14],
+                  ['.heritageCoupleNames', innerWidth <= 1023 ? (language === 'en' ? 22 : 20) : (language === 'en' ? 29.6 : 24.8)],
+                  ['.heritageJourneyMessage', innerWidth <= 1023 ? 10.5 : 13.4],
+                  ['.heritageAssistance > h3', innerWidth <= 1023 ? 12 : 15.2],
+                  ['.heritageAssistance .contactCard .eyebrow', innerWidth <= 1023 ? 9 : 11.2],
+                  ['.heritageAssistance .contactCard h3', innerWidth <= 1023 ? 10 : 12],
+                  ['.heritageAssistance .contactCard a', innerWidth <= 1023 ? 10 : 12]
+                ]
+              };
+              for (const [selector, minimum] of readableFloors[pageName] || []) {
+                for (const node of document.querySelectorAll(selector)) {
+                  if (parseFloat(getComputedStyle(node).fontSize) < minimum - .1) {
+                    issues.push(`Baby Pink ${pageName} text too small: ${selector}`);
+                  }
+                }
               }
             }
             if (innerWidth < 375 && document.querySelector('.bookStage.page-front')) {
