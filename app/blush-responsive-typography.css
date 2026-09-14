@@ -227,6 +227,20 @@
     font-size: clamp(.84rem, 1.72cqw, 1.1rem) !important;
   }
 
+  /* Bengali/Nepali closing blessing sits directly over detailed river artwork.
+     Give native-script copy a true laptop-readable pixel floor and stronger
+     local contrast without moving the approved divider, lotus or text zone. */
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="blush"] .familyBlessingsClosing {
+    color: color-mix(in srgb, var(--theme-ink) 88%, #2b1820 12%) !important;
+    font-size: clamp(18px, 1.8cqw, 24px) !important;
+    font-weight: 700;
+    line-height: 1.5;
+    text-shadow:
+      0 1px 0 rgba(255, 250, 246, .96),
+      0 0 .34em rgba(255, 247, 242, .9),
+      0 .08em .16em rgba(58, 31, 39, .24);
+  }
+
   .bookApp[data-invitation-theme="blush"] .insideRightDynamicTitle {
     font-size: clamp(1.5rem, 3.55cqw, 2.35rem) !important;
   }
