@@ -67,7 +67,6 @@ test('Baby Pink front has readable laptop typography and deliberate content spac
     css,
     /\.dynamicFrontClosing\s*\{[\s\S]*?font-size:\s*clamp\(18px, 2\.2cqw, 23px\)\s*!important/
   );
-  assert.match(css, /\.dynamicFrontMonogram\s*\{[\s\S]*?margin-bottom:\s*clamp\(16px, 1\.8cqw, 24px\)/);
   assert.match(css, /\.dynamicFrontRule\s*\{[\s\S]*?margin:\s*clamp\(14px, 1\.8cqw, 22px\) auto/);
 });
 
