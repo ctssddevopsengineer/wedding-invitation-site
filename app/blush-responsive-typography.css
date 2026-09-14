@@ -199,16 +199,46 @@
 }
 
 @media (min-width: 1024px) {
+  /* FRONT — true laptop/desktop readability floors and more ceremonial
+     breathing room. Keep the artwork/frame coordinates untouched; spacing is
+     applied only between the existing content groups. */
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontMonogram {
+    margin-bottom: clamp(16px, 1.8cqw, 24px);
+  }
+
   .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontHeading > span {
-    font-size: clamp(1.9rem, 7cqw, 4.2rem) !important;
+    font-size: clamp(46px, 7.8cqw, 68px) !important;
+    line-height: 1.06;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontHeading > em {
+    margin-top: .16em;
+    font-size: clamp(30px, 5.5cqw, 44px) !important;
+    line-height: 1.12;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontRule {
+    margin: clamp(14px, 1.8cqw, 22px) auto;
   }
 
   .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontTagline {
-    font-size: clamp(1rem, 2.45cqw, 1.42rem) !important;
+    font-size: clamp(20px, 2.8cqw, 26px) !important;
+    line-height: 1.48;
   }
 
   .bookApp[lang="en"][data-invitation-theme="blush"] .frontCover .dynamicFrontNames {
-    font-size: clamp(1.85rem, 6.1cqw, 3.7rem) !important;
+    font-size: clamp(40px, 6.5cqw, 58px) !important;
+    line-height: 1.04;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="blush"] .frontCover .dynamicFrontNames {
+    font-size: clamp(38px, 5.8cqw, 54px) !important;
+    line-height: 1.2;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontClosing {
+    font-size: clamp(18px, 2.2cqw, 23px) !important;
+    line-height: 1.55;
   }
 
   .bookApp[data-invitation-theme="blush"] .familyBlessingsIntro h2 {
@@ -225,6 +255,20 @@
 
   .bookApp[data-invitation-theme="blush"] .familyBlock p {
     font-size: clamp(.84rem, 1.72cqw, 1.1rem) !important;
+  }
+
+  /* Bengali/Nepali closing blessing sits directly over detailed river artwork.
+     Give native-script copy a true laptop-readable pixel floor and stronger
+     local contrast without moving the approved divider, lotus or text zone. */
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="blush"] .familyBlessingsClosing {
+    color: color-mix(in srgb, var(--theme-ink) 88%, #2b1820 12%) !important;
+    font-size: clamp(18px, 1.8cqw, 24px) !important;
+    font-weight: 700;
+    line-height: 1.5;
+    text-shadow:
+      0 1px 0 rgba(255, 250, 246, .96),
+      0 0 .34em rgba(255, 247, 242, .9),
+      0 .08em .16em rgba(58, 31, 39, .24);
   }
 
   .bookApp[data-invitation-theme="blush"] .insideRightDynamicTitle {
