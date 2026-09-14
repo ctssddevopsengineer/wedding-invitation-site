@@ -202,10 +202,6 @@
   /* FRONT — true laptop/desktop readability floors and more ceremonial
      breathing room. Keep the artwork/frame coordinates untouched; spacing is
      applied only between the existing content groups. */
-  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontMonogram {
-    margin-bottom: clamp(16px, 1.8cqw, 24px);
-  }
-
   .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontHeading > span {
     font-size: clamp(46px, 7.8cqw, 68px) !important;
     line-height: 1.06;

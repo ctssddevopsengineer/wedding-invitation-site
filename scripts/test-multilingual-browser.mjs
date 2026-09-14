@@ -231,11 +231,8 @@ try {
               }
 
               if (pageName === 'front' && innerWidth >= 1024) {
-                const monogram = document.querySelector('.dynamicFrontMonogram');
                 const rules = [...document.querySelectorAll('.dynamicFrontRule')];
-                const monogramMargin = monogram ? parseFloat(getComputedStyle(monogram).marginBottom) : 0;
                 const ruleMargins = rules.map((rule) => parseFloat(getComputedStyle(rule).marginTop) || 0);
-                if (monogramMargin < 16 - .1) issues.push('Baby Pink front monogram needs laptop breathing room');
                 if (ruleMargins.some((margin) => margin < 14 - .1)) {
                   issues.push('Baby Pink front separators need laptop breathing room');
                 }
