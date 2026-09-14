@@ -1,0 +1,223 @@
+/* ========================================================================== */
+/* BABY PINK — MULTILINGUAL TABLET / DESKTOP TYPOGRAPHY                       */
+/*                                                                            */
+/* Theme-scoped readability hardening for 681px+ viewports. Mobile geometry   */
+/* and the existing <=680px Baby Pink overlap fixes remain authoritative.      */
+/* This file changes typography only: no page/card/artwork coordinates.        */
+/* ========================================================================== */
+
+@media (min-width: 681px) {
+  /* FRONT */
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontHeading > span {
+    font-size: clamp(1.7rem, 6.5cqw, 3.9rem) !important;
+    line-height: 1.08;
+    font-weight: 700;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontHeading > em {
+    font-size: clamp(1.35rem, 5.1cqw, 3rem) !important;
+    line-height: 1.14;
+    font-weight: 600;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontTagline {
+    font-size: clamp(.9rem, 2.25cqw, 1.3rem) !important;
+    line-height: 1.48;
+    font-weight: 500;
+  }
+
+  .bookApp[lang="en"][data-invitation-theme="blush"] .frontCover .dynamicFrontNames {
+    font-size: clamp(1.65rem, 5.7cqw, 3.35rem) !important;
+    line-height: 1.06;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="blush"] .frontCover .dynamicFrontNames {
+    font-size: clamp(1.5rem, 5.15cqw, 2.9rem) !important;
+    line-height: 1.24;
+    font-weight: 700;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontClosing {
+    font-size: clamp(.82rem, 1.95cqw, 1.14rem) !important;
+    line-height: 1.52;
+    font-weight: 500;
+  }
+
+  /* INSIDE LEFT / FAMILY */
+  .bookApp[data-invitation-theme="blush"] .familyBlessingsIntro h2 {
+    font-size: clamp(1.25rem, 3cqw, 2rem) !important;
+    line-height: 1.18;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .familyBlessingsIntro p {
+    font-size: clamp(.82rem, 1.75cqw, 1.12rem) !important;
+    line-height: 1.5;
+  }
+
+  .bookApp[lang="en"][data-invitation-theme="blush"] .familyCoupleNames {
+    font-size: clamp(1.5rem, 4.7cqw, 3rem) !important;
+    line-height: 1.06;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="blush"] .familyCoupleNames {
+    font-size: clamp(1.4rem, 4.35cqw, 2.7rem) !important;
+    line-height: 1.24;
+    font-weight: 700;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .familyBlock h3 {
+    font-size: clamp(.92rem, 2.1cqw, 1.4rem) !important;
+    line-height: 1.25;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .familyBlock p {
+    font-size: clamp(.78rem, 1.6cqw, 1.04rem) !important;
+    line-height: 1.46;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .familyBlessingsClosing {
+    font-size: clamp(.76rem, 1.55cqw, 1rem) !important;
+    line-height: 1.48;
+  }
+
+  /* INSIDE RIGHT / RECEPTION DETAILS */
+  .bookApp[data-invitation-theme="blush"] .insideRightDynamicTitle {
+    font-size: clamp(1.3rem, 3.2cqw, 2.1rem) !important;
+    line-height: 1.08;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .receptionDetailLabel {
+    font-size: clamp(.82rem, 1.85cqw, 1.2rem) !important;
+    line-height: 1.3;
+    letter-spacing: .025em;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .receptionDetailValue {
+    font-size: clamp(.8rem, 1.65cqw, 1.08rem) !important;
+    line-height: 1.42;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .receptionAddressValue {
+    font-size: clamp(.74rem, 1.45cqw, .98rem) !important;
+    line-height: 1.42;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .receptionCalendarItem .btn {
+    font-size: clamp(.72rem, 1.18cqw, .9rem) !important;
+    line-height: 1.3;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .receptionCountdownItem .countdownUnit strong {
+    font-size: clamp(.88rem, 1.5cqw, 1.08rem) !important;
+    line-height: 1.25;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .receptionCountdownItem .countdownUnit span {
+    font-size: clamp(.68rem, 1cqw, .82rem) !important;
+    line-height: 1.25;
+  }
+
+  /* BACK */
+  .bookApp[data-invitation-theme="blush"] .heritageBackIntro h2 {
+    font-size: clamp(1.5rem, 2.8cqw, 2.35rem) !important;
+    line-height: 1.16;
+    font-weight: 700;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .heritageBackMessage {
+    font-size: clamp(.88rem, 1.5cqw, 1.22rem) !important;
+    line-height: 1.5;
+  }
+
+  .bookApp[lang="en"][data-invitation-theme="blush"] .heritageCoupleNames {
+    font-size: clamp(1.85rem, 4.1cqw, 3.35rem) !important;
+    line-height: 1.04;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="blush"] .heritageCoupleNames {
+    font-size: clamp(1.55rem, 3.4cqw, 2.7rem) !important;
+    line-height: 1.24;
+    font-weight: 700;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .heritageJourneyMessage {
+    font-size: clamp(.84rem, 1.42cqw, 1.16rem) !important;
+    line-height: 1.48;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .heritageAssistance > h3 {
+    font-size: clamp(.95rem, 1.55cqw, 1.28rem) !important;
+    line-height: 1.25;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .heritageAssistance .contactCard .eyebrow {
+    font-size: clamp(.7rem, .95cqw, .86rem) !important;
+    line-height: 1.25;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .heritageAssistance .contactCard h3,
+  .bookApp[data-invitation-theme="blush"] .heritageAssistance .contactCard p,
+  .bookApp[data-invitation-theme="blush"] .heritageAssistance .contactCard a,
+  .bookApp[data-invitation-theme="blush"] .heritageAssistance .contactCard p.muted {
+    font-size: clamp(.75rem, 1.02cqw, .94rem) !important;
+    line-height: 1.3;
+  }
+}
+
+@media (min-width: 1024px) {
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontHeading > span {
+    font-size: clamp(1.9rem, 7cqw, 4.2rem) !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .frontCover .dynamicFrontTagline {
+    font-size: clamp(1rem, 2.45cqw, 1.42rem) !important;
+  }
+
+  .bookApp[lang="en"][data-invitation-theme="blush"] .frontCover .dynamicFrontNames {
+    font-size: clamp(1.85rem, 6.1cqw, 3.7rem) !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .familyBlessingsIntro h2 {
+    font-size: clamp(1.45rem, 3.25cqw, 2.25rem) !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .familyBlessingsIntro p {
+    font-size: clamp(.9rem, 1.9cqw, 1.22rem) !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .familyBlock h3 {
+    font-size: clamp(1.02rem, 2.3cqw, 1.55rem) !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .familyBlock p {
+    font-size: clamp(.84rem, 1.72cqw, 1.1rem) !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .insideRightDynamicTitle {
+    font-size: clamp(1.5rem, 3.55cqw, 2.35rem) !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .receptionDetailLabel {
+    font-size: clamp(.92rem, 2cqw, 1.3rem) !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .receptionDetailValue {
+    font-size: clamp(.88rem, 1.78cqw, 1.16rem) !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .heritageBackIntro h2 {
+    font-size: clamp(1.7rem, 3cqw, 2.6rem) !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .heritageBackMessage {
+    font-size: clamp(.95rem, 1.62cqw, 1.3rem) !important;
+  }
+
+  .bookApp[lang="en"][data-invitation-theme="blush"] .heritageCoupleNames {
+    font-size: clamp(2rem, 4.4cqw, 3.65rem) !important;
+  }
+
+  .bookApp[data-invitation-theme="blush"] .heritageJourneyMessage {
+    font-size: clamp(.9rem, 1.52cqw, 1.22rem) !important;
+  }
+}
