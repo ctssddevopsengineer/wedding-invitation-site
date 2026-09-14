@@ -42,6 +42,45 @@ const server = http.createServer(async (req, res) => {
 await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 const url = `http://127.0.0.1:${server.address().port}${basePath}/`;
 const animationFreezeCss = '*, *::before, *::after { animation: none !important; transition: none !important; }';
+
+async function waitForInvitationImages(page) {
+  await page.waitForFunction(
+    () => [...document.querySelectorAll('.invitePage img')].every(
+      (image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0
+    ),
+    null,
+    { timeout: 10000 }
+  );
+
+  await page.locator('.invitePage img').evaluateAll(async (images) => {
+    for (const image of images) {
+      let lastError;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          if (!image.complete || !image.naturalWidth || !image.naturalHeight) {
+            await new Promise((resolve, reject) => {
+              const cleanup = () => {
+                image.removeEventListener('load', onLoad);
+                image.removeEventListener('error', onError);
+              };
+              const onLoad = () => { cleanup(); resolve(); };
+              const onError = () => { cleanup(); reject(new Error(`Artwork failed to load: ${image.currentSrc || image.src}`)); };
+              image.addEventListener('load', onLoad, { once: true });
+              image.addEventListener('error', onError, { once: true });
+            });
+          }
+          await image.decode();
+          lastError = null;
+          break;
+        } catch (error) {
+          lastError = error;
+          await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        }
+      }
+      if (lastError) throw lastError;
+    }
+  });
+}
 let browser;
 const launchBrowser = () => browserTypes[browserTarget.engine].launch({
   headless: true,
@@ -114,7 +153,7 @@ try {
           await page.waitForSelector(`main[data-theme-ready="true"][data-invitation-theme="${theme}"][lang="${language}"]`);
           await page.waitForSelector(`.bookStage.page-${({ family: 'inside-left', details: 'inside-right' })[pageName] || pageName}`);
           await page.evaluate(async () => { await document.fonts.ready; await Promise.all(document.getAnimations().filter(a => a.effect?.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))); });
-          await page.locator('.invitePage img').evaluateAll((images) => Promise.all(images.map((image) => image.decode())));
+          await waitForInvitationImages(page);
           assert.equal(await page.locator('html').getAttribute('lang'), language);
           assert.equal(await page.locator('#invitation-language-value').getAttribute('lang'), language);
           const issues = await page.evaluate(() => {
