@@ -188,11 +188,11 @@ try {
               const language = document.querySelector('main[lang]')?.getAttribute('lang') || 'en';
               const readableFloors = {
                 front: [
-                  ['.dynamicFrontHeading > span', 27.2],
-                  ['.dynamicFrontHeading > em', 21.6],
-                  ['.dynamicFrontTagline', 14.4],
-                  ['.dynamicFrontNames', language === 'en' ? 26.4 : 24],
-                  ['.dynamicFrontClosing', 13.1]
+                  ['.dynamicFrontHeading > span', innerWidth >= 1024 ? 46 : 27.2],
+                  ['.dynamicFrontHeading > em', innerWidth >= 1024 ? 30 : 21.6],
+                  ['.dynamicFrontTagline', innerWidth >= 1024 ? 20 : 14.4],
+                  ['.dynamicFrontNames', innerWidth >= 1024 ? (language === 'en' ? 40 : 38) : (language === 'en' ? 26.4 : 24)],
+                  ['.dynamicFrontClosing', innerWidth >= 1024 ? 18 : 13.1]
                 ],
                 family: [
                   ['.familyBlessingsIntro h2', 20],
@@ -227,6 +227,17 @@ try {
                   if (parseFloat(getComputedStyle(node).fontSize) < minimum - .1) {
                     issues.push(`Baby Pink ${pageName} text too small: ${selector}`);
                   }
+                }
+              }
+
+              if (pageName === 'front' && innerWidth >= 1024) {
+                const monogram = document.querySelector('.dynamicFrontMonogram');
+                const rules = [...document.querySelectorAll('.dynamicFrontRule')];
+                const monogramMargin = monogram ? parseFloat(getComputedStyle(monogram).marginBottom) : 0;
+                const ruleMargins = rules.map((rule) => parseFloat(getComputedStyle(rule).marginTop) || 0);
+                if (monogramMargin < 16 - .1) issues.push('Baby Pink front monogram needs laptop breathing room');
+                if (ruleMargins.some((margin) => margin < 14 - .1)) {
+                  issues.push('Baby Pink front separators need laptop breathing room');
                 }
               }
             }
