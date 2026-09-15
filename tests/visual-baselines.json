@@ -180,7 +180,7 @@
       "language": "ne",
       "width": 1116,
       "height": 789,
-      "hash": "f3fd6a3c1e527fde8a0c13c719f63acf705dced7145cb24fedd26f8fed1e3452"
+      "hash": "cef8e4de25acbae28c219d8fef1b83c5e8499156bd1e414570b35e945c516a4c"
     },
     "laptop-plum-details-bn": {
       "viewport": "1366x768",
@@ -694,6 +694,213 @@
       "width": 1116,
       "height": 789,
       "hash": "77c919f8d32f04d01e1b0d7060a50ec18575b2b09b3582958a214e573128a7bd"
+    },
+    "tablet-navy-front-en": {
+      "viewport": "768x1024",
+      "theme": "navy",
+      "page": "front",
+      "language": "en",
+      "width": 726,
+      "height": 1028,
+      "hash": "458f51d90c4e1f44b4ff8b538b0f679746baf49dd1aac54db60b84297697c3ac"
+    },
+    "tablet-navy-front-bn": {
+      "viewport": "768x1024",
+      "theme": "navy",
+      "page": "front",
+      "language": "bn",
+      "width": 726,
+      "height": 1028,
+      "hash": "0bf21f83d4415b051148813d7fbd3b2418b7498f3ab8c9496a82e48893e6e12e"
+    },
+    "tablet-navy-front-ne": {
+      "viewport": "768x1024",
+      "theme": "navy",
+      "page": "front",
+      "language": "ne",
+      "width": 726,
+      "height": 1028,
+      "hash": "31a44601c6b243a5ac49b6b96ca08a59c25edd24fd0723940e3657c179dc55a9"
+    },
+    "tablet-navy-family-en": {
+      "viewport": "768x1024",
+      "theme": "navy",
+      "page": "family",
+      "language": "en",
+      "width": 726,
+      "height": 1028,
+      "hash": "9548d728a59102fe9c6aa59eacacdace0fbc9f68bc9fce19b18f9180bf4b206d"
+    },
+    "tablet-navy-family-bn": {
+      "viewport": "768x1024",
+      "theme": "navy",
+      "page": "family",
+      "language": "bn",
+      "width": 726,
+      "height": 1028,
+      "hash": "cae51d59e682043fd82734d272992ad540e7a00a47105c51079b596ea4b85900"
+    },
+    "tablet-navy-family-ne": {
+      "viewport": "768x1024",
+      "theme": "navy",
+      "page": "family",
+      "language": "ne",
+      "width": 726,
+      "height": 1028,
+      "hash": "546ac1350a3952f46c00c94a9e0c77f10da2b797d12fe514d2d7e7207d9257d5"
+    },
+    "tablet-navy-details-en": {
+      "viewport": "768x1024",
+      "theme": "navy",
+      "page": "details",
+      "language": "en",
+      "width": 726,
+      "height": 1028,
+      "hash": "1145a71f857f5c5f52075adbe3c680dcef44aa399e9d944f41c4fff99759ed6d"
+    },
+    "tablet-navy-details-bn": {
+      "viewport": "768x1024",
+      "theme": "navy",
+      "page": "details",
+      "language": "bn",
+      "width": 726,
+      "height": 1028,
+      "hash": "bfdf1cb7d3ec1d530c9045f3d553fde8186bdfb2b7ccc62c91384297900e93ed"
+    },
+    "tablet-navy-details-ne": {
+      "viewport": "768x1024",
+      "theme": "navy",
+      "page": "details",
+      "language": "ne",
+      "width": 726,
+      "height": 1028,
+      "hash": "8e487962bc1ac75ad8add041f225976bd12a0a8581313d628fd9ae17d266ea2a"
+    },
+    "tablet-navy-back-en": {
+      "viewport": "768x1024",
+      "theme": "navy",
+      "page": "back",
+      "language": "en",
+      "width": 726,
+      "height": 513,
+      "hash": "31cf1e4688aa51a4a027bdd78cdf1023adef856395e58176e59bd91a340821d9"
+    },
+    "tablet-navy-back-bn": {
+      "viewport": "768x1024",
+      "theme": "navy",
+      "page": "back",
+      "language": "bn",
+      "width": 726,
+      "height": 513,
+      "hash": "6b4fd4d2b122bb7fbdce1d9a3d573ee38d79273963d96da09bab672bb0c7be73"
+    },
+    "tablet-navy-back-ne": {
+      "viewport": "768x1024",
+      "theme": "navy",
+      "page": "back",
+      "language": "ne",
+      "width": 726,
+      "height": 513,
+      "hash": "882e823fe5896bd6f494d0d0dd03afafe8fe32680bc8ce3d0d650249bb19d9be"
+    },
+    "laptop-navy-front-en": {
+      "viewport": "1366x768",
+      "theme": "navy",
+      "page": "front",
+      "language": "en",
+      "width": 840,
+      "height": 1191,
+      "hash": "dca95cb66879332450560265c5d5202368c20fa57945df43e592e32330cf5d2c"
+    },
+    "laptop-navy-front-bn": {
+      "viewport": "1366x768",
+      "theme": "navy",
+      "page": "front",
+      "language": "bn",
+      "width": 840,
+      "height": 1191,
+      "hash": "e73df4ef242e9d6841fb719c36fdc606db2cae49c1423be92481e289e42381c0"
+    },
+    "laptop-navy-front-ne": {
+      "viewport": "1366x768",
+      "theme": "navy",
+      "page": "front",
+      "language": "ne",
+      "width": 840,
+      "height": 1191,
+      "hash": "fd34abe6c4f319122de3c886a62849f60e1f80d8f30760f1882aae841e627327"
+    },
+    "laptop-navy-family-en": {
+      "viewport": "1366x768",
+      "theme": "navy",
+      "page": "family",
+      "language": "en",
+      "width": 840,
+      "height": 1191,
+      "hash": "1c28d7421c01cdd2f1f49fd8ca3e0c5b306dcf0ebfa7d57badc92bbfbe337dd4"
+    },
+    "laptop-navy-family-bn": {
+      "viewport": "1366x768",
+      "theme": "navy",
+      "page": "family",
+      "language": "bn",
+      "width": 840,
+      "height": 1191,
+      "hash": "312175badbeb8ec9e5ee2c7c728f6fad63008aab9b1d852cff6611fb2096e892"
+    },
+    "laptop-navy-family-ne": {
+      "viewport": "1366x768",
+      "theme": "navy",
+      "page": "family",
+      "language": "ne",
+      "width": 840,
+      "height": 1191,
+      "hash": "760ad043b586491e1a63c1de062cc7acefe7968b8aa13eb045d126abe9ff0ce7"
+    },
+    "laptop-navy-details-en": {
+      "viewport": "1366x768",
+      "theme": "navy",
+      "page": "details",
+      "language": "en",
+      "width": 840,
+      "height": 1191,
+      "hash": "74f190fd3a532ca446723c5e88d6f50d4721b0c6d7ee473a4143b005eb0b8abf"
+    },
+    "laptop-navy-details-bn": {
+      "viewport": "1366x768",
+      "theme": "navy",
+      "page": "details",
+      "language": "bn",
+      "width": 840,
+      "height": 1191,
+      "hash": "1f881b1fa8b3293c73f6b4f193d51354bfd6047db68e55c03ce2072c51d2fdc5"
+    },
+    "laptop-navy-details-ne": {
+      "viewport": "1366x768",
+      "theme": "navy",
+      "page": "details",
+      "language": "ne",
+      "width": 840,
+      "height": 1191,
+      "hash": "a0f2be8ca58e1d01506861560108e2046e1571de377cbb6befee9fee722cab0c"
+    },
+    "laptop-navy-back-en": {
+      "viewport": "1366x768",
+      "theme": "navy",
+      "page": "back",
+      "language": "en",
+      "width": 1116,
+      "height": 789,
+      "hash": "0e311a9ac3b2ac9155fa8dcae80da222440952abf6e82d79ceae8b748f2f1d60"
+    },
+    "laptop-navy-back-bn": {
+      "viewport": "1366x768",
+      "theme": "navy",
+      "page": "back",
+      "language": "bn",
+      "width": 1116,
+      "height": 789,
+      "hash": "e18402ef6d00f064ca9e0fe7e0a46d31c17b7b63dde2278492f8e6b41bde0ec4"
     }
   }
 }

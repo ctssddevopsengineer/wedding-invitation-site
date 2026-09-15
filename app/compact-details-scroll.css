@@ -16,9 +16,12 @@
   .bookStage.page-inside-right .receptionDetailsOverlay,
   .bookStage.page-back .heritageBackContent {
     box-sizing: border-box;
-    overflow-y: auto;
-    overflow-x: hidden;
-    overscroll-behavior-y: contain;
+    /* This is the final compact-layout contract. Earlier theme/mobile layers
+       contain some !important overflow/layout declarations, so keep the
+       scrollport behavior authoritative across browser engines and runners. */
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior-y: contain !important;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     scrollbar-color: rgba(169, 119, 40, .55) transparent;
