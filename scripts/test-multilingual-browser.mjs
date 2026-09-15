@@ -238,6 +238,59 @@ try {
                 }
               }
             }
+            if (innerWidth >= 681 && document.querySelector('.bookApp[data-invitation-theme="magenta"]')) {
+              const pageName =
+                document.querySelector('.bookStage.page-front') ? 'front' :
+                document.querySelector('.bookStage.page-inside-left') ? 'family' :
+                document.querySelector('.bookStage.page-inside-right') ? 'details' :
+                document.querySelector('.bookStage.page-back') ? 'back' :
+                '';
+              const language = document.querySelector('main[lang]')?.getAttribute('lang') || 'en';
+              const laptop = innerWidth >= 1024;
+              const readableFloors = {
+                front: [
+                  ['.dynamicFrontHeading > span', laptop ? 42 : 27],
+                  ['.dynamicFrontHeading > em', laptop ? 28 : 21],
+                  ['.dynamicFrontTagline', laptop ? 18 : 14.2],
+                  ['.dynamicFrontNames', laptop ? (language === 'en' ? 36 : 34) : (language === 'en' ? 25 : 23)],
+                  ['.dynamicFrontClosing', laptop ? 17 : 12.8]
+                ],
+                family: [
+                  ['.familyBlessingsIntro h2', laptop ? 22 : 20],
+                  ['.familyBlessingsIntro p', laptop ? 15 : 13],
+                  ['.familyCoupleNames', language === 'en' ? 24 : 22],
+                  ['.familyBlock h3', laptop ? 17 : 14.5],
+                  ['.familyBlock p', laptop ? 14 : 12.3],
+                  ['.familyBlessingsClosing', laptop ? 14 : 12]
+                ],
+                details: [
+                  ['.insideRightDynamicTitle', laptop ? 24 : 20.5],
+                  ['.receptionDetailLabel', laptop ? 15 : 13],
+                  ['.receptionDetailValue:not(.receptionAddressValue)', laptop ? 14 : 12.7],
+                  ['.receptionAddressValue', laptop ? 13 : 11.6],
+                  ['.receptionCalendarItem .btn', 11.4],
+                  ['.receptionCountdownItem .countdownUnit strong', 14],
+                  ['.receptionCountdownItem .countdownUnit span', 10.7]
+                ],
+                back: [
+                  ['.heritageBackIntro h2', laptop ? 24 : 18],
+                  ['.heritageBackMessage', laptop ? 14 : 11],
+                  ['.heritageCoupleNames', laptop ? (language === 'en' ? 28 : 28) : (language === 'en' ? 22 : 20)],
+                  ['.heritageJourneyMessage', laptop ? 14 : 10.5],
+                  ['.heritageAssistance > h3', laptop ? 16 : 12],
+                  ['.heritageAssistance .contactCard .eyebrow', laptop ? 11 : 9],
+                  ['.heritageAssistance .contactCard h3', laptop ? 11.8 : 10],
+                  ['.heritageAssistance .contactCard a', laptop ? 11.8 : 10]
+                ]
+              };
+              for (const [selector, minimum] of readableFloors[pageName] || []) {
+                for (const node of document.querySelectorAll(selector)) {
+                  if (parseFloat(getComputedStyle(node).fontSize) < minimum - .1) {
+                    issues.push(`Rani Magenta ${pageName} text too small: ${selector}`);
+                  }
+                }
+              }
+            }
             if (innerWidth < 375 && document.querySelector('.bookStage.page-front')) {
               const heading = document.querySelector('.dynamicFrontHeading')?.getBoundingClientRect();
               const theme = document.querySelector('main[data-invitation-theme]')?.dataset.invitationTheme;
