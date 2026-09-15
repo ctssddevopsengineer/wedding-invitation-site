@@ -23,6 +23,13 @@ test('Royal Navy responsive typography covers all four pages', () => {
   ]) assert.ok(css.includes(selector), `missing Royal Navy selector ${selector}`);
 });
 
+test('Royal Navy back page has a tablet-specific fit without moving artwork', () => {
+  assert.match(css, /@media \(min-width:\s*681px\) and \(max-width:\s*1023px\)/);
+  assert.match(css, /\.heritageBackIntro h2\s*\{[\s\S]*?font-size:\s*clamp\(18px, 2\.45cqw, 27px\)\s*!important/);
+  assert.match(css, /\[lang="en"\][\s\S]*?\.heritageCoupleNames\s*\{[\s\S]*?font-size:\s*clamp\(22px, 3\.45cqw, 33px\)\s*!important/);
+  assert.match(css, /:is\(\[lang="bn"\], \[lang="ne"\]\)[\s\S]*?\.heritageCoupleNames\s*\{[\s\S]*?font-size:\s*clamp\(20px, 3\.1cqw, 30px\)\s*!important/);
+});
+
 test('Royal Navy native-script names have dedicated Bengali/Nepali treatment', () => {
   assert.match(css, /:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="navy"\][\s\S]*?dynamicFrontNames/);
   assert.match(css, /:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="navy"\][\s\S]*?familyCoupleNames/);
