@@ -273,14 +273,14 @@ try {
                   ['.receptionCountdownItem .countdownUnit span', 10.7]
                 ],
                 back: [
-                  ['.heritageBackIntro h2', laptop ? 26 : 24],
-                  ['.heritageBackMessage', laptop ? 15 : 13.8],
-                  ['.heritageCoupleNames', laptop ? (language === 'en' ? 32 : 28) : (language === 'en' ? 29 : 24)],
-                  ['.heritageJourneyMessage', laptop ? 14 : 13.2],
-                  ['.heritageAssistance > h3', laptop ? 16 : 15],
-                  ['.heritageAssistance .contactCard .eyebrow', 11],
-                  ['.heritageAssistance .contactCard h3', 11.8],
-                  ['.heritageAssistance .contactCard a', 11.8]
+                  ['.heritageBackIntro h2', laptop ? 26 : 18],
+                  ['.heritageBackMessage', laptop ? 15 : 11],
+                  ['.heritageCoupleNames', laptop ? (language === 'en' ? 32 : 28) : (language === 'en' ? 22 : 20)],
+                  ['.heritageJourneyMessage', laptop ? 14 : 10.5],
+                  ['.heritageAssistance > h3', laptop ? 16 : 12],
+                  ['.heritageAssistance .contactCard .eyebrow', laptop ? 11 : 9],
+                  ['.heritageAssistance .contactCard h3', laptop ? 11.8 : 10],
+                  ['.heritageAssistance .contactCard a', laptop ? 11.8 : 10]
                 ]
               };
               for (const [selector, minimum] of readableFloors[pageName] || []) {
