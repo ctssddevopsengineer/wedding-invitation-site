@@ -43,6 +43,22 @@ test('Rani Magenta 681px+ typography covers all four invitation pages', () => {
   }
 });
 
+test('Rani Magenta back page has a tablet-specific typography fit without moving artwork zones', () => {
+  assert.match(css, /@media \(min-width:\s*681px\) and \(max-width:\s*1023px\)/);
+  assert.match(
+    css,
+    /\.heritageBackIntro h2\s*\{[\s\S]*?font-size:\s*clamp\(18px, 2\.55cqw, 28px\)\s*!important/
+  );
+  assert.match(
+    css,
+    /\[lang="en"\][\s\S]*?\.heritageCoupleNames\s*\{[\s\S]*?font-size:\s*clamp\(22px, 3\.55cqw, 34px\)\s*!important/
+  );
+  assert.match(
+    css,
+    /:is\(\[lang="bn"\], \[lang="ne"\]\)[\s\S]*?\.heritageCoupleNames\s*\{[\s\S]*?font-size:\s*clamp\(20px, 3\.2cqw, 31px\)\s*!important/
+  );
+});
+
 test('Rani Magenta keeps native-script-specific name treatment for Bengali and Nepali', () => {
   assert.match(css, /:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="magenta"\][\s\S]*?dynamicFrontNames/);
   assert.match(css, /:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="magenta"\][\s\S]*?familyCoupleNames/);
