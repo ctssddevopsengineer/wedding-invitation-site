@@ -273,9 +273,9 @@ try {
                   ['.receptionCountdownItem .countdownUnit span', 10.7]
                 ],
                 back: [
-                  ['.heritageBackIntro h2', laptop ? 26 : 18],
-                  ['.heritageBackMessage', laptop ? 15 : 11],
-                  ['.heritageCoupleNames', laptop ? (language === 'en' ? 32 : 28) : (language === 'en' ? 22 : 20)],
+                  ['.heritageBackIntro h2', laptop ? 24 : 18],
+                  ['.heritageBackMessage', laptop ? 14 : 11],
+                  ['.heritageCoupleNames', laptop ? (language === 'en' ? 28 : 28) : (language === 'en' ? 22 : 20)],
                   ['.heritageJourneyMessage', laptop ? 14 : 10.5],
                   ['.heritageAssistance > h3', laptop ? 16 : 12],
                   ['.heritageAssistance .contactCard .eyebrow', laptop ? 11 : 9],
