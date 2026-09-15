@@ -59,6 +59,21 @@ test('Rani Magenta back page has a tablet-specific typography fit without moving
   );
 });
 
+test('Rani Magenta English back cover keeps a conservative cross-platform desktop fit', () => {
+  assert.match(
+    css,
+    /@media \(min-width:\s*1024px\)[\s\S]*?\.heritageBackIntro h2\s*\{[\s\S]*?font-size:\s*clamp\(24px, 2\.85cqw, 36px\)\s*!important/
+  );
+  assert.match(
+    css,
+    /@media \(min-width:\s*1024px\)[\s\S]*?\.heritageBackMessage\s*\{[\s\S]*?font-size:\s*clamp\(14px, 1\.5cqw, 19px\)\s*!important/
+  );
+  assert.match(
+    css,
+    /@media \(min-width:\s*1024px\)[\s\S]*?\[lang="en"\][\s\S]*?\.heritageCoupleNames\s*\{[\s\S]*?font-size:\s*clamp\(28px, 3\.95cqw, 48px\)\s*!important[\s\S]*?line-height:\s*1;/
+  );
+});
+
 test('Rani Magenta keeps native-script-specific name treatment for Bengali and Nepali', () => {
   assert.match(css, /:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="magenta"\][\s\S]*?dynamicFrontNames/);
   assert.match(css, /:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="magenta"\][\s\S]*?familyCoupleNames/);
