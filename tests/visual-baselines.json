@@ -675,7 +675,7 @@
       "language": "en",
       "width": 1116,
       "height": 789,
-      "hash": "99e0ccc7a33f1fa29b22438df09dbd3a42ca4bc97c825ff55468620740a37fd1"
+      "hash": "1c2c3d897033a83e1839257fab5b8284a9e989ff479b16d030eab2809f776b86"
     },
     "laptop-magenta-back-bn": {
       "viewport": "1366x768",
@@ -684,7 +684,7 @@
       "language": "bn",
       "width": 1116,
       "height": 789,
-      "hash": "86d5f620e883436ee42a525b318f704f5ffbdc03898162d7006e20265013debd"
+      "hash": "97c9de9ce3e10da5075b15c4da0786c5365eb53f70dce280366bc2d90c22563a"
     },
     "laptop-magenta-back-ne": {
       "viewport": "1366x768",
@@ -693,7 +693,7 @@
       "language": "ne",
       "width": 1116,
       "height": 789,
-      "hash": "6d920588d70f62ec1fcb3a8f5ca7e7cdc76bfac5edde1c21f44a106565f64c1c"
+      "hash": "77c919f8d32f04d01e1b0d7060a50ec18575b2b09b3582958a214e573128a7bd"
     }
   }
 }
