@@ -270,15 +270,20 @@
   }
 
   .bookApp[data-invitation-theme="magenta"] .heritageBackIntro h2 {
-    font-size: clamp(26px, 3.05cqw, 40px) !important;
+    font-size: clamp(24px, 2.85cqw, 36px) !important;
+    line-height: 1.1;
   }
 
   .bookApp[data-invitation-theme="magenta"] .heritageBackMessage {
-    font-size: clamp(15px, 1.65cqw, 21px) !important;
+    font-size: clamp(14px, 1.5cqw, 19px) !important;
+    line-height: 1.4;
   }
 
+  /* Windows font metrics are slightly taller for the English back cover.
+     Keep a conservative cross-platform fit rather than moving artwork zones. */
   .bookApp[lang="en"][data-invitation-theme="magenta"] .heritageCoupleNames {
-    font-size: clamp(32px, 4.45cqw, 56px) !important;
+    font-size: clamp(28px, 3.95cqw, 48px) !important;
+    line-height: 1;
   }
 
   .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="magenta"] .heritageCoupleNames {
