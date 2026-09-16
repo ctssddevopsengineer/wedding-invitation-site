@@ -258,10 +258,10 @@
 /* -------------------------------------------------------------------------- */
 .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames {
   display: grid;
-  grid-template-columns: max-content auto max-content;
-  align-items: center;
+  grid-template-columns: max-content max-content max-content;
+  align-items: baseline;
   justify-content: center;
-  column-gap: clamp(.18rem, .7cqw, .42rem);
+  column-gap: clamp(.08rem, .36cqw, .22rem);
   font-family: var(--font-devanagari), 'Devanagari Sangam MN', 'Nirmala UI', serif;
   font-style: normal;
   white-space: normal;
@@ -278,7 +278,9 @@
 }
 
 .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames > b {
+  align-self: baseline;
   padding-inline: 0;
+  line-height: 1;
 }
 
 /* Compact mode converts the front copy to normal flow below 375px. Keep the
@@ -286,7 +288,7 @@
    percentage-sized invisible space from the generic long-name safeguards. */
 @media (max-width: 374px) {
   .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames {
-    column-gap: .16rem;
+    column-gap: .08rem;
   }
 }
 
