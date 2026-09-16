@@ -7,6 +7,7 @@ on:
       - master
 
 permissions:
+  actions: read
   contents: read
   pages: write
   id-token: write
@@ -16,6 +17,41 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  deployment-versions:
+    name: Resolve deployment versions
+    runs-on: ubuntu-latest
+    outputs:
+      current_deployed_version: ${{ steps.versions.outputs.current_deployed_version }}
+      previous_deployed_version: ${{ steps.versions.outputs.previous_deployed_version }}
+    steps:
+      - name: Resolve current and previous deployed commit
+        id: versions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          CURRENT_SHA="${GITHUB_SHA}"
+          PREVIOUS_SHA="$(
+            gh api               --method GET               "repos/${GITHUB_REPOSITORY}/actions/workflows/cd.yml/runs"               -f branch="${GITHUB_REF_NAME}"               -f event="push"               -f status="success"               -f per_page=1               --jq '.workflow_runs[0].head_sha // ""'
+          )"
+
+          if [[ -z "${PREVIOUS_SHA}" ]]; then
+            PREVIOUS_SHA="none"
+          fi
+
+          echo "current_deployed_version=${CURRENT_SHA}" >> "${GITHUB_OUTPUT}"
+          echo "previous_deployed_version=${PREVIOUS_SHA}" >> "${GITHUB_OUTPUT}"
+
+          {
+            echo "### Deployment versions"
+            echo ""
+            echo "- Target branch: \`${GITHUB_REF_NAME}\`"
+            echo "- CURRENT_DEPLOYED_VERSION: \`${CURRENT_SHA}\`"
+            echo "- PREVIOUS_DEPLOYED_VERSION: \`${PREVIOUS_SHA}\`"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
   set-environment:
     runs-on: ubuntu-latest
     outputs:
@@ -42,10 +78,14 @@ jobs:
     name: Build GitHub Pages artifact
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: set-environment
+    needs:
+      - set-environment
+      - deployment-versions
     environment: ${{ needs.set-environment.outputs.environment }}
     env:
       NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+      CURRENT_DEPLOYED_VERSION: ${{ needs.deployment-versions.outputs.current_deployed_version }}
+      PREVIOUS_DEPLOYED_VERSION: ${{ needs.deployment-versions.outputs.previous_deployed_version }}
 
     steps:
       - name: Checkout
@@ -107,9 +147,24 @@ jobs:
       name: github-pages
       url: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/ # ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: build
+    needs:
+      - build
+      - deployment-versions
+    env:
+      CURRENT_DEPLOYED_VERSION: ${{ needs.deployment-versions.outputs.current_deployed_version }}
+      PREVIOUS_DEPLOYED_VERSION: ${{ needs.deployment-versions.outputs.previous_deployed_version }}
 
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+
+      - name: Record deployed versions
+        shell: bash
+        run: |
+          {
+            echo "### Successful deployment"
+            echo ""
+            echo "- CURRENT_DEPLOYED_VERSION: \`${CURRENT_DEPLOYED_VERSION}\`"
+            echo "- PREVIOUS_DEPLOYED_VERSION: \`${PREVIOUS_DEPLOYED_VERSION}\`"
+          } >> "${GITHUB_STEP_SUMMARY}"
