@@ -477,6 +477,30 @@ try {
               if (image.currentSrc !== expected || !image.naturalWidth) issues.push('artwork not optimized/loaded');
             }
 
+            if (innerWidth >= 681 && document.querySelector('.bookApp[data-invitation-theme="saffron"] .bookStage.page-front')) {
+              const firstRule = document.querySelector('.dynamicFrontRule:not(.dynamicFrontNamesRule):not(.dynamicFrontClosingRule)');
+              const namesRule = document.querySelector('.dynamicFrontNamesRule');
+              const closingRule = document.querySelector('.dynamicFrontClosingRule');
+              const ornamentBox = (rule) => rule?.querySelector(':scope > span')?.getBoundingClientRect() || rule?.getBoundingClientRect();
+              const heading = document.querySelector('.dynamicFrontHeading')?.getBoundingClientRect();
+              const tagline = document.querySelector('.dynamicFrontTagline')?.getBoundingClientRect();
+              const names = document.querySelector('.dynamicFrontNames')?.getBoundingClientRect();
+              const closing = document.querySelector('.dynamicFrontClosing')?.getBoundingClientRect();
+              const first = ornamentBox(firstRule);
+              const middle = ornamentBox(namesRule);
+              const last = ornamentBox(closingRule);
+
+              const separated = (above, below, gap = 4) =>
+                !above?.width || !below?.width || above.bottom + gap <= below.top;
+
+              if (!separated(heading, first)) issues.push('Saffron front overlap: heading/first separator');
+              if (!separated(first, tagline)) issues.push('Saffron front overlap: first separator/tagline');
+              if (!separated(tagline, middle)) issues.push('Saffron front overlap: tagline/names separator');
+              if (!separated(middle, names)) issues.push('Saffron front overlap: names separator/names');
+              if (!separated(names, last)) issues.push('Saffron front overlap: names/closing separator');
+              if (!separated(last, closing)) issues.push('Saffron front overlap: closing separator/closing copy');
+            }
+
             // Validate important layout zones using the boxes of visible semantic content. A flex
             // item can reserve more layout height than its painted children on a particular engine;
             // that allocation is not a visual collision. Below 375px the reception overlay is a
