@@ -32,7 +32,7 @@ test('Saffron Nepali wearable fallback reduces type without allowing internal na
 
 test('Saffron Nepali names use content-sized columns without invisible percentage spacing', () => {
   assert.match(css, /grid-template-columns:\s*max-content max-content max-content/);
-  assert.match(css, /column-gap:\s*0/);
+  assert.match(css, /column-gap:\s*\.08em/);
   assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?width:\s*max-content/);
   assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?max-width:\s*none/);
   assert.doesNotMatch(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?max-width:\s*4[24]%/);
@@ -45,6 +45,11 @@ test('Saffron Nepali wearable fallback deliberately switches back to flex', () =
 
 test('Saffron Nepali names are optically lowered relative to the ampersand', () => {
   assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?margin-top:\s*\.08em/);
-  assert.match(css, /\.dynamicFrontNames > b\s*\{[\s\S]*?margin-inline:\s*-\.035em/);
+  assert.match(css, /\.dynamicFrontNames > b\s*\{[\s\S]*?margin-inline:\s*0/);
   assert.match(css, /@media \(max-width:\s*200px\)[\s\S]*?\.dynamicFrontNames > span\s*\{[\s\S]*?margin-top:\s*0/);
+});
+
+
+test('compact Nepali name row keeps a small balanced gap', () => {
+  assert.match(css, /@media \(max-width:\s*374px\)[\s\S]*?\.dynamicFrontNames\s*\{[\s\S]*?column-gap:\s*\.07em/);
 });
