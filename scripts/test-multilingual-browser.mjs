@@ -193,6 +193,40 @@ try {
             const compactScroller = innerWidth < 375 && document.querySelector('[data-compact-scroll-region]');
             if (document.documentElement.scrollWidth > innerWidth + 1) issues.push('horizontal page overflow: ' + [...document.querySelectorAll('body *')].filter(n => n.getBoundingClientRect().right > innerWidth + 2).slice(0, 5).map(n => n.className).join('/'));
             const card = document.querySelector('.invitePage').getBoundingClientRect();
+
+            // Saffron/Nepali front names must remain intact native-script units.
+            // The shared long-name fallback permits overflow-wrap:anywhere, which is
+            // inappropriate for these short Devanagari names and can split glyph clusters.
+            const activeMain = document.querySelector('main');
+            if (
+              activeMain?.dataset.invitationTheme === 'saffron' &&
+              activeMain?.getAttribute('lang') === 'ne' &&
+              document.querySelector('.bookStage.page-front')
+            ) {
+              const row = document.querySelector('.dynamicFrontNames');
+              const nameSpans = [...row?.querySelectorAll(':scope > span') || []];
+              const ampersand = row?.querySelector(':scope > b');
+              const rowRect = row?.getBoundingClientRect();
+              const ampRect = ampersand?.getBoundingClientRect();
+
+              if (nameSpans.length !== 2 || !rowRect?.width || !ampRect?.width) {
+                issues.push('Saffron Nepali front names structure missing');
+              } else {
+                for (const [index, span] of nameSpans.entries()) {
+                  const rect = span.getBoundingClientRect();
+                  const style = getComputedStyle(span);
+                  const lineHeight = Number.parseFloat(style.lineHeight) || Number.parseFloat(style.fontSize) * 1.2;
+                  if (style.whiteSpace !== 'nowrap') issues.push(`Saffron Nepali name ${index + 1} may wrap`);
+                  if (style.overflowWrap !== 'normal') issues.push(`Saffron Nepali name ${index + 1} allows internal wrapping`);
+                  if (rect.height > lineHeight * 1.35) issues.push(`Saffron Nepali name ${index + 1} rendered on multiple lines`);
+                  if (span.scrollWidth > span.clientWidth + 1) issues.push(`Saffron Nepali name ${index + 1} is clipped`);
+                  if (rect.left < card.left - 2 || rect.right > card.right + 2) issues.push(`Saffron Nepali name ${index + 1} leaves card bounds`);
+                  const overlapX = Math.min(rect.right, ampRect.right) - Math.max(rect.left, ampRect.left);
+                  const overlapY = Math.min(rect.bottom, ampRect.bottom) - Math.max(rect.top, ampRect.top);
+                  if (overlapX > 1 && overlapY > 1) issues.push(`Saffron Nepali name ${index + 1} overlaps ampersand`);
+                }
+              }
+            }
             if (innerWidth >= 1024 && document.querySelector('.bookApp[data-invitation-theme="classic"] .exactInsideRight')) {
               for (const [selector, minimum] of [
                 ['.receptionDetailLabel', 16],
