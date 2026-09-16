@@ -105,3 +105,84 @@
     top: 37.15%;
   }
 }
+
+
+/* --------------------------------------------------------------------------
+   681px+ Saffron front vertical rhythm
+   --------------------------------------------------------------------------
+   The responsive typography layer deliberately enlarges the heading at tablet
+   and desktop sizes. Keep the three ornamented rules in whitespace between
+   semantic text zones rather than at the older compact-type coordinates.
+   Artwork itself is not moved.
+   -------------------------------------------------------------------------- */
+@media (min-width: 681px) {
+  .bookApp[data-invitation-theme="saffron"] .frontCover .dynamicFrontRule:not(.dynamicFrontNamesRule):not(.dynamicFrontClosingRule) {
+    top: 37.15%;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .frontCover .dynamicFrontTagline {
+    top: 39.45%;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .frontCover .dynamicFrontNamesRule {
+    top: 44.15%;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .frontCover .dynamicFrontNames {
+    top: 46.55%;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .frontCover .dynamicFrontClosingRule {
+    top: 56.65%;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .frontCover .dynamicFrontClosing {
+    top: 59.65%;
+  }
+
+  /* Bengali and Devanagari headings use taller glyph boxes. Give the first
+     separator and every following text zone a little more vertical clearance. */
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="saffron"] .frontCover .dynamicFrontRule:not(.dynamicFrontNamesRule):not(.dynamicFrontClosingRule) {
+    top: 38.15%;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="saffron"] .frontCover .dynamicFrontTagline {
+    top: 40.55%;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="saffron"] .frontCover .dynamicFrontNamesRule {
+    top: 45.25%;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="saffron"] .frontCover .dynamicFrontNames {
+    top: 47.65%;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="saffron"] .frontCover .dynamicFrontClosingRule {
+    top: 57.45%;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="saffron"] .frontCover .dynamicFrontClosing {
+    top: 60.45%;
+  }
+}
+
+/* The 681–820px tablet range needs the same safe rhythm to override the older
+   max-width:820px coordinates above. */
+@media (min-width: 681px) and (max-width: 820px) {
+  .bookApp[data-invitation-theme="saffron"] .frontCover .dynamicFrontRule:not(.dynamicFrontNamesRule):not(.dynamicFrontClosingRule) {
+    top: 37.35%;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .frontCover .dynamicFrontTagline {
+    top: 39.75%;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="saffron"] .frontCover .dynamicFrontRule:not(.dynamicFrontNamesRule):not(.dynamicFrontClosingRule) {
+    top: 38.4%;
+  }
+
+  .bookApp:is([lang="bn"], [lang="ne"])[data-invitation-theme="saffron"] .frontCover .dynamicFrontTagline {
+    top: 40.85%;
+  }
+}
