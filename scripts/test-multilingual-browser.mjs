@@ -397,6 +397,59 @@ try {
                 }
               }
             }
+            if (innerWidth >= 681 && document.querySelector('.bookApp[data-invitation-theme="saffron"]')) {
+              const pageName =
+                document.querySelector('.bookStage.page-front') ? 'front' :
+                document.querySelector('.bookStage.page-inside-left') ? 'family' :
+                document.querySelector('.bookStage.page-inside-right') ? 'details' :
+                document.querySelector('.bookStage.page-back') ? 'back' :
+                '';
+              const language = document.querySelector('main[lang]')?.getAttribute('lang') || 'en';
+              const laptop = innerWidth >= 1024;
+              const readableFloors = {
+                front: [
+                  ['.dynamicFrontHeading > span', laptop ? 40 : 26.5],
+                  ['.dynamicFrontHeading > em', laptop ? 27 : 20.5],
+                  ['.dynamicFrontTagline', laptop ? 18 : 14],
+                  ['.dynamicFrontNames', laptop ? (language === 'en' ? 34 : 32) : (language === 'en' ? 24.5 : 22.5)],
+                  ['.dynamicFrontClosing', laptop ? 17 : 12.7]
+                ],
+                family: [
+                  ['.familyBlessingsIntro h2', laptop ? 21 : 19.5],
+                  ['.familyBlessingsIntro p', laptop ? 15 : 12.9],
+                  ['.familyCoupleNames', language === 'en' ? 23.5 : 21.5],
+                  ['.familyBlock h3', laptop ? 16 : 14.3],
+                  ['.familyBlock p', laptop ? 14 : 12.2],
+                  ['.familyBlessingsClosing', laptop ? 14 : 11.9]
+                ],
+                details: [
+                  ['.insideRightDynamicTitle', laptop ? 23 : 20.2],
+                  ['.receptionDetailLabel', laptop ? 15 : 12.9],
+                  ['.receptionDetailValue:not(.receptionAddressValue)', laptop ? 14 : 12.6],
+                  ['.receptionAddressValue', laptop ? 13 : 11.5],
+                  ['.receptionCalendarItem .btn', 11.3],
+                  ['.receptionCountdownItem .countdownUnit strong', 14],
+                  ['.receptionCountdownItem .countdownUnit span', 10.6]
+                ],
+                back: [
+                  ['.heritageBackIntro h2', laptop ? 24 : 18],
+                  ['.heritageBackMessage', laptop ? 14 : 11],
+                  ['.heritageCoupleNames', laptop ? (language === 'en' ? 30 : 27) : (language === 'en' ? 22 : 20)],
+                  ['.heritageJourneyMessage', laptop ? 14 : 10.5],
+                  ['.heritageAssistance > h3', laptop ? 16 : 12],
+                  ['.heritageAssistance .contactCard .eyebrow', laptop ? 11 : 9],
+                  ['.heritageAssistance .contactCard h3', laptop ? 11.5 : 10],
+                  ['.heritageAssistance .contactCard a', laptop ? 11.5 : 10]
+                ]
+              };
+              for (const [selector, minimum] of readableFloors[pageName] || []) {
+                for (const node of document.querySelectorAll(selector)) {
+                  if (parseFloat(getComputedStyle(node).fontSize) < minimum - .1) {
+                    issues.push(`Saffron Gold ${pageName} text too small: ${selector}`);
+                  }
+                }
+              }
+            }
             if (innerWidth < 375 && document.querySelector('.bookStage.page-front')) {
               const heading = document.querySelector('.dynamicFrontHeading')?.getBoundingClientRect();
               const theme = document.querySelector('main[data-invitation-theme]')?.dataset.invitationTheme;
