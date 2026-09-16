@@ -258,10 +258,10 @@
 /* -------------------------------------------------------------------------- */
 .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames {
   display: grid;
-  grid-template-columns: max-content auto max-content;
-  align-items: center;
+  grid-template-columns: max-content max-content max-content;
+  align-items: baseline;
   justify-content: center;
-  column-gap: clamp(.18rem, .7cqw, .42rem);
+  column-gap: .08em;
   font-family: var(--font-devanagari), 'Devanagari Sangam MN', 'Nirmala UI', serif;
   font-style: normal;
   white-space: normal;
@@ -271,6 +271,7 @@
   min-width: 0;
   max-width: none;
   width: max-content;
+  margin-top: .08em;
   white-space: nowrap;
   overflow-wrap: normal;
   word-break: keep-all;
@@ -278,7 +279,10 @@
 }
 
 .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames > b {
+  align-self: baseline;
   padding-inline: 0;
+  margin-inline: 0;
+  line-height: 1;
 }
 
 /* Compact mode converts the front copy to normal flow below 375px. Keep the
@@ -286,7 +290,7 @@
    percentage-sized invisible space from the generic long-name safeguards. */
 @media (max-width: 374px) {
   .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames {
-    column-gap: .16rem;
+    column-gap: .07em;
   }
 }
 
@@ -295,6 +299,15 @@
    too wide for an unbroken Nepali groom name at the 162px validation viewport.
    Reduce type only for this ultra-compact Saffron/Nepali case while preserving
    the intact-name contract and the existing compact scroll geometry. */
+/* 201–260px compact phones need a little more visible separation around
+   the ampersand than the normal compact row. Keep this band narrow so the
+   approved spacing on standard phones/tablets remains unchanged. */
+@media (min-width: 201px) and (max-width: 260px) {
+  .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames {
+    column-gap: .18em;
+  }
+}
+
 @media (max-width: 200px) {
   .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames {
     display: flex;
@@ -305,6 +318,7 @@
   .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames > span {
     flex: 1 1 0;
     max-width: none;
+    margin-top: 0;
     text-align: center;
   }
 
