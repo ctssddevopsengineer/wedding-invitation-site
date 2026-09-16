@@ -43,6 +43,37 @@ await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 const url = `http://127.0.0.1:${server.address().port}${basePath}/`;
 const animationFreezeCss = '*, *::before, *::after { animation: none !important; transition: none !important; }';
 
+const compactRegionByPage = {
+  front: 'front',
+  family: 'inside-left',
+  details: 'inside-right',
+  back: 'back'
+};
+
+async function waitForCompactScrollContract(page, width, pageName) {
+  if (width >= 375) return;
+
+  const expectedRegion = compactRegionByPage[pageName];
+  await page.waitForFunction(
+    ({ expectedWidth, region }) => {
+      if (innerWidth !== expectedWidth || !matchMedia('(max-width: 374px)').matches) return false;
+      const scroller = document.querySelector(`[data-compact-scroll-region="${region}"]`);
+      if (!scroller) return false;
+      const style = getComputedStyle(scroller);
+      return style.overflowY === 'auto' &&
+        style.overflowX === 'hidden' &&
+        style.overscrollBehaviorY === 'contain';
+    },
+    { expectedWidth: width, region: expectedRegion },
+    { timeout: 5000 }
+  );
+
+  // Let the confirmed compact style reach layout/paint before geometry checks.
+  await page.evaluate(() => new Promise((resolve) =>
+    requestAnimationFrame(() => requestAnimationFrame(resolve))
+  ));
+}
+
 async function waitForInvitationImages(page) {
   await page.waitForFunction(
     () => [...document.querySelectorAll('.invitePage img')].every(
@@ -154,6 +185,7 @@ try {
           await page.waitForSelector(`.bookStage.page-${({ family: 'inside-left', details: 'inside-right' })[pageName] || pageName}`);
           await page.evaluate(async () => { await document.fonts.ready; await Promise.all(document.getAnimations().filter(a => a.effect?.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))); });
           await waitForInvitationImages(page);
+          await waitForCompactScrollContract(page, width, pageName);
           assert.equal(await page.locator('html').getAttribute('lang'), language);
           assert.equal(await page.locator('#invitation-language-value').getAttribute('lang'), language);
           const issues = await page.evaluate(() => {
@@ -650,8 +682,9 @@ try {
 
 
           {
-            const scrollState = await page.evaluate(() => {
-              const scroller = document.querySelector('[data-compact-scroll-region]');
+            const expectedRegion = compactRegionByPage[pageName];
+            const scrollState = await page.evaluate((region) => {
+              const scroller = document.querySelector(`[data-compact-scroll-region="${region}"]`);
               assertScroller(scroller);
               const style = getComputedStyle(scroller);
               const initialScrollTop = scroller.scrollTop;
@@ -673,11 +706,11 @@ try {
               function assertScroller(node) {
                 if (!node) throw new Error('Active invitation page has no compact scroll region');
               }
-            });
+            }, expectedRegion);
 
             assert.equal(
               scrollState.region,
-              ({ front: 'front', family: 'inside-left', details: 'inside-right', back: 'back' })[pageName],
+              expectedRegion,
               `${pageName} exposes the expected compact scroll region`
             );
 
