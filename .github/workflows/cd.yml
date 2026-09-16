@@ -5,6 +5,14 @@ on:
     branches:
       - development
       - master
+    paths-ignore:
+      - '.github/workflows/**'
+      - 'docs/**'
+      - 'README.md'
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
+      - 'INSTALL.md'
+      - '.gitignore'
 
 permissions:
   actions: read
