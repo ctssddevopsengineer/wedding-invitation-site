@@ -28,6 +28,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -38,9 +39,80 @@ env:
   NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
 
 jobs:
+  changes:
+    name: Detect effective changes
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.diff.outputs.should_run }}
+      relevant_files: ${{ steps.diff.outputs.relevant_files }}
+    steps:
+      - name: Checkout PR head with full history
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Detect effective runtime/test changes
+        id: diff
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+
+          # workflow_dispatch has no PR base/head. It is an explicit request,
+          # so allow the CI suite to run.
+          if [[ "${{ github.event_name }}" != "pull_request" ]]; then
+            echo "should_run=true" >> "${GITHUB_OUTPUT}"
+            echo "relevant_files=manual-dispatch" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          echo "Base SHA: ${BASE_SHA}"
+          echo "Head SHA: ${HEAD_SHA}"
+
+          git fetch --no-tags origin "${BASE_SHA}" "${HEAD_SHA}"
+
+          # Compare the actual endpoint trees, not commit history. This is the
+          # important guard for master -> development synchronization PRs where
+          # commits differ but GitHub shows 0 changed files.
+          ALL_CHANGED="$(git diff --name-only "${BASE_SHA}" "${HEAD_SHA}")"
+
+          if [[ -z "${ALL_CHANGED}" ]]; then
+            echo "No effective file changes between PR base and head."
+            echo "should_run=false" >> "${GITHUB_OUTPUT}"
+            echo "relevant_files=" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          RELEVANT_CHANGED="$(
+            printf '%s\n' "${ALL_CHANGED}" |
+              grep -Ev '^(\.github/workflows/|docs/|README\.md$|AGENTS\.md$|CLAUDE\.md$|INSTALL\.md$|\.gitignore$)' || true
+          )"
+
+          if [[ -z "${RELEVANT_CHANGED}" ]]; then
+            echo "Only non-runtime files changed:"
+            printf '%s\n' "${ALL_CHANGED}"
+            echo "should_run=false" >> "${GITHUB_OUTPUT}"
+            echo "relevant_files=" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          echo "Relevant changed files:"
+          printf '%s\n' "${RELEVANT_CHANGED}"
+          {
+            echo "should_run=true"
+            echo "relevant_files<<EOF"
+            printf '%s\n' "${RELEVANT_CHANGED}"
+            echo "EOF"
+          } >> "${GITHUB_OUTPUT}"
+
   context:
     name: Resolve CI Context
     runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.should_run == 'true'
     outputs:
       environment: ${{ steps.environment.outputs.environment }}
     steps:
@@ -438,8 +510,9 @@ jobs:
   ci-gate:
     name: CI Gate
     runs-on: ubuntu-latest
-    if: always()
+    if: always() && needs.changes.outputs.should_run == 'true'
     needs:
+      - changes
       - context
       - quality
       - build
