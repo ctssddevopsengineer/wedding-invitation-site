@@ -40,7 +40,27 @@ async function readBaselines() {
 }
 
 async function waitForStableArtwork(page) {
-  await page.evaluate(async () => { await document.fonts.ready; });
+  // A newly selected language/theme can introduce a font request after an
+  // earlier document.fonts.ready promise has already resolved. Explicitly
+  // request the fonts used by visible invitation text so pixel hashes never
+  // depend on hosted-runner timing or fallback-font races.
+  await page.evaluate(async () => {
+    const textNodes = [...document.querySelectorAll('.invitePage *')]
+      .filter((node) => {
+        const text = node.textContent?.trim();
+        if (!text) return false;
+        const style = getComputedStyle(node);
+        return style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity) !== 0;
+      });
+    const requests = textNodes.map((node) => {
+      const style = getComputedStyle(node);
+      const font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+      return document.fonts.load(font, node.textContent.trim().slice(0, 64));
+    });
+    await Promise.allSettled(requests);
+    await document.fonts.ready;
+  });
+
   await page.locator('.invitePage img').evaluateAll((images) => Promise.all(images.map(async (image) => {
     if (!image.complete) {
       await new Promise((resolve) => {
@@ -52,6 +72,9 @@ async function waitForStableArtwork(page) {
     }
     try { await image.decode(); } catch {}
   })));
+
+  // Let layout/paint consume the loaded font metrics before the screenshot.
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 }
 
 await fs.mkdir(outputDir, { recursive: true });

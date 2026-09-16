@@ -26,6 +26,95 @@ test('existing responsive CSS keeps the approved template geometry guards', () =
   assert.match(css, /@media \(min-width: 681px\) and \(max-width: 1024px\)/);
 });
 
+test('Classic Bengali and Nepali laptop typography has readable floors without changing geometry', () => {
+  const classicLaptopCss = fs.readFileSync(new URL('../app/classic-multilingual-laptop.css', import.meta.url), 'utf8');
+  assert.match(classicLaptopCss, /@media \(min-width:\s*681px\)/);
+  assert.match(classicLaptopCss, /dynamicFrontHeading > span[\s\S]*?font-size:\s*clamp\(1\.85rem, 7\.1cqw, 4rem\)\s*!important/);
+  assert.match(classicLaptopCss, /dynamicFrontHeading > em[\s\S]*?font-size:\s*clamp\(1\.45rem, 5\.5cqw, 3\.05rem\)\s*!important/);
+  assert.match(classicLaptopCss, /dynamicFrontTagline[\s\S]*?font-size:\s*clamp\(\.92rem, 2\.4cqw, 1\.35rem\)\s*!important/);
+  assert.match(classicLaptopCss, /dynamicFrontNames[\s\S]*?font-size:\s*clamp\(1\.5rem, 5\.35cqw, 3\.05rem\)\s*!important/);
+  assert.match(classicLaptopCss, /dynamicFrontClosing[\s\S]*?font-size:\s*clamp\(\.9rem, 2\.2cqw, 1\.28rem\)\s*!important/);
+  assert.match(classicLaptopCss, /familyBlessingsIntro h2[\s\S]*?font-size:\s*clamp\(1\.5rem, 3\.6cqw, 2\.55rem\)\s*!important/);
+  assert.match(classicLaptopCss, /familyBlessingsIntro p[\s\S]*?font-size:\s*clamp\(\.9rem, 1\.95cqw, 1\.28rem\)\s*!important/);
+  assert.match(classicLaptopCss, /familyCoupleNames[\s\S]*?font-size:\s*clamp\(1\.7rem, 5\.25cqw, 3\.35rem\)\s*!important/);
+  assert.match(classicLaptopCss, /familyBlock h3[\s\S]*?font-size:\s*clamp\(1\.12rem, 2\.55cqw, 1\.7rem\)\s*!important/);
+  assert.match(classicLaptopCss, /familyBlock p[\s\S]*?font-size:\s*clamp\(\.92rem, 1\.9cqw, 1\.22rem\)\s*!important/);
+  assert.match(classicLaptopCss, /familyBlessingsClosing[\s\S]*?font-size:\s*clamp\(\.9rem, 1\.85cqw, 1\.18rem\)\s*!important/);
+
+  // Check declarations only. Comments may legitimately describe geometry that this
+  // typography-only stylesheet intentionally leaves untouched.
+  const declarations = classicLaptopCss
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .split(/\n/)
+    .map((line) => line.trim());
+
+  for (const forbidden of ['top:', 'left:', 'right:', 'bottom:', 'width:', 'height:', 'transform:', 'position:']) {
+    assert.equal(
+      declarations.some((line) => line.startsWith(forbidden)),
+      false,
+      `Classic multilingual laptop typography must not override geometry with ${forbidden}`
+    );
+  }
+});
+
+test('Classic English front typography starts at 681px and bridges cleanly into tablet rules', () => {
+  const classicLaptopCss = fs.readFileSync(new URL('../app/classic-multilingual-laptop.css', import.meta.url), 'utf8');
+  assert.match(classicLaptopCss, /@media \(min-width:\s*681px\) and \(max-width:\s*767px\)/);
+  assert.match(classicLaptopCss, /\[lang="en"\][\s\S]*?dynamicFrontHeading > span[\s\S]*?font-size:\s*clamp\(1\.62rem, 6\.35cqw, 3\.2rem\)\s*!important/);
+  assert.match(classicLaptopCss, /\[lang="en"\][\s\S]*?dynamicFrontHeading > em[\s\S]*?font-size:\s*clamp\(1\.34rem, 5\.05cqw, 2\.7rem\)\s*!important/);
+  assert.match(classicLaptopCss, /\[lang="en"\][\s\S]*?dynamicFrontTagline[\s\S]*?font-size:\s*clamp\(\.9rem, 2\.15cqw, 1\.16rem\)\s*!important/);
+  assert.match(classicLaptopCss, /\[lang="en"\][\s\S]*?dynamicFrontNames[\s\S]*?font-size:\s*clamp\(1\.55rem, 5\.55cqw, 3rem\)\s*!important/);
+  assert.match(classicLaptopCss, /\[lang="en"\][\s\S]*?dynamicFrontClosing[\s\S]*?font-size:\s*clamp\(\.82rem, 1\.95cqw, 1\.08rem\)\s*!important/);
+});
+
+test('Classic front has readable tablet typography for English, Bengali and Nepali without moving artwork', () => {
+  const classicLaptopCss = fs.readFileSync(new URL('../app/classic-multilingual-laptop.css', import.meta.url), 'utf8');
+  assert.match(classicLaptopCss, /@media \(min-width:\s*768px\) and \(max-width:\s*1023px\)/);
+  assert.match(classicLaptopCss, /dynamicFrontHeading > span[\s\S]*?font-size:\s*clamp\(1\.75rem, 6\.9cqw, 3\.7rem\)\s*!important/);
+  assert.match(classicLaptopCss, /dynamicFrontHeading > em[\s\S]*?font-size:\s*clamp\(1\.45rem, 5\.7cqw, 3\.05rem\)\s*!important/);
+  assert.match(classicLaptopCss, /dynamicFrontTagline[\s\S]*?font-size:\s*clamp\(\.95rem, 2\.45cqw, 1\.3rem\)\s*!important/);
+  assert.match(classicLaptopCss, /\[lang="en"\][\s\S]*?dynamicFrontNames[\s\S]*?font-size:\s*clamp\(1\.7rem, 6\.2cqw, 3\.4rem\)\s*!important/);
+  assert.match(classicLaptopCss, /:is\(\[lang="bn"\], \[lang="ne"\]\)[\s\S]*?dynamicFrontNames[\s\S]*?font-size:\s*clamp\(1\.55rem, 5\.35cqw, 2\.9rem\)\s*!important/);
+  assert.match(classicLaptopCss, /dynamicFrontClosing[\s\S]*?font-size:\s*clamp\(\.85rem, 2\.1cqw, 1\.15rem\)\s*!important/);
+
+  const declarations = classicLaptopCss
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .split(/\n/)
+    .map((line) => line.trim());
+
+  for (const forbidden of ['top:', 'left:', 'right:', 'bottom:', 'width:', 'height:', 'transform:', 'position:']) {
+    assert.equal(
+      declarations.some((line) => line.startsWith(forbidden)),
+      false,
+      `Classic tablet typography must not alter front-page geometry with ${forbidden}`
+    );
+  }
+});
+
+test('Classic front has readable laptop typography for English, Bengali and Nepali without moving artwork', () => {
+  const classicLaptopCss = fs.readFileSync(new URL('../app/classic-multilingual-laptop.css', import.meta.url), 'utf8');
+  assert.match(classicLaptopCss, /@media \(min-width:\s*1024px\)/);
+  assert.match(classicLaptopCss, /dynamicFrontHeading > span[\s\S]*?font-size:\s*clamp\(1\.9rem, 7\.6cqw, 4\.4rem\)\s*!important/);
+  assert.match(classicLaptopCss, /dynamicFrontHeading > em[\s\S]*?font-size:\s*clamp\(1\.55rem, 6\.35cqw, 3\.8rem\)\s*!important/);
+  assert.match(classicLaptopCss, /dynamicFrontTagline[\s\S]*?font-size:\s*clamp\(1rem, 2\.65cqw, 1\.5rem\)\s*!important/);
+  assert.match(classicLaptopCss, /\[lang="en"\][\s\S]*?dynamicFrontNames[\s\S]*?font-size:\s*clamp\(1\.85rem, 6\.9cqw, 4rem\)\s*!important/);
+  assert.match(classicLaptopCss, /dynamicFrontClosing[\s\S]*?font-size:\s*clamp\(\.9rem, 2\.3cqw, 1\.35rem\)\s*!important/);
+  assert.match(classicLaptopCss, /:is\(\[lang="bn"\], \[lang="ne"\]\)[\s\S]*?dynamicFrontNames[\s\S]*?font-size:\s*clamp\(1\.65rem, 5\.6cqw, 3\.2rem\)\s*!important/);
+
+  const declarations = classicLaptopCss
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .split(/\n/)
+    .map((line) => line.trim());
+
+  for (const forbidden of ['top:', 'left:', 'right:', 'bottom:', 'width:', 'height:', 'transform:', 'position:']) {
+    assert.equal(
+      declarations.some((line) => line.startsWith(forbidden)),
+      false,
+      `Classic laptop typography must not alter front-page geometry with ${forbidden}`
+    );
+  }
+});
+
 test('typography hardening remains geometry-free and mobile overlap fixes load after it', () => {
   assert.match(layout, /import '\.\/classic-front\.css';\s*\nimport '\.\/device-hardening\.css';\s*\nimport '\.\/mobile-overlap-fixes\.css';/);
   assert.match(hardeningCss, /font-size:\s*clamp\(/);
@@ -39,7 +128,7 @@ test('typography hardening remains geometry-free and mobile overlap fixes load a
     'aspect-ratio', 'transform', 'object-fit', 'position', 'top', 'right', 'bottom',
     'left', 'margin', 'padding', 'overflow', 'white-space', 'flex-wrap', 'gap'
   ]) {
-    assert.doesNotMatch(hardeningCss, new RegExp(`(^|[;{\\s])${property}\\s*:`, 'm'), `${property} must not be overridden by typography hardening`);
+    assert.doesNotMatch(hardeningCss, new RegExp(`(^|[;{\\\\s])${property}\\\\s*:`, 'm'), `${property} must not be overridden by typography hardening`);
   }
 
   // Geometry corrections are isolated to narrow screens and affected themes only.
@@ -65,6 +154,6 @@ test('theme picker stays outside page viewport geometry and scales independently
 test('exact viewport coverage includes short landscape, 240px phones and legacy widths without duplicates', () => {
   const sizes = RESPONSIVE_VALIDATION_VIEWPORTS.map(({ width, height }) => `${width}x${height}`);
   assert.equal(new Set(sizes).size, sizes.length);
-  for (const size of ['240x320', '640x360', '360x780', '412x915', '1024x768', '1920x1080']) assert.ok(sizes.includes(size));
+  for (const size of ['240x320', '640x360', '360x780', '412x915', '681x1100', '712x1138', '767x1100', '768x1024', '1024x768', '1920x1080']) assert.ok(sizes.includes(size));
   for (const width of RESPONSIVE_VALIDATION_WIDTHS) assert.ok(sizes.includes(`${width}x1100`));
 });

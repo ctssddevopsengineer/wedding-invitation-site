@@ -100,19 +100,48 @@ test('Bengali and Nepali receive extra vertical clearance around the separator',
   );
 });
 
+
+test('681px+ Saffron front keeps every ornamented separator in its own whitespace zone', () => {
+  assert.match(css, /@media \(min-width:\s*681px\)/);
+
+  for (const [selector, top] of [
+    ['dynamicFrontRule:not(.dynamicFrontNamesRule):not(.dynamicFrontClosingRule)', '37.15%'],
+    ['dynamicFrontTagline', '39.45%'],
+    ['dynamicFrontNamesRule', '44.15%'],
+    ['dynamicFrontNames', '46.55%'],
+    ['dynamicFrontClosingRule', '56.65%'],
+    ['dynamicFrontClosing', '59.65%']
+  ]) {
+    assert.ok(css.includes(selector), `missing ${selector}`);
+    assert.ok(css.includes(`top: ${top}`), `missing desktop Saffron coordinate ${top}`);
+  }
+
+  assert.ok(39.45 - 37.15 >= 2.0, 'heading separator to tagline keeps visible clearance');
+  assert.ok(46.55 - 44.15 >= 2.0, 'names separator to names keeps visible clearance');
+  assert.ok(59.65 - 56.65 >= 2.0, 'closing separator to closing copy keeps visible clearance');
+});
+
+test('Bengali and Nepali get additional 681px+ clearance for taller native-script glyphs', () => {
+  assert.match(css, /:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="saffron"\][\s\S]*?top:\s*38\.15%/);
+  assert.match(css, /:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="saffron"\][\s\S]*?dynamicFrontTagline[\s\S]*?top:\s*40\.55%/);
+  assert.match(css, /:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="saffron"\][\s\S]*?dynamicFrontNamesRule[\s\S]*?top:\s*45\.25%/);
+  assert.match(css, /:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="saffron"\][\s\S]*?dynamicFrontNames[\s\S]*?top:\s*47\.65%/);
+  assert.match(css, /:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="saffron"\][\s\S]*?dynamicFrontClosingRule[\s\S]*?top:\s*57\.45%/);
+  assert.match(css, /:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="saffron"\][\s\S]*?dynamicFrontClosing[\s\S]*?top:\s*60\.45%/);
+});
+
 test('Saffron separator tuning remains before front parity and compact details scrolling', () => {
   const separatorImport = "import './saffron-front-separator.css';";
   const frontParityImport = "import './front-saffron-parity.css';";
+  const classicLaptopImport = "import './classic-multilingual-laptop.css';";
   const compactScrollImport = "import './compact-details-scroll.css';";
-  assert.ok(layout.includes(separatorImport));
-  assert.ok(layout.includes(frontParityImport));
-  assert.ok(layout.includes(compactScrollImport));
-  assert.ok(layout.indexOf(frontParityImport) > layout.indexOf(separatorImport));
-  assert.ok(layout.indexOf(compactScrollImport) > layout.indexOf(frontParityImport));
 
-  const importLines = layout.split('\n').filter((line) => line.startsWith("import './"));
-  assert.equal(importLines.at(-3), separatorImport);
-  assert.equal(importLines.at(-2), frontParityImport);
-  assert.equal(importLines.at(-1), compactScrollImport);
+  for (const required of [separatorImport, frontParityImport, classicLaptopImport, compactScrollImport]) {
+    assert.ok(layout.includes(required));
+  }
+
+  assert.ok(layout.indexOf(frontParityImport) > layout.indexOf(separatorImport));
+  assert.ok(layout.indexOf(classicLaptopImport) > layout.indexOf(frontParityImport));
+  assert.ok(layout.indexOf(compactScrollImport) > layout.indexOf(classicLaptopImport));
   assert.equal(count(css, '{'), count(css, '}'));
 });

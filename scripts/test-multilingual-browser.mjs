@@ -42,6 +42,45 @@ const server = http.createServer(async (req, res) => {
 await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 const url = `http://127.0.0.1:${server.address().port}${basePath}/`;
 const animationFreezeCss = '*, *::before, *::after { animation: none !important; transition: none !important; }';
+
+async function waitForInvitationImages(page) {
+  await page.waitForFunction(
+    () => [...document.querySelectorAll('.invitePage img')].every(
+      (image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0
+    ),
+    null,
+    { timeout: 10000 }
+  );
+
+  await page.locator('.invitePage img').evaluateAll(async (images) => {
+    for (const image of images) {
+      let lastError;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          if (!image.complete || !image.naturalWidth || !image.naturalHeight) {
+            await new Promise((resolve, reject) => {
+              const cleanup = () => {
+                image.removeEventListener('load', onLoad);
+                image.removeEventListener('error', onError);
+              };
+              const onLoad = () => { cleanup(); resolve(); };
+              const onError = () => { cleanup(); reject(new Error(`Artwork failed to load: ${image.currentSrc || image.src}`)); };
+              image.addEventListener('load', onLoad, { once: true });
+              image.addEventListener('error', onError, { once: true });
+            });
+          }
+          await image.decode();
+          lastError = null;
+          break;
+        } catch (error) {
+          lastError = error;
+          await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        }
+      }
+      if (lastError) throw lastError;
+    }
+  });
+}
 let browser;
 const launchBrowser = () => browserTypes[browserTarget.engine].launch({
   headless: true,
@@ -114,7 +153,7 @@ try {
           await page.waitForSelector(`main[data-theme-ready="true"][data-invitation-theme="${theme}"][lang="${language}"]`);
           await page.waitForSelector(`.bookStage.page-${({ family: 'inside-left', details: 'inside-right' })[pageName] || pageName}`);
           await page.evaluate(async () => { await document.fonts.ready; await Promise.all(document.getAnimations().filter(a => a.effect?.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))); });
-          await page.locator('.invitePage img').evaluateAll((images) => Promise.all(images.map((image) => image.decode())));
+          await waitForInvitationImages(page);
           assert.equal(await page.locator('html').getAttribute('lang'), language);
           assert.equal(await page.locator('#invitation-language-value').getAttribute('lang'), language);
           const issues = await page.evaluate(() => {
@@ -122,6 +161,295 @@ try {
             const compactScroller = innerWidth < 375 && document.querySelector('[data-compact-scroll-region]');
             if (document.documentElement.scrollWidth > innerWidth + 1) issues.push('horizontal page overflow: ' + [...document.querySelectorAll('body *')].filter(n => n.getBoundingClientRect().right > innerWidth + 2).slice(0, 5).map(n => n.className).join('/'));
             const card = document.querySelector('.invitePage').getBoundingClientRect();
+            if (innerWidth >= 1024 && document.querySelector('.bookApp[data-invitation-theme="classic"] .exactInsideRight')) {
+              for (const [selector, minimum] of [
+                ['.receptionDetailLabel', 16],
+                ['.receptionDetailValue', 16],
+                ['.receptionCalendarItem .btn', 13],
+                ['.countdownUnit strong', 16],
+                ['.countdownUnit span', 12]
+              ]) {
+                for (const node of document.querySelectorAll(selector)) {
+                  if (parseFloat(getComputedStyle(node).fontSize) < minimum - .1) issues.push(`Classic laptop text too small: ${selector}`);
+                }
+              }
+              const items = [...document.querySelectorAll('.receptionDetailItem')];
+              for (let index = 1; index < items.length; index++) {
+                if (items[index - 1].getBoundingClientRect().bottom > items[index].getBoundingClientRect().top + 1) issues.push('Classic laptop detail items overlap');
+              }
+            }
+            if (innerWidth >= 681 && document.querySelector('.bookApp[data-invitation-theme="blush"]')) {
+              const pageName =
+                document.querySelector('.bookStage.page-front') ? 'front' :
+                document.querySelector('.bookStage.page-inside-left') ? 'family' :
+                document.querySelector('.bookStage.page-inside-right') ? 'details' :
+                document.querySelector('.bookStage.page-back') ? 'back' :
+                '';
+              const language = document.querySelector('main[lang]')?.getAttribute('lang') || 'en';
+              const readableFloors = {
+                front: [
+                  ['.dynamicFrontHeading > span', innerWidth >= 1024 ? 46 : 27.2],
+                  ['.dynamicFrontHeading > em', innerWidth >= 1024 ? 30 : 21.6],
+                  ['.dynamicFrontTagline', innerWidth >= 1024 ? 20 : 14.4],
+                  ['.dynamicFrontNames', innerWidth >= 1024 ? (language === 'en' ? 40 : 38) : (language === 'en' ? 26.4 : 24)],
+                  ['.dynamicFrontClosing', innerWidth >= 1024 ? 18 : 13.1]
+                ],
+                family: [
+                  ['.familyBlessingsIntro h2', 20],
+                  ['.familyBlessingsIntro p', 13.1],
+                  ['.familyCoupleNames', language === 'en' ? 24 : 22.4],
+                  ['.familyBlock h3', 14.7],
+                  ['.familyBlock p', 12.4],
+                  ['.familyBlessingsClosing', innerWidth >= 1024 && ['bn', 'ne'].includes(language) ? 18 : 12.1]
+                ],
+                details: [
+                  ['.insideRightDynamicTitle', 20.8],
+                  ['.receptionDetailLabel', 13.1],
+                  ['.receptionDetailValue:not(.receptionAddressValue)', innerWidth <= 1023 ? 13 : 12.8],
+                  ['.receptionAddressValue', innerWidth <= 1023 ? 12 : 11.8],
+                  ['.receptionCalendarItem .btn', 11.5],
+                  ['.receptionCountdownItem .countdownUnit strong', 14],
+                  ['.receptionCountdownItem .countdownUnit span', 10.8]
+                ],
+                back: [
+                  ['.heritageBackIntro h2', innerWidth <= 1023 ? 18 : 24],
+                  ['.heritageBackMessage', innerWidth <= 1023 ? 11 : 14],
+                  ['.heritageCoupleNames', innerWidth <= 1023 ? (language === 'en' ? 22 : 20) : (language === 'en' ? 29.6 : 24.8)],
+                  ['.heritageJourneyMessage', innerWidth <= 1023 ? 10.5 : 13.4],
+                  ['.heritageAssistance > h3', innerWidth <= 1023 ? 12 : 15.2],
+                  ['.heritageAssistance .contactCard .eyebrow', innerWidth <= 1023 ? 9 : 11.2],
+                  ['.heritageAssistance .contactCard h3', innerWidth <= 1023 ? 10 : 12],
+                  ['.heritageAssistance .contactCard a', innerWidth <= 1023 ? 10 : 12]
+                ]
+              };
+              for (const [selector, minimum] of readableFloors[pageName] || []) {
+                for (const node of document.querySelectorAll(selector)) {
+                  if (parseFloat(getComputedStyle(node).fontSize) < minimum - .1) {
+                    issues.push(`Baby Pink ${pageName} text too small: ${selector}`);
+                  }
+                }
+              }
+
+              if (pageName === 'front' && innerWidth >= 1024) {
+                const rules = [...document.querySelectorAll('.dynamicFrontRule')];
+                const ruleMargins = rules.map((rule) => parseFloat(getComputedStyle(rule).marginTop) || 0);
+                if (ruleMargins.some((margin) => margin < 14 - .1)) {
+                  issues.push('Baby Pink front separators need laptop breathing room');
+                }
+              }
+            }
+            if (innerWidth >= 681 && document.querySelector('.bookApp[data-invitation-theme="magenta"]')) {
+              const pageName =
+                document.querySelector('.bookStage.page-front') ? 'front' :
+                document.querySelector('.bookStage.page-inside-left') ? 'family' :
+                document.querySelector('.bookStage.page-inside-right') ? 'details' :
+                document.querySelector('.bookStage.page-back') ? 'back' :
+                '';
+              const language = document.querySelector('main[lang]')?.getAttribute('lang') || 'en';
+              const laptop = innerWidth >= 1024;
+              const readableFloors = {
+                front: [
+                  ['.dynamicFrontHeading > span', laptop ? 42 : 27],
+                  ['.dynamicFrontHeading > em', laptop ? 28 : 21],
+                  ['.dynamicFrontTagline', laptop ? 18 : 14.2],
+                  ['.dynamicFrontNames', laptop ? (language === 'en' ? 36 : 34) : (language === 'en' ? 25 : 23)],
+                  ['.dynamicFrontClosing', laptop ? 17 : 12.8]
+                ],
+                family: [
+                  ['.familyBlessingsIntro h2', laptop ? 22 : 20],
+                  ['.familyBlessingsIntro p', laptop ? 15 : 13],
+                  ['.familyCoupleNames', language === 'en' ? 24 : 22],
+                  ['.familyBlock h3', laptop ? 17 : 14.5],
+                  ['.familyBlock p', laptop ? 14 : 12.3],
+                  ['.familyBlessingsClosing', laptop ? 14 : 12]
+                ],
+                details: [
+                  ['.insideRightDynamicTitle', laptop ? 24 : 20.5],
+                  ['.receptionDetailLabel', laptop ? 15 : 13],
+                  ['.receptionDetailValue:not(.receptionAddressValue)', laptop ? 14 : 12.7],
+                  ['.receptionAddressValue', laptop ? 13 : 11.6],
+                  ['.receptionCalendarItem .btn', 11.4],
+                  ['.receptionCountdownItem .countdownUnit strong', 14],
+                  ['.receptionCountdownItem .countdownUnit span', 10.7]
+                ],
+                back: [
+                  ['.heritageBackIntro h2', laptop ? 24 : 18],
+                  ['.heritageBackMessage', laptop ? 14 : 11],
+                  ['.heritageCoupleNames', laptop ? (language === 'en' ? 28 : 28) : (language === 'en' ? 22 : 20)],
+                  ['.heritageJourneyMessage', laptop ? 14 : 10.5],
+                  ['.heritageAssistance > h3', laptop ? 16 : 12],
+                  ['.heritageAssistance .contactCard .eyebrow', laptop ? 11 : 9],
+                  ['.heritageAssistance .contactCard h3', laptop ? 11.8 : 10],
+                  ['.heritageAssistance .contactCard a', laptop ? 11.8 : 10]
+                ]
+              };
+              for (const [selector, minimum] of readableFloors[pageName] || []) {
+                for (const node of document.querySelectorAll(selector)) {
+                  if (parseFloat(getComputedStyle(node).fontSize) < minimum - .1) {
+                    issues.push(`Rani Magenta ${pageName} text too small: ${selector}`);
+                  }
+                }
+              }
+            }
+            if (innerWidth >= 681 && document.querySelector('.bookApp[data-invitation-theme="navy"]')) {
+              const pageName =
+                document.querySelector('.bookStage.page-front') ? 'front' :
+                document.querySelector('.bookStage.page-inside-left') ? 'family' :
+                document.querySelector('.bookStage.page-inside-right') ? 'details' :
+                document.querySelector('.bookStage.page-back') ? 'back' :
+                '';
+              const language = document.querySelector('main[lang]')?.getAttribute('lang') || 'en';
+              const laptop = innerWidth >= 1024;
+              const readableFloors = {
+                front: [
+                  ['.dynamicFrontHeading > span', laptop ? 40 : 26.5],
+                  ['.dynamicFrontHeading > em', laptop ? 27 : 20.5],
+                  ['.dynamicFrontTagline', laptop ? 18 : 14],
+                  ['.dynamicFrontNames', laptop ? (language === 'en' ? 34 : 32) : (language === 'en' ? 24.5 : 22.5)],
+                  ['.dynamicFrontClosing', laptop ? 17 : 12.7]
+                ],
+                family: [
+                  ['.familyBlessingsIntro h2', laptop ? 21 : 19.5],
+                  ['.familyBlessingsIntro p', laptop ? 15 : 12.9],
+                  ['.familyCoupleNames', language === 'en' ? 23.5 : 21.5],
+                  ['.familyBlock h3', laptop ? 16 : 14.3],
+                  ['.familyBlock p', laptop ? 14 : 12.2],
+                  ['.familyBlessingsClosing', laptop ? 14 : 11.9]
+                ],
+                details: [
+                  ['.insideRightDynamicTitle', laptop ? 23 : 20.2],
+                  ['.receptionDetailLabel', laptop ? 15 : 12.9],
+                  ['.receptionDetailValue:not(.receptionAddressValue)', laptop ? 14 : 12.6],
+                  ['.receptionAddressValue', laptop ? 13 : 11.5],
+                  ['.receptionCalendarItem .btn', 11.3],
+                  ['.receptionCountdownItem .countdownUnit strong', 14],
+                  ['.receptionCountdownItem .countdownUnit span', 10.6]
+                ],
+                back: [
+                  ['.heritageBackIntro h2', laptop ? 24 : 18],
+                  ['.heritageBackMessage', laptop ? 14 : 11],
+                  ['.heritageCoupleNames', laptop ? (language === 'en' ? 30 : 27) : (language === 'en' ? 22 : 20)],
+                  ['.heritageJourneyMessage', laptop ? 14 : 10.5],
+                  ['.heritageAssistance > h3', laptop ? 16 : 12],
+                  ['.heritageAssistance .contactCard .eyebrow', laptop ? 11 : 9],
+                  ['.heritageAssistance .contactCard h3', laptop ? 11.5 : 10],
+                  ['.heritageAssistance .contactCard a', laptop ? 11.5 : 10]
+                ]
+              };
+              for (const [selector, minimum] of readableFloors[pageName] || []) {
+                for (const node of document.querySelectorAll(selector)) {
+                  if (parseFloat(getComputedStyle(node).fontSize) < minimum - .1) {
+                    issues.push(`Royal Navy ${pageName} text too small: ${selector}`);
+                  }
+                }
+              }
+            }
+            if (innerWidth >= 681 && document.querySelector('.bookApp[data-invitation-theme="plum"]')) {
+              const pageName =
+                document.querySelector('.bookStage.page-front') ? 'front' :
+                document.querySelector('.bookStage.page-inside-left') ? 'family' :
+                document.querySelector('.bookStage.page-inside-right') ? 'details' :
+                document.querySelector('.bookStage.page-back') ? 'back' :
+                '';
+              const language = document.querySelector('main[lang]')?.getAttribute('lang') || 'en';
+              const laptop = innerWidth >= 1024;
+              const readableFloors = {
+                front: [
+                  ['.dynamicFrontHeading > span', laptop ? 40 : 26.5],
+                  ['.dynamicFrontHeading > em', laptop ? 27 : 20.5],
+                  ['.dynamicFrontTagline', laptop ? 18 : 14],
+                  ['.dynamicFrontNames', laptop ? (language === 'en' ? 34 : 32) : (language === 'en' ? 24.5 : 22.5)],
+                  ['.dynamicFrontClosing', laptop ? 17 : 12.7]
+                ],
+                family: [
+                  ['.familyBlessingsIntro h2', laptop ? 21 : 19.5],
+                  ['.familyBlessingsIntro p', laptop ? 15 : 12.9],
+                  ['.familyCoupleNames', language === 'en' ? 23.5 : 21.5],
+                  ['.familyBlock h3', laptop ? 16 : 14.3],
+                  ['.familyBlock p', laptop ? 14 : 12.2],
+                  ['.familyBlessingsClosing', laptop ? 14 : 11.9]
+                ],
+                details: [
+                  ['.insideRightDynamicTitle', laptop ? 23 : 20.2],
+                  ['.receptionDetailLabel', laptop ? 15 : 12.9],
+                  ['.receptionDetailValue:not(.receptionAddressValue)', laptop ? 14 : 12.6],
+                  ['.receptionAddressValue', laptop ? 13 : 11.5],
+                  ['.receptionCalendarItem .btn', 11.3],
+                  ['.receptionCountdownItem .countdownUnit strong', 14],
+                  ['.receptionCountdownItem .countdownUnit span', 10.6]
+                ],
+                back: [
+                  ['.heritageBackIntro h2', laptop ? 24 : 18],
+                  ['.heritageBackMessage', laptop ? 14 : 11],
+                  ['.heritageCoupleNames', laptop ? (language === 'en' ? 30 : 27) : (language === 'en' ? 22 : 20)],
+                  ['.heritageJourneyMessage', laptop ? 14 : 10.5],
+                  ['.heritageAssistance > h3', laptop ? 16 : 12],
+                  ['.heritageAssistance .contactCard .eyebrow', laptop ? 11 : 9],
+                  ['.heritageAssistance .contactCard h3', laptop ? 11.5 : 10],
+                  ['.heritageAssistance .contactCard a', laptop ? 11.5 : 10]
+                ]
+              };
+              for (const [selector, minimum] of readableFloors[pageName] || []) {
+                for (const node of document.querySelectorAll(selector)) {
+                  if (parseFloat(getComputedStyle(node).fontSize) < minimum - .1) {
+                    issues.push(`Royal Plum ${pageName} text too small: ${selector}`);
+                  }
+                }
+              }
+            }
+            if (innerWidth >= 681 && document.querySelector('.bookApp[data-invitation-theme="saffron"]')) {
+              const pageName =
+                document.querySelector('.bookStage.page-front') ? 'front' :
+                document.querySelector('.bookStage.page-inside-left') ? 'family' :
+                document.querySelector('.bookStage.page-inside-right') ? 'details' :
+                document.querySelector('.bookStage.page-back') ? 'back' :
+                '';
+              const language = document.querySelector('main[lang]')?.getAttribute('lang') || 'en';
+              const laptop = innerWidth >= 1024;
+              const readableFloors = {
+                front: [
+                  ['.dynamicFrontHeading > span', laptop ? 40 : 26.5],
+                  ['.dynamicFrontHeading > em', laptop ? 27 : 20.5],
+                  ['.dynamicFrontTagline', laptop ? 18 : 14],
+                  ['.dynamicFrontNames', laptop ? (language === 'en' ? 34 : 32) : (language === 'en' ? 24.5 : 22.5)],
+                  ['.dynamicFrontClosing', laptop ? 17 : 12.7]
+                ],
+                family: [
+                  ['.familyBlessingsIntro h2', laptop ? 21 : 19.5],
+                  ['.familyBlessingsIntro p', laptop ? 15 : 12.9],
+                  ['.familyCoupleNames', language === 'en' ? 23.5 : 21.5],
+                  ['.familyBlock h3', laptop ? 16 : 14.3],
+                  ['.familyBlock p', laptop ? 14 : 12.2],
+                  ['.familyBlessingsClosing', laptop ? 14 : 11.9]
+                ],
+                details: [
+                  ['.insideRightDynamicTitle', laptop ? 23 : 20.2],
+                  ['.receptionDetailLabel', laptop ? 15 : 12.9],
+                  ['.receptionDetailValue:not(.receptionAddressValue)', laptop ? 14 : 12.6],
+                  ['.receptionAddressValue', laptop ? 13 : 11.5],
+                  ['.receptionCalendarItem .btn', 11.3],
+                  ['.receptionCountdownItem .countdownUnit strong', 14],
+                  ['.receptionCountdownItem .countdownUnit span', 10.6]
+                ],
+                back: [
+                  ['.heritageBackIntro h2', laptop ? 24 : 18],
+                  ['.heritageBackMessage', laptop ? 14 : 11],
+                  ['.heritageCoupleNames', laptop ? (language === 'en' ? 30 : 27) : (language === 'en' ? 22 : 20)],
+                  ['.heritageJourneyMessage', laptop ? 14 : 10.5],
+                  ['.heritageAssistance > h3', laptop ? 16 : 12],
+                  ['.heritageAssistance .contactCard .eyebrow', laptop ? 11 : 9],
+                  ['.heritageAssistance .contactCard h3', laptop ? 11.5 : 10],
+                  ['.heritageAssistance .contactCard a', laptop ? 11.5 : 10]
+                ]
+              };
+              for (const [selector, minimum] of readableFloors[pageName] || []) {
+                for (const node of document.querySelectorAll(selector)) {
+                  if (parseFloat(getComputedStyle(node).fontSize) < minimum - .1) {
+                    issues.push(`Saffron Gold ${pageName} text too small: ${selector}`);
+                  }
+                }
+              }
+            }
             if (innerWidth < 375 && document.querySelector('.bookStage.page-front')) {
               const heading = document.querySelector('.dynamicFrontHeading')?.getBoundingClientRect();
               const theme = document.querySelector('main[data-invitation-theme]')?.dataset.invitationTheme;
@@ -147,6 +475,30 @@ try {
               // Every approved template has a same-geometry WebP companion.
               const expected = /(?:\/themes\/|\/images\/wedding-monogram\.png$)/.test(image.src) ? image.src.replace(/\.(?:png|jpe?g)$/, '.webp') : image.src;
               if (image.currentSrc !== expected || !image.naturalWidth) issues.push('artwork not optimized/loaded');
+            }
+
+            if (innerWidth >= 681 && document.querySelector('.bookApp[data-invitation-theme="saffron"] .bookStage.page-front')) {
+              const firstRule = document.querySelector('.dynamicFrontRule:not(.dynamicFrontNamesRule):not(.dynamicFrontClosingRule)');
+              const namesRule = document.querySelector('.dynamicFrontNamesRule');
+              const closingRule = document.querySelector('.dynamicFrontClosingRule');
+              const ornamentBox = (rule) => rule?.querySelector(':scope > span')?.getBoundingClientRect() || rule?.getBoundingClientRect();
+              const heading = document.querySelector('.dynamicFrontHeading')?.getBoundingClientRect();
+              const tagline = document.querySelector('.dynamicFrontTagline')?.getBoundingClientRect();
+              const names = document.querySelector('.dynamicFrontNames')?.getBoundingClientRect();
+              const closing = document.querySelector('.dynamicFrontClosing')?.getBoundingClientRect();
+              const first = ornamentBox(firstRule);
+              const middle = ornamentBox(namesRule);
+              const last = ornamentBox(closingRule);
+
+              const separated = (above, below, gap = 4) =>
+                !above?.width || !below?.width || above.bottom + gap <= below.top;
+
+              if (!separated(heading, first)) issues.push('Saffron front overlap: heading/first separator');
+              if (!separated(first, tagline)) issues.push('Saffron front overlap: first separator/tagline');
+              if (!separated(tagline, middle)) issues.push('Saffron front overlap: tagline/names separator');
+              if (!separated(middle, names)) issues.push('Saffron front overlap: names separator/names');
+              if (!separated(names, last)) issues.push('Saffron front overlap: names/closing separator');
+              if (!separated(last, closing)) issues.push('Saffron front overlap: closing separator/closing copy');
             }
 
             // Validate important layout zones using the boxes of visible semantic content. A flex
