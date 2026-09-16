@@ -9,7 +9,7 @@ test('Royal Plum responsive typography is theme-scoped from 681px upward', () =>
   assert.match(css, /@media \(min-width:\s*681px\)/);
   assert.match(css, /@media \(min-width:\s*1024px\)/);
   assert.match(css, /data-invitation-theme="plum"/);
-  assert.doesNotMatch(css, /data-invitation-theme="(?:classic|blush|magenta|plum|saffron)"/);
+  assert.doesNotMatch(css, /data-invitation-theme="(?:classic|blush|magenta|navy|saffron)"/);
 });
 
 test('Royal Plum responsive typography covers all four pages', () => {
@@ -45,7 +45,8 @@ test('Royal Plum typography layer does not alter artwork geometry', () => {
 
 test('Royal Plum typography loads after prior theme layers and before compact scrolling', () => {
   const magenta=layout.indexOf("import './rani-magenta-responsive-typography.css';");
-  const navy=layout.indexOf("import './royal-plum-responsive-typography.css';");
+  const navy=layout.indexOf("import './royal-navy-responsive-typography.css';");
+  const plum=layout.indexOf("import './royal-plum-responsive-typography.css';");
   const compact=layout.indexOf("import './compact-details-scroll.css';");
-  assert.ok(magenta>=0 && navy>magenta && compact>navy);
+  assert.ok(magenta>=0 && navy>magenta && plum>navy && compact>plum);
 });
