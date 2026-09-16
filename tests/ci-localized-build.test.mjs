@@ -16,7 +16,7 @@ test('production static export passes localized Bengali and Nepali invitation va
     'GROOM_FATHER_NAME_NE', 'GROOM_MOTHER_NAME_NE', 'BRIDE_FATHER_NAME_NE', 'BRIDE_MOTHER_NAME_NE',
     'GROOM_FAMILY_CONTACT_NAME_NE', 'BRIDE_FAMILY_CONTACT_NAME_NE'
   ]) {
-    assert.ok(buildJob.includes(`${key}: ${{ vars.${key} }}`), `build job must pass ${key}`);
+    assert.ok(buildJob.includes(`${key}: \${{ vars.${key} }}`), `build job must pass ${key}`);
   }
 });
 
