@@ -5,14 +5,17 @@ on:
     branches:
       - development
       - master
-    paths-ignore:
-      - '.github/workflows/**'
-      - 'docs/**'
-      - 'README.md'
-      - 'AGENTS.md'
-      - 'CLAUDE.md'
-      - 'INSTALL.md'
-      - '.gitignore'
+    # A workflow run is created only when the diff contains at least one
+    # runtime/test-relevant file. An empty PR diff therefore creates no CI run.
+    paths:
+      - '**'
+      - '!.github/workflows/**'
+      - '!docs/**'
+      - '!README.md'
+      - '!AGENTS.md'
+      - '!CLAUDE.md'
+      - '!INSTALL.md'
+      - '!.gitignore'
 
 permissions:
   actions: read
