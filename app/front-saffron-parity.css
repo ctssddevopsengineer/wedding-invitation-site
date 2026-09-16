@@ -292,3 +292,26 @@
     max-width: 44%;
   }
 }
+
+
+/* Wearable-class fallback: the generic native-script floor is 1rem, which is
+   too wide for an unbroken Nepali groom name at the 162px validation viewport.
+   Reduce type only for this ultra-compact Saffron/Nepali case while preserving
+   the intact-name contract and the existing compact scroll geometry. */
+@media (max-width: 200px) {
+  .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames {
+    gap: .12rem;
+    font-size: clamp(.74rem, 6.8cqw, .9rem) !important;
+  }
+
+  .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames > span {
+    flex: 1 1 0;
+    max-width: none;
+    text-align: center;
+  }
+
+  .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames > b {
+    padding-inline: .06em;
+    font-size: .64em;
+  }
+}
