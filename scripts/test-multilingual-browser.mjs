@@ -43,6 +43,37 @@ await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 const url = `http://127.0.0.1:${server.address().port}${basePath}/`;
 const animationFreezeCss = '*, *::before, *::after { animation: none !important; transition: none !important; }';
 
+const compactRegionByPage = {
+  front: 'front',
+  family: 'inside-left',
+  details: 'inside-right',
+  back: 'back'
+};
+
+async function waitForCompactScrollContract(page, width, pageName) {
+  if (width >= 375) return;
+
+  const expectedRegion = compactRegionByPage[pageName];
+  await page.waitForFunction(
+    ({ expectedWidth, region }) => {
+      if (innerWidth !== expectedWidth || !matchMedia('(max-width: 374px)').matches) return false;
+      const scroller = document.querySelector(`[data-compact-scroll-region="${region}"]`);
+      if (!scroller) return false;
+      const style = getComputedStyle(scroller);
+      return style.overflowY === 'auto' &&
+        style.overflowX === 'hidden' &&
+        style.overscrollBehaviorY === 'contain';
+    },
+    { expectedWidth: width, region: expectedRegion },
+    { timeout: 5000 }
+  );
+
+  // Let the confirmed compact style reach layout/paint before geometry checks.
+  await page.evaluate(() => new Promise((resolve) =>
+    requestAnimationFrame(() => requestAnimationFrame(resolve))
+  ));
+}
+
 async function waitForInvitationImages(page) {
   await page.waitForFunction(
     () => [...document.querySelectorAll('.invitePage img')].every(
@@ -154,6 +185,7 @@ try {
           await page.waitForSelector(`.bookStage.page-${({ family: 'inside-left', details: 'inside-right' })[pageName] || pageName}`);
           await page.evaluate(async () => { await document.fonts.ready; await Promise.all(document.getAnimations().filter(a => a.effect?.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))); });
           await waitForInvitationImages(page);
+          await waitForCompactScrollContract(page, width, pageName);
           assert.equal(await page.locator('html').getAttribute('lang'), language);
           assert.equal(await page.locator('#invitation-language-value').getAttribute('lang'), language);
           const issues = await page.evaluate(() => {
@@ -161,6 +193,40 @@ try {
             const compactScroller = innerWidth < 375 && document.querySelector('[data-compact-scroll-region]');
             if (document.documentElement.scrollWidth > innerWidth + 1) issues.push('horizontal page overflow: ' + [...document.querySelectorAll('body *')].filter(n => n.getBoundingClientRect().right > innerWidth + 2).slice(0, 5).map(n => n.className).join('/'));
             const card = document.querySelector('.invitePage').getBoundingClientRect();
+
+            // Saffron/Nepali front names must remain intact native-script units.
+            // The shared long-name fallback permits overflow-wrap:anywhere, which is
+            // inappropriate for these short Devanagari names and can split glyph clusters.
+            const activeMain = document.querySelector('main');
+            if (
+              activeMain?.dataset.invitationTheme === 'saffron' &&
+              activeMain?.getAttribute('lang') === 'ne' &&
+              document.querySelector('.bookStage.page-front')
+            ) {
+              const row = document.querySelector('.dynamicFrontNames');
+              const nameSpans = [...row?.querySelectorAll(':scope > span') || []];
+              const ampersand = row?.querySelector(':scope > b');
+              const rowRect = row?.getBoundingClientRect();
+              const ampRect = ampersand?.getBoundingClientRect();
+
+              if (nameSpans.length !== 2 || !rowRect?.width || !ampRect?.width) {
+                issues.push('Saffron Nepali front names structure missing');
+              } else {
+                for (const [index, span] of nameSpans.entries()) {
+                  const rect = span.getBoundingClientRect();
+                  const style = getComputedStyle(span);
+                  const lineHeight = Number.parseFloat(style.lineHeight) || Number.parseFloat(style.fontSize) * 1.2;
+                  if (style.whiteSpace !== 'nowrap') issues.push(`Saffron Nepali name ${index + 1} may wrap`);
+                  if (style.overflowWrap !== 'normal') issues.push(`Saffron Nepali name ${index + 1} allows internal wrapping`);
+                  if (rect.height > lineHeight * 1.35) issues.push(`Saffron Nepali name ${index + 1} rendered on multiple lines`);
+                  if (span.scrollWidth > span.clientWidth + 1) issues.push(`Saffron Nepali name ${index + 1} is clipped`);
+                  if (rect.left < card.left - 2 || rect.right > card.right + 2) issues.push(`Saffron Nepali name ${index + 1} leaves card bounds`);
+                  const overlapX = Math.min(rect.right, ampRect.right) - Math.max(rect.left, ampRect.left);
+                  const overlapY = Math.min(rect.bottom, ampRect.bottom) - Math.max(rect.top, ampRect.top);
+                  if (overlapX > 1 && overlapY > 1) issues.push(`Saffron Nepali name ${index + 1} overlaps ampersand`);
+                }
+              }
+            }
             if (innerWidth >= 1024 && document.querySelector('.bookApp[data-invitation-theme="classic"] .exactInsideRight')) {
               for (const [selector, minimum] of [
                 ['.receptionDetailLabel', 16],
@@ -650,8 +716,9 @@ try {
 
 
           {
-            const scrollState = await page.evaluate(() => {
-              const scroller = document.querySelector('[data-compact-scroll-region]');
+            const expectedRegion = compactRegionByPage[pageName];
+            const scrollState = await page.evaluate((region) => {
+              const scroller = document.querySelector(`[data-compact-scroll-region="${region}"]`);
               assertScroller(scroller);
               const style = getComputedStyle(scroller);
               const initialScrollTop = scroller.scrollTop;
@@ -673,11 +740,11 @@ try {
               function assertScroller(node) {
                 if (!node) throw new Error('Active invitation page has no compact scroll region');
               }
-            });
+            }, expectedRegion);
 
             assert.equal(
               scrollState.region,
-              ({ front: 'front', family: 'inside-left', details: 'inside-right', back: 'back' })[pageName],
+              expectedRegion,
               `${pageName} exposes the expected compact scroll region`
             );
 
