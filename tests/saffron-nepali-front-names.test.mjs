@@ -44,7 +44,7 @@ test('Saffron Nepali wearable fallback deliberately switches back to flex', () =
 
 
 test('Saffron Nepali names are optically lowered relative to the ampersand', () => {
-  assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?position:\s*relative[\s\S]*?top:\s*\.08em/);
+  assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?margin-top:\s*\.08em/);
   assert.match(css, /\.dynamicFrontNames > b\s*\{[\s\S]*?margin-inline:\s*-\.035em/);
-  assert.match(css, /@media \(max-width:\s*200px\)[\s\S]*?\.dynamicFrontNames > span\s*\{[\s\S]*?top:\s*0/);
+  assert.match(css, /@media \(max-width:\s*200px\)[\s\S]*?\.dynamicFrontNames > span\s*\{[\s\S]*?margin-top:\s*0/);
 });
