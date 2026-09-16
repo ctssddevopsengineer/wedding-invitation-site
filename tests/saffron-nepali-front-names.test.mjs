@@ -21,3 +21,10 @@ test('Saffron Nepali groom and bride names stay intact instead of wrapping insid
 test('Saffron Nepali compact mode preserves name integrity below 375px', () => {
   assert.match(css, /@media \(max-width:\s*374px\)[\s\S]*?\[lang="ne"\]\[data-invitation-theme="saffron"\][\s\S]*?\.dynamicFrontNames/);
 });
+
+
+test('Saffron Nepali wearable fallback reduces type without allowing internal name wrapping', () => {
+  assert.match(css, /@media \(max-width:\s*200px\)[\s\S]*?\[lang="ne"\]\[data-invitation-theme="saffron"\][\s\S]*?font-size:\s*clamp\(\.74rem, 6\.8cqw, \.9rem\)\s*!important/);
+  assert.match(css, /@media \(max-width:\s*200px\)[\s\S]*?\.dynamicFrontNames > span\s*\{[\s\S]*?flex:\s*1 1 0/);
+  assert.match(css, /@media \(max-width:\s*200px\)[\s\S]*?\.dynamicFrontNames > span\s*\{[\s\S]*?max-width:\s*none/);
+});
