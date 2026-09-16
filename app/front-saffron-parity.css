@@ -261,7 +261,7 @@
   grid-template-columns: max-content max-content max-content;
   align-items: baseline;
   justify-content: center;
-  column-gap: 0;
+  column-gap: .08em;
   font-family: var(--font-devanagari), 'Devanagari Sangam MN', 'Nirmala UI', serif;
   font-style: normal;
   white-space: normal;
@@ -281,7 +281,7 @@
 .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames > b {
   align-self: baseline;
   padding-inline: 0;
-  margin-inline: -.035em;
+  margin-inline: 0;
   line-height: 1;
 }
 
@@ -290,7 +290,7 @@
    percentage-sized invisible space from the generic long-name safeguards. */
 @media (max-width: 374px) {
   .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames {
-    column-gap: 0;
+    column-gap: .07em;
   }
 }
 
