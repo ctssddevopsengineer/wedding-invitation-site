@@ -5,8 +5,8 @@ on:
     branches:
       - development
       - master
-    # A workflow run is created only when the diff contains at least one
-    # runtime/test-relevant file. An empty PR diff therefore creates no CI run.
+    # A deployment run is created only when the pushed diff contains at least
+    # one runtime/test-relevant file. An empty/non-runtime diff creates no CD run.
     paths:
       - '**'
       - '!.github/workflows/**'
