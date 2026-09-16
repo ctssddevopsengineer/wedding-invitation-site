@@ -1,10 +1,12 @@
 name: New CI
 
 on:
+  # Run the full CI suite only for changes entering development.
+  # Promotion PRs into master are intentionally excluded so the same
+  # validated code is not tested a second time before production CD.
   pull_request:
     branches:
       - development
-      - master
     types:
       - opened
       - synchronize
