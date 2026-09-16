@@ -257,19 +257,20 @@
 /* centered Saffron geometry and make only the name row an explicit flex row.  */
 /* -------------------------------------------------------------------------- */
 .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames {
-  display: flex;
+  display: grid;
+  grid-template-columns: max-content auto max-content;
   align-items: center;
   justify-content: center;
-  gap: clamp(.35rem, 1.15cqw, .75rem);
+  column-gap: clamp(.18rem, .7cqw, .42rem);
   font-family: var(--font-devanagari), 'Devanagari Sangam MN', 'Nirmala UI', serif;
   font-style: normal;
   white-space: normal;
 }
 
 .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames > span {
-  flex: 0 1 auto;
   min-width: 0;
-  max-width: 42%;
+  max-width: none;
+  width: max-content;
   white-space: nowrap;
   overflow-wrap: normal;
   word-break: keep-all;
@@ -277,19 +278,15 @@
 }
 
 .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames > b {
-  flex: 0 0 auto;
-  padding-inline: .22em;
+  padding-inline: 0;
 }
 
-/* Compact mode converts the front copy to normal flow below 375px. Preserve  */
-/* the same name integrity there without changing the compact scroll geometry. */
+/* Compact mode converts the front copy to normal flow below 375px. Keep the
+   same content-sized three-column row so short Nepali names do not inherit
+   percentage-sized invisible space from the generic long-name safeguards. */
 @media (max-width: 374px) {
   .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames {
-    gap: .3rem;
-  }
-
-  .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames > span {
-    max-width: 44%;
+    column-gap: .16rem;
   }
 }
 
@@ -300,6 +297,7 @@
    the intact-name contract and the existing compact scroll geometry. */
 @media (max-width: 200px) {
   .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames {
+    display: flex;
     gap: .12rem;
     font-size: clamp(.74rem, 6.8cqw, .9rem) !important;
   }
