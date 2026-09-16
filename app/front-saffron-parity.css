@@ -299,6 +299,15 @@
    too wide for an unbroken Nepali groom name at the 162px validation viewport.
    Reduce type only for this ultra-compact Saffron/Nepali case while preserving
    the intact-name contract and the existing compact scroll geometry. */
+/* 201–260px compact phones need a little more visible separation around
+   the ampersand than the normal compact row. Keep this band narrow so the
+   approved spacing on standard phones/tablets remains unchanged. */
+@media (min-width: 201px) and (max-width: 260px) {
+  .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames {
+    column-gap: .18em;
+  }
+}
+
 @media (max-width: 200px) {
   .bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames {
     display: flex;
