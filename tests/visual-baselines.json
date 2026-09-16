@@ -1116,7 +1116,7 @@
       "language": "en",
       "width": 726,
       "height": 1028,
-      "hash": "cb33dd144c02f3200c8718d1a123437102ec712e27f6da62c39d0469e2487a73"
+      "hash": "026e8f7510584e2f82b3627e27383069c4b28350de15f3b4f9c32b6538c7d3f3"
     },
     "tablet-saffron-front-bn": {
       "viewport": "768x1024",
@@ -1125,7 +1125,7 @@
       "language": "bn",
       "width": 726,
       "height": 1028,
-      "hash": "6002828bb29f9d5811ba13d9048d13334258e0316f4594666dddff4b963fdd5c"
+      "hash": "db8a745b099cdb85767307dac24d08720c0e9c8489b9bf801fb00fe528f13e2f"
     },
     "tablet-saffron-front-ne": {
       "viewport": "768x1024",
@@ -1134,7 +1134,7 @@
       "language": "ne",
       "width": 726,
       "height": 1028,
-      "hash": "3dcc2bac66105f730afaa327631431415c81beafe4c2e2b916890957e0279b20"
+      "hash": "443af8ee58082513c9680607c71db678103b3914bc8d0bdef1ced0a573fd973b"
     },
     "tablet-saffron-family-en": {
       "viewport": "768x1024",
@@ -1224,7 +1224,7 @@
       "language": "en",
       "width": 840,
       "height": 1191,
-      "hash": "47918cd2aba43d6435d62dba2a4530d8ad113fba4271ceeb956f96721c8d51ef"
+      "hash": "c028552167a8b9a88e54b43f5b7a7d5d7a05936977ae38644201c6256c26907d"
     },
     "laptop-saffron-front-bn": {
       "viewport": "1366x768",
@@ -1233,7 +1233,7 @@
       "language": "bn",
       "width": 840,
       "height": 1191,
-      "hash": "0ea2af24d253e2b2a794fc57639159f30604b14fb0eb279ed13dfc61603b6662"
+      "hash": "bd30fad66028c938705437d292389b4e836f3235ff07acb8bb1f7080aab38e3e"
     },
     "laptop-saffron-front-ne": {
       "viewport": "1366x768",
@@ -1242,7 +1242,7 @@
       "language": "ne",
       "width": 840,
       "height": 1191,
-      "hash": "d5a6a8faae922b83eaed864e9c33c3d3ec23d7a8dc309541ff273fb952ab3e67"
+      "hash": "ba23ed03c739b76b084f6495cc764e8a1fd216fc74f69dbafc7384094777d9b5"
     },
     "laptop-saffron-family-en": {
       "viewport": "1366x768",
