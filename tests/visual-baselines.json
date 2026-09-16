@@ -189,7 +189,7 @@
       "language": "bn",
       "width": 840,
       "height": 1191,
-      "hash": "da78b93aeed101bbd482da5bfafaf857984c793266304b4934359d4338369ce1"
+      "hash": "7227ec63b32683e10cced1200d524a2d19cc9740156d809915f083c548bbe6c8"
     },
     "large-desktop-classic-front-ne": {
       "viewport": "1920x1080",
@@ -901,6 +901,213 @@
       "width": 1116,
       "height": 789,
       "hash": "e18402ef6d00f064ca9e0fe7e0a46d31c17b7b63dde2278492f8e6b41bde0ec4"
+    },
+    "tablet-plum-front-en": {
+      "viewport": "768x1024",
+      "theme": "plum",
+      "page": "front",
+      "language": "en",
+      "width": 726,
+      "height": 1028,
+      "hash": "2712934e339b07164dd80dbeeb4ea46dd3ecf03f1a0741f9536ec45c5fa96137"
+    },
+    "tablet-plum-front-bn": {
+      "viewport": "768x1024",
+      "theme": "plum",
+      "page": "front",
+      "language": "bn",
+      "width": 726,
+      "height": 1028,
+      "hash": "7652a2a6827ca4f4331c0fb9fec573e71e1cf3f6b3fa5de2c9c1380be616a2b8"
+    },
+    "tablet-plum-front-ne": {
+      "viewport": "768x1024",
+      "theme": "plum",
+      "page": "front",
+      "language": "ne",
+      "width": 726,
+      "height": 1028,
+      "hash": "5ea44562796d76d62b56e6895b68204d286ab1b0d74d9e87efe3590f62d784e6"
+    },
+    "tablet-plum-family-en": {
+      "viewport": "768x1024",
+      "theme": "plum",
+      "page": "family",
+      "language": "en",
+      "width": 726,
+      "height": 1028,
+      "hash": "ec8f169c134df35d615ba599d4ac15acb9f813749934c0ed73c3ffedcc5ab6d9"
+    },
+    "tablet-plum-family-bn": {
+      "viewport": "768x1024",
+      "theme": "plum",
+      "page": "family",
+      "language": "bn",
+      "width": 726,
+      "height": 1028,
+      "hash": "94a8661cbcdaf62fd00418f77404a4323697ead505038114d5693c010c0bd76b"
+    },
+    "tablet-plum-family-ne": {
+      "viewport": "768x1024",
+      "theme": "plum",
+      "page": "family",
+      "language": "ne",
+      "width": 726,
+      "height": 1028,
+      "hash": "21f7c4cea808e3abcd9d701bcd380a0232d978820938c09fcaf826688ffb49c9"
+    },
+    "tablet-plum-details-en": {
+      "viewport": "768x1024",
+      "theme": "plum",
+      "page": "details",
+      "language": "en",
+      "width": 726,
+      "height": 1028,
+      "hash": "ab16795faefca2d2ea2e82f92594737c7ababec27816f4765b443b495216dbdf"
+    },
+    "tablet-plum-details-bn": {
+      "viewport": "768x1024",
+      "theme": "plum",
+      "page": "details",
+      "language": "bn",
+      "width": 726,
+      "height": 1028,
+      "hash": "62022e5a68df4529bf02fccbc681c7f0e7d916c6f358500e91245511fa48e342"
+    },
+    "tablet-plum-details-ne": {
+      "viewport": "768x1024",
+      "theme": "plum",
+      "page": "details",
+      "language": "ne",
+      "width": 726,
+      "height": 1028,
+      "hash": "b4308c8d1d335257624d559160a5ca4f95d9c7dfd56b1c9aa70d8abe278065bd"
+    },
+    "tablet-plum-back-en": {
+      "viewport": "768x1024",
+      "theme": "plum",
+      "page": "back",
+      "language": "en",
+      "width": 726,
+      "height": 513,
+      "hash": "2fee541f81d1a273ca675d97e14f684a13cc2766b75173df8e029cef6199c913"
+    },
+    "tablet-plum-back-bn": {
+      "viewport": "768x1024",
+      "theme": "plum",
+      "page": "back",
+      "language": "bn",
+      "width": 726,
+      "height": 513,
+      "hash": "b994dc0e2f3d7e48f70177907e9b2f9d5c736eabc87bad3c9959029f50adc387"
+    },
+    "tablet-plum-back-ne": {
+      "viewport": "768x1024",
+      "theme": "plum",
+      "page": "back",
+      "language": "ne",
+      "width": 726,
+      "height": 513,
+      "hash": "24beebbbf5a307ba8e11499fe5b92735849c99724ba47b2577b7ffa589acc9d2"
+    },
+    "laptop-plum-front-en": {
+      "viewport": "1366x768",
+      "theme": "plum",
+      "page": "front",
+      "language": "en",
+      "width": 840,
+      "height": 1191,
+      "hash": "8a3d0d2f2765822886643d3a1a220c55122187f9c380c9be6d263d97045489aa"
+    },
+    "laptop-plum-front-bn": {
+      "viewport": "1366x768",
+      "theme": "plum",
+      "page": "front",
+      "language": "bn",
+      "width": 840,
+      "height": 1191,
+      "hash": "7813dc0dbb02af94c9430be93b723f6344c82a4fff67b5b8cc6cc9b5b9d20034"
+    },
+    "laptop-plum-front-ne": {
+      "viewport": "1366x768",
+      "theme": "plum",
+      "page": "front",
+      "language": "ne",
+      "width": 840,
+      "height": 1191,
+      "hash": "d15fad7d2f3c6211915eebbe5aebaa339f33ce3547818f551c3e277fce1a8685"
+    },
+    "laptop-plum-family-en": {
+      "viewport": "1366x768",
+      "theme": "plum",
+      "page": "family",
+      "language": "en",
+      "width": 840,
+      "height": 1191,
+      "hash": "5de32fb39ac23e42947a92f9fcfa0699e868a13f7e2b8ab25a4435d58462fad4"
+    },
+    "laptop-plum-family-bn": {
+      "viewport": "1366x768",
+      "theme": "plum",
+      "page": "family",
+      "language": "bn",
+      "width": 840,
+      "height": 1191,
+      "hash": "94c80952798103df806eda28dd1e1a0cb9355cf71774fba7bd2d2210bd02989b"
+    },
+    "laptop-plum-family-ne": {
+      "viewport": "1366x768",
+      "theme": "plum",
+      "page": "family",
+      "language": "ne",
+      "width": 840,
+      "height": 1191,
+      "hash": "beadeef2d179cbc07d2eaf9d7af1a31e36aba4c14e65527da7b4a9681eb71310"
+    },
+    "laptop-plum-details-en": {
+      "viewport": "1366x768",
+      "theme": "plum",
+      "page": "details",
+      "language": "en",
+      "width": 840,
+      "height": 1191,
+      "hash": "e7f384dccd1a919b5202cdc1d780caca051f25d314f6a3f1795ca33b856d5306"
+    },
+    "laptop-plum-details-ne": {
+      "viewport": "1366x768",
+      "theme": "plum",
+      "page": "details",
+      "language": "ne",
+      "width": 840,
+      "height": 1191,
+      "hash": "edbb890f61566db61746a5536155cc0d2d03d31b6c1a2f41fcf70a1c14383265"
+    },
+    "laptop-plum-back-en": {
+      "viewport": "1366x768",
+      "theme": "plum",
+      "page": "back",
+      "language": "en",
+      "width": 1116,
+      "height": 789,
+      "hash": "332571c2c35ec03110fc78191db2a986442058204ba10b7ee0212ac07f4a60d7"
+    },
+    "laptop-plum-back-bn": {
+      "viewport": "1366x768",
+      "theme": "plum",
+      "page": "back",
+      "language": "bn",
+      "width": 1116,
+      "height": 789,
+      "hash": "9e55b25e045fc1d92d1d1dab695f75747250c394df91216e9998183761504b36"
+    },
+    "laptop-plum-back-ne": {
+      "viewport": "1366x768",
+      "theme": "plum",
+      "page": "back",
+      "language": "ne",
+      "width": 1116,
+      "height": 789,
+      "hash": "f72bd1316827eb38708249d7f30d5135cfd24524512d6179b167b13a3d4df8e6"
     }
   }
 }
