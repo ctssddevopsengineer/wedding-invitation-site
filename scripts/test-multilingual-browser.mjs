@@ -225,6 +225,18 @@ try {
                   const overlapY = Math.min(rect.bottom, ampRect.bottom) - Math.max(rect.top, ampRect.top);
                   if (overlapX > 1 && overlapY > 1) issues.push(`Saffron Nepali name ${index + 1} overlaps ampersand`);
                 }
+                const firstRect = nameSpans[0].getBoundingClientRect();
+                const secondRect = nameSpans[1].getBoundingClientRect();
+                const leftGap = ampRect.left - firstRect.right;
+                const rightGap = secondRect.left - ampRect.right;
+                const rowFontSize = Number.parseFloat(getComputedStyle(row).fontSize) || 16;
+                if (innerWidth > 200) {
+                  const maxGap = rowFontSize * .8;
+                  if (leftGap < 1 || rightGap < 1) issues.push('Saffron Nepali names need visible ampersand separation');
+                  if (leftGap > maxGap || rightGap > maxGap) issues.push('Saffron Nepali name spacing too wide');
+                  if (Math.abs(leftGap - rightGap) > Math.max(4, rowFontSize * .22)) issues.push('Saffron Nepali name spacing is unbalanced');
+                
+                }
               }
             }
             if (innerWidth >= 1024 && document.querySelector('.bookApp[data-invitation-theme="classic"] .exactInsideRight')) {
