@@ -53,3 +53,8 @@ test('Saffron Nepali names are optically lowered relative to the ampersand', () 
 test('compact Nepali name row keeps a small balanced gap', () => {
   assert.match(css, /@media \(max-width:\s*374px\)[\s\S]*?\.dynamicFrontNames\s*\{[\s\S]*?column-gap:\s*\.07em/);
 });
+
+
+test('240px-class compact phones keep visible ampersand separation', () => {
+  assert.match(css, /@media \(min-width:\s*201px\) and \(max-width:\s*260px\)[\s\S]*?\.dynamicFrontNames\s*\{[\s\S]*?column-gap:\s*\.18em/);
+});
