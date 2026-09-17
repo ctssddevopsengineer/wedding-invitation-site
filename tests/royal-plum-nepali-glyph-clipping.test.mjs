@@ -12,6 +12,12 @@ test('Royal Plum Nepali front names allow full Devanagari headline and matra ren
   assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?line-height:\s*1\.34/);
 });
 
+test('Royal Plum Nepali groom and bride names are optically lowered to align with the ampersand', () => {
+  assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?margin-top:\s*\.08em/);
+  assert.doesNotMatch(css, /(?:^|[;{]\s*)top\s*:/m);
+  assert.doesNotMatch(css, /(?:^|[;{]\s*)transform\s*:/m);
+});
+
 test('Royal Plum Nepali clipping fix stays front-page and theme/language scoped', () => {
   assert.doesNotMatch(css, /\[lang="bn"\]/);
   assert.doesNotMatch(css, /data-invitation-theme="(?:classic|blush|magenta|navy|saffron)"/);
