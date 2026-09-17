@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "cases": {
+    "tablet-saffron-front-ne": {
+      "viewport": "768x1024",
+      "theme": "saffron",
+      "page": "front",
+      "language": "ne",
+      "width": 726,
+      "height": 1028,
+      "hash": "d8cd1bec8decfc95a5ae1eda9fe27955a7cf2706a68804dbc5e0ec83c6190822"
+    },
+    "laptop-saffron-front-ne": {
+      "viewport": "1366x768",
+      "theme": "saffron",
+      "page": "front",
+      "language": "ne",
+      "width": 840,
+      "height": 1191,
+      "hash": "13165161bf3d4c53806600885908a30acd2bd583bae2f952b4e1951f9ea29201"
+    }
+  }
+}
