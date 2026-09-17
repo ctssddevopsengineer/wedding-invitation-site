@@ -36,6 +36,24 @@
       "width": 1116,
       "height": 789,
       "hash": "4f657d97dfae54b99fb8043753854f379e978d3a80d0a585848a2d8e53e86f9f"
+    },
+    "tablet-plum-front-ne": {
+      "viewport": "768x1024",
+      "theme": "plum",
+      "page": "front",
+      "language": "ne",
+      "width": 726,
+      "height": 1028,
+      "hash": "f8148d1df8f0c2eaa7733546fc9c37c2057424c1c691ad68a9e6411599782af4"
+    },
+    "laptop-plum-front-ne": {
+      "viewport": "1366x768",
+      "theme": "plum",
+      "page": "front",
+      "language": "ne",
+      "width": 840,
+      "height": 1191,
+      "hash": "9519c43a680d0cde78f4527769e0760153a635be88cfa79246299ca3f3128140"
     }
   }
 }
