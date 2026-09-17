@@ -90,6 +90,24 @@
       "width": 840,
       "height": 1191,
       "hash": "bb43aec7c3e5a37f41265429335738a6c03ea43eaa524a1e34e299e40d3c7ad8"
+    },
+    "tablet-navy-back-ne": {
+      "viewport": "768x1024",
+      "theme": "navy",
+      "page": "back",
+      "language": "ne",
+      "width": 726,
+      "height": 513,
+      "hash": "98f6bdb0f7aba23ea5ddb99b4eb560f4ea73e80e6b965e9420942346b6a2900b"
+    },
+    "laptop-navy-back-ne": {
+      "viewport": "1366x768",
+      "theme": "navy",
+      "page": "back",
+      "language": "ne",
+      "width": 1116,
+      "height": 789,
+      "hash": "4580b8b5a9962379286c070c0e3420b7ceae9636cc3b043f13b729e74937a8e6"
     }
   }
 }
