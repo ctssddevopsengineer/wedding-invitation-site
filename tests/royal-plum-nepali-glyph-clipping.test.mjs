@@ -19,10 +19,18 @@ test('Royal Plum Nepali groom and bride names are optically lowered to align wit
   assert.doesNotMatch(css, /margin-top\s*:/);
 });
 
-test('Royal Plum Nepali clipping fix stays front-page and theme/language scoped', () => {
+test('Royal Plum Nepali back names allow full Devanagari headline and matra rendering', () => {
+  assert.match(css, /\.heritageBackContent \.heritageCoupleNames\s*\{[\s\S]*?overflow:\s*visible/);
+  assert.match(css, /\.heritageBackContent \.heritageCoupleNames\s*\{[\s\S]*?text-overflow:\s*clip/);
+  assert.match(css, /\.heritageBackContent \.heritageCoupleNames\s*\{[\s\S]*?line-height:\s*1\.34/);
+  assert.match(css, /\.heritageBackContent \.heritageCoupleNames > span\s*\{[\s\S]*?overflow:\s*visible/);
+  assert.match(css, /\.heritageBackContent \.heritageCoupleNames > span\s*\{[\s\S]*?line-height:\s*1\.34/);
+});
+
+test('Royal Plum Nepali clipping fixes stay theme and language scoped', () => {
   assert.doesNotMatch(css, /\[lang="bn"\]/);
   assert.doesNotMatch(css, /data-invitation-theme="(?:classic|blush|magenta|navy|saffron)"/);
-  assert.doesNotMatch(css, /\.familyCoupleNames|\.heritageCoupleNames|\.receptionDetailsOverlay/);
+  assert.doesNotMatch(css, /\.familyCoupleNames|\.receptionDetailsOverlay/);
 });
 
 test('Royal Plum Nepali clipping guard loads after Plum responsive typography and before later layout layers', () => {

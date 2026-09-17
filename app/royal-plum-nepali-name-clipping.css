@@ -1,12 +1,13 @@
 /* ========================================================================== */
-/* ROYAL PLUM / NEPALI — DEVANAGARI FRONT-NAME CLIPPING GUARD                */
+/* ROYAL PLUM / NEPALI — DEVANAGARI NAME CLIPPING GUARD                      */
 /*                                                                            */
 /* responsive-layout.css clips generic name overflow to protect long Latin    */
-/* values. Noto Serif Devanagari can paint the shirorekha/matra slightly       */
-/* outside that generic line box, trimming the top of Nepali groom/bride       */
-/* names. Keep this correction narrowly scoped to Royal Plum + Nepali Front.  */
+/* values. Noto Serif Devanagari can paint the shirorekha/matra slightly      */
+/* outside those generic line boxes, trimming the top of Nepali groom/bride   */
+/* names. Keep this correction narrowly scoped to Royal Plum + Nepali.         */
 /* ========================================================================== */
 
+/* FRONT */
 .bookApp[lang="ne"][data-invitation-theme="plum"] .frontCover .dynamicFrontNames {
   overflow: visible;
   text-overflow: clip;
@@ -17,4 +18,20 @@
   overflow: visible;
   line-height: 1.34;
   vertical-align: -.10em;
+}
+
+/* BACK / LAST PAGE
+   The shared responsive back layout uses line-height:.9 + overflow:hidden.
+   That combination clips the upper Devanagari headline/matra. Give only the
+   Royal Plum Nepali back-page names a complete line box and visible glyph ink
+   while leaving the existing artwork and spacing geometry untouched. */
+.bookApp[lang="ne"][data-invitation-theme="plum"] .heritageBackContent .heritageCoupleNames {
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.34;
+}
+
+.bookApp[lang="ne"][data-invitation-theme="plum"] .heritageBackContent .heritageCoupleNames > span {
+  overflow: visible;
+  line-height: 1.34;
 }
