@@ -1,0 +1,26 @@
+/* ========================================================================== */
+/* SAFFRON GOLD — INSIDE RIGHT LOCATION MEDALLION MAGNIFIER                  */
+/*                                                                            */
+/* The legacy Saffron pseudo-element rendered at 72% and scale(.9), leaving   */
+/* a visible outer ring of the medallion uncovered on hover/focus. Keep the   */
+/* established hotspot geometry untouched and expand only its circular visual */
+/* treatment so it covers the complete medallion.                             */
+/* ========================================================================== */
+
+.bookApp[data-invitation-theme="saffron"] .exactLocationHotspot::before {
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%) scale(1);
+  border-radius: 50%;
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.bookApp[data-invitation-theme="saffron"] .exactLocationHotspot:hover::before,
+.bookApp[data-invitation-theme="saffron"] .exactLocationHotspot:focus-visible::before,
+.bookApp[data-invitation-theme="saffron"] .exactLocationHotspot[aria-expanded="true"]::before {
+  transform: translate(-50%, -50%) scale(1.02);
+}
