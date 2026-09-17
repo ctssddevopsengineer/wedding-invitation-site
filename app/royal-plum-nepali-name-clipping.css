@@ -1,0 +1,19 @@
+/* ========================================================================== */
+/* ROYAL PLUM / NEPALI — DEVANAGARI FRONT-NAME CLIPPING GUARD                */
+/*                                                                            */
+/* responsive-layout.css clips generic name overflow to protect long Latin    */
+/* values. Noto Serif Devanagari can paint the shirorekha/matra slightly       */
+/* outside that generic line box, trimming the top of Nepali groom/bride       */
+/* names. Keep this correction narrowly scoped to Royal Plum + Nepali Front.  */
+/* ========================================================================== */
+
+.bookApp[lang="ne"][data-invitation-theme="plum"] .frontCover .dynamicFrontNames {
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.34;
+}
+
+.bookApp[lang="ne"][data-invitation-theme="plum"] .frontCover .dynamicFrontNames > span {
+  overflow: visible;
+  line-height: 1.34;
+}
