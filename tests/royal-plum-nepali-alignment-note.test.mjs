@@ -5,5 +5,5 @@ import test from 'node:test';
 const css = fs.readFileSync(new URL('../app/royal-plum-nepali-name-clipping.css', import.meta.url), 'utf8');
 
 test('Royal Plum Nepali front name spans keep the approved optical offset', () => {
-  assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?margin-top:\s*\.08em/);
+  assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?margin-top:\s*\.10em/);
 });

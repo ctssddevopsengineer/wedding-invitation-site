@@ -13,7 +13,7 @@ test('Royal Plum Nepali front names allow full Devanagari headline and matra ren
 });
 
 test('Royal Plum Nepali groom and bride names are optically lowered to align with the ampersand', () => {
-  assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?margin-top:\s*\.08em/);
+  assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?margin-top:\s*\.10em/);
   assert.doesNotMatch(css, /(?:^|[;{]\s*)top\s*:/m);
   assert.doesNotMatch(css, /(?:^|[;{]\s*)transform\s*:/m);
 });

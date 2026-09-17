@@ -173,6 +173,7 @@ jobs:
     timeout-minutes: 60
     needs:
       - build
+      - visual-regression
     strategy:
       fail-fast: false
       matrix:
