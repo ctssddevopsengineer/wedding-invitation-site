@@ -1,0 +1,44 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import test from 'node:test';
+
+const css = fs.readFileSync(new URL('../app/royal-plum-nepali-name-clipping.css', import.meta.url), 'utf8');
+const layout = fs.readFileSync(new URL('../app/layout.js', import.meta.url), 'utf8');
+
+test('Royal Plum Nepali front names allow full Devanagari headline and matra rendering', () => {
+  assert.match(css, /\[lang="ne"\]\[data-invitation-theme="plum"\][\s\S]*?\.dynamicFrontNames\s*\{[\s\S]*?overflow:\s*visible/);
+  assert.match(css, /\.dynamicFrontNames\s*\{[\s\S]*?line-height:\s*1\.34/);
+  assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?overflow:\s*visible/);
+  assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?line-height:\s*1\.34/);
+});
+
+test('Royal Plum Nepali groom and bride names are optically lowered to align with the ampersand', () => {
+  assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?vertical-align:\s*-\.10em/);
+  assert.doesNotMatch(css, /(?:^|[;{]\s*)top\s*:/m);
+  assert.doesNotMatch(css, /(?:^|[;{]\s*)transform\s*:/m);
+  assert.doesNotMatch(css, /margin-top\s*:/);
+});
+
+test('Royal Plum Nepali back names allow full Devanagari headline and matra rendering', () => {
+  assert.match(css, /\.heritageBackContent \.heritageCoupleNames\s*\{[\s\S]*?overflow:\s*visible/);
+  assert.match(css, /\.heritageBackContent \.heritageCoupleNames\s*\{[\s\S]*?text-overflow:\s*clip/);
+  assert.match(css, /\.heritageBackContent \.heritageCoupleNames\s*\{[\s\S]*?line-height:\s*1\.34/);
+  assert.match(css, /\.heritageBackContent \.heritageCoupleNames > span\s*\{[\s\S]*?overflow:\s*visible/);
+  assert.match(css, /\.heritageBackContent \.heritageCoupleNames > span\s*\{[\s\S]*?line-height:\s*1\.34/);
+});
+
+test('Royal Plum Nepali clipping fixes stay theme and language scoped', () => {
+  assert.doesNotMatch(css, /\[lang="bn"\]/);
+  assert.doesNotMatch(css, /data-invitation-theme="(?:classic|blush|magenta|navy|saffron)"/);
+  assert.doesNotMatch(css, /\.familyCoupleNames|\.receptionDetailsOverlay/);
+});
+
+test('Royal Plum Nepali clipping guard loads after Plum responsive typography and before later layout layers', () => {
+  const responsive = layout.indexOf("import './royal-plum-responsive-typography.css';");
+  const clipping = layout.indexOf("import './royal-plum-nepali-name-clipping.css';");
+  const saffronResponsive = layout.indexOf("import './saffron-responsive-typography.css';");
+  const compact = layout.indexOf("import './compact-details-scroll.css';");
+  assert.ok(responsive >= 0 && clipping > responsive, 'Royal Plum clipping guard must override its responsive typography');
+  assert.ok(saffronResponsive > clipping, 'unrelated later theme typography remains ordered after the Plum guard');
+  assert.ok(compact > clipping, 'compact scrolling remains the final layout layer');
+});

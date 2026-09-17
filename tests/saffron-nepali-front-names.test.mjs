@@ -5,7 +5,7 @@ import test from 'node:test';
 const css = fs.readFileSync(new URL('../app/front-saffron-parity.css', import.meta.url), 'utf8');
 
 test('Saffron Nepali front names use a dedicated native-script row', () => {
-  assert.match(css, /\[lang="ne"\]\[data-invitation-theme="saffron"\][\s\S]*?\.dynamicFrontNames\s*\{[\s\S]*?display:\s*flex/);
+  assert.match(css, /\[lang="ne"\]\[data-invitation-theme="saffron"\][\s\S]*?\.dynamicFrontNames\s*\{[\s\S]*?display:\s*grid/);
   assert.match(css, /font-family:\s*var\(--font-devanagari\)/);
   assert.match(css, /justify-content:\s*center/);
   assert.match(css, /font-style:\s*normal/);
@@ -27,4 +27,34 @@ test('Saffron Nepali wearable fallback reduces type without allowing internal na
   assert.match(css, /@media \(max-width:\s*200px\)[\s\S]*?\[lang="ne"\]\[data-invitation-theme="saffron"\][\s\S]*?font-size:\s*clamp\(\.74rem, 6\.8cqw, \.9rem\)\s*!important/);
   assert.match(css, /@media \(max-width:\s*200px\)[\s\S]*?\.dynamicFrontNames > span\s*\{[\s\S]*?flex:\s*1 1 0/);
   assert.match(css, /@media \(max-width:\s*200px\)[\s\S]*?\.dynamicFrontNames > span\s*\{[\s\S]*?max-width:\s*none/);
+});
+
+
+test('Saffron Nepali names use content-sized columns without invisible percentage spacing', () => {
+  assert.match(css, /grid-template-columns:\s*max-content max-content max-content/);
+  assert.match(css, /column-gap:\s*\.08em/);
+  assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?width:\s*max-content/);
+  assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?max-width:\s*none/);
+  assert.doesNotMatch(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?max-width:\s*4[24]%/);
+});
+
+test('Saffron Nepali wearable fallback deliberately switches back to flex', () => {
+  assert.match(css, /@media \(max-width:\s*200px\)[\s\S]*?\.dynamicFrontNames\s*\{[\s\S]*?display:\s*flex/);
+});
+
+
+test('Saffron Nepali names are optically lowered relative to the ampersand', () => {
+  assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?margin-top:\s*\.08em/);
+  assert.match(css, /\.dynamicFrontNames > b\s*\{[\s\S]*?margin-inline:\s*0/);
+  assert.match(css, /@media \(max-width:\s*200px\)[\s\S]*?\.dynamicFrontNames > span\s*\{[\s\S]*?margin-top:\s*0/);
+});
+
+
+test('compact Nepali name row keeps a small balanced gap', () => {
+  assert.match(css, /@media \(max-width:\s*374px\)[\s\S]*?\.dynamicFrontNames\s*\{[\s\S]*?column-gap:\s*\.07em/);
+});
+
+
+test('240px-class compact phones keep visible ampersand separation', () => {
+  assert.match(css, /@media \(min-width:\s*201px\) and \(max-width:\s*260px\)[\s\S]*?\.dynamicFrontNames\s*\{[\s\S]*?column-gap:\s*\.18em/);
 });
