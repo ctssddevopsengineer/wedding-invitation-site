@@ -1,0 +1,21 @@
+/* ========================================================================== */
+/* SAFFRON GOLD / NEPALI — DEVANAGARI GLYPH CLIPPING GUARD                   */
+/*                                                                            */
+/* responsive-layout.css intentionally clips generic front-name overflow so   */
+/* long Latin names cannot escape the parchment. Noto Serif Devanagari can    */
+/* paint its headline/matra slightly outside the generic line box, which was  */
+/* trimming the tops of the Nepali groom/bride names. Keep this correction    */
+/* narrowly scoped to Saffron + Nepali and preserve the existing row spacing, */
+/* baseline alignment and artwork geometry.                                   */
+/* ========================================================================== */
+
+.bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames {
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.34;
+}
+
+.bookApp[lang="ne"][data-invitation-theme="saffron"] .frontCover .dynamicFrontNames > span {
+  overflow: visible;
+  line-height: 1.34;
+}
