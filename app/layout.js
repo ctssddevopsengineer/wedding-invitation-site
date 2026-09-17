@@ -25,6 +25,7 @@ import './classic-multilingual-laptop.css';
 import './blush-responsive-typography.css';
 import './rani-magenta-responsive-typography.css';
 import './royal-navy-responsive-typography.css';
+import './royal-navy-nepali-name-alignment.css';
 import './royal-plum-responsive-typography.css';
 import './royal-plum-nepali-name-clipping.css';
 import './saffron-responsive-typography.css';
