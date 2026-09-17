@@ -126,6 +126,24 @@
       "width": 840,
       "height": 1191,
       "hash": "606cfdb12635ce17ae3014ad7d3956f441b39c9ed22d1436ebbbdc8b8a417f92"
+    },
+    "tablet-magenta-back-ne": {
+      "viewport": "768x1024",
+      "theme": "magenta",
+      "page": "back",
+      "language": "ne",
+      "width": 726,
+      "height": 513,
+      "hash": "a9cf9288c54e92a9f668fa17423de57102860bb95d6d8b22f72e071683735c5c"
+    },
+    "laptop-magenta-back-ne": {
+      "viewport": "1366x768",
+      "theme": "magenta",
+      "page": "back",
+      "language": "ne",
+      "width": 1116,
+      "height": 789,
+      "hash": "7b686b17e4a335059256ec00964b9a9f42ea4ad5f68f12723208e2be1d31b382"
     }
   }
 }
