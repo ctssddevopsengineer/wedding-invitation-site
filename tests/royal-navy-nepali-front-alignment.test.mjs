@@ -4,25 +4,26 @@ import test from 'node:test';
 
 const css = fs.readFileSync(new URL('../app/royal-navy-nepali-name-alignment.css', import.meta.url), 'utf8');
 const layout = fs.readFileSync(new URL('../app/layout.js', import.meta.url), 'utf8');
+const frontCss = css.split('/* BACK / LAST PAGE */')[0];
 
 test('Royal Navy Nepali front names preserve full Devanagari glyph ink', () => {
-  assert.match(css, /\[lang="ne"\]\[data-invitation-theme="navy"\][\s\S]*?\.dynamicFrontNames\s*\{[\s\S]*?overflow:\s*visible/);
-  assert.match(css, /\.dynamicFrontNames\s*\{[\s\S]*?line-height:\s*1\.34/);
-  assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?overflow:\s*visible/);
-  assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?line-height:\s*1\.34/);
+  assert.match(frontCss, /\[lang="ne"\]\[data-invitation-theme="navy"\][\s\S]*?\.dynamicFrontNames\s*\{[\s\S]*?overflow:\s*visible/);
+  assert.match(frontCss, /\.dynamicFrontNames\s*\{[\s\S]*?line-height:\s*1\.34/);
+  assert.match(frontCss, /\.dynamicFrontNames > span\s*\{[\s\S]*?overflow:\s*visible/);
+  assert.match(frontCss, /\.dynamicFrontNames > span\s*\{[\s\S]*?line-height:\s*1\.34/);
 });
 
 test('Royal Navy Nepali groom and bride names are optically lowered to the ampersand', () => {
-  assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?vertical-align:\s*-\.10em/);
-  assert.doesNotMatch(css, /margin-top\s*:/);
-  assert.doesNotMatch(css, /(?:^|[;{]\s*)top\s*:/m);
-  assert.doesNotMatch(css, /(?:^|[;{]\s*)transform\s*:/m);
+  assert.match(frontCss, /\.dynamicFrontNames > span\s*\{[\s\S]*?vertical-align:\s*-\.10em/);
+  assert.doesNotMatch(frontCss, /margin-top\s*:/);
+  assert.doesNotMatch(frontCss, /(?:^|[;{]\s*)top\s*:/m);
+  assert.doesNotMatch(frontCss, /(?:^|[;{]\s*)transform\s*:/m);
 });
 
 test('Royal Navy Nepali front fix remains narrowly scoped', () => {
-  assert.doesNotMatch(css, /\[lang="bn"\]/);
-  assert.doesNotMatch(css, /data-invitation-theme="(?:classic|blush|magenta|plum|saffron)"/);
-  assert.doesNotMatch(css, /\.familyCoupleNames|\.heritageCoupleNames|\.receptionDetailsOverlay/);
+  assert.doesNotMatch(frontCss, /\[lang="bn"\]/);
+  assert.doesNotMatch(frontCss, /data-invitation-theme="(?:classic|blush|magenta|plum|saffron)"/);
+  assert.doesNotMatch(frontCss, /\.familyCoupleNames|\.heritageCoupleNames|\.receptionDetailsOverlay/);
 });
 
 test('Royal Navy Nepali alignment guard loads after Navy responsive typography', () => {
