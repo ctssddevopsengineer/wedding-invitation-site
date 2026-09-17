@@ -5,9 +5,11 @@ import test from 'node:test';
 const overrides = JSON.parse(fs.readFileSync(new URL('./visual-baseline-overrides.json', import.meta.url), 'utf8'));
 const runner = fs.readFileSync(new URL('../scripts/test-visual-regression.mjs', import.meta.url), 'utf8');
 
-test('visual baseline overrides are limited to the reviewed Saffron Nepali front cases', () => {
+test('visual baseline overrides are limited to the reviewed Saffron Nepali front and back cases', () => {
   assert.deepEqual(Object.keys(overrides.cases).sort(), [
+    'laptop-saffron-back-ne',
     'laptop-saffron-front-ne',
+    'tablet-saffron-back-ne',
     'tablet-saffron-front-ne'
   ]);
 });

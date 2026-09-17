@@ -18,6 +18,24 @@
       "width": 840,
       "height": 1191,
       "hash": "13165161bf3d4c53806600885908a30acd2bd583bae2f952b4e1951f9ea29201"
+    },
+    "tablet-saffron-back-ne": {
+      "viewport": "768x1024",
+      "theme": "saffron",
+      "page": "back",
+      "language": "ne",
+      "width": 726,
+      "height": 513,
+      "hash": "455a9925ee15b88de9c3be724c5c767ce15a1b4330af53f66cd8295df3c7da29"
+    },
+    "laptop-saffron-back-ne": {
+      "viewport": "1366x768",
+      "theme": "saffron",
+      "page": "back",
+      "language": "ne",
+      "width": 1116,
+      "height": 789,
+      "hash": "4f657d97dfae54b99fb8043753854f379e978d3a80d0a585848a2d8e53e86f9f"
     }
   }
 }
