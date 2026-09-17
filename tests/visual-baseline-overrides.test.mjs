@@ -5,12 +5,14 @@ import test from 'node:test';
 const overrides = JSON.parse(fs.readFileSync(new URL('./visual-baseline-overrides.json', import.meta.url), 'utf8'));
 const runner = fs.readFileSync(new URL('../scripts/test-visual-regression.mjs', import.meta.url), 'utf8');
 
-test('visual baseline overrides are limited to reviewed Nepali glyph-clipping cases', () => {
+test('visual baseline overrides are limited to reviewed Nepali glyph-clipping and alignment cases', () => {
   assert.deepEqual(Object.keys(overrides.cases).sort(), [
+    'laptop-navy-front-ne',
     'laptop-plum-back-ne',
     'laptop-plum-front-ne',
     'laptop-saffron-back-ne',
     'laptop-saffron-front-ne',
+    'tablet-navy-front-ne',
     'tablet-plum-back-ne',
     'tablet-plum-front-ne',
     'tablet-saffron-back-ne',
