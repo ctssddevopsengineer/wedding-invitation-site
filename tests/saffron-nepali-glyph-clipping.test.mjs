@@ -12,10 +12,17 @@ test('Saffron Nepali front names allow Devanagari headline and matra glyphs to p
   assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?line-height:\s*1\.34/);
 });
 
-test('Devanagari clipping fix remains narrowly scoped to Saffron Nepali front names', () => {
+test('Saffron Nepali back names allow Devanagari headline and matra glyphs to paint fully', () => {
+  assert.match(css, /\[lang="ne"\]\[data-invitation-theme="saffron"\][\s\S]*?\.heritageBackContent \.heritageCoupleNames\s*\{[\s\S]*?overflow:\s*visible/);
+  assert.match(css, /\.heritageBackContent \.heritageCoupleNames\s*\{[\s\S]*?line-height:\s*1\.34/);
+  assert.match(css, /\.heritageBackContent \.heritageCoupleNames > span\s*\{[\s\S]*?overflow:\s*visible/);
+  assert.match(css, /\.heritageBackContent \.heritageCoupleNames > span\s*\{[\s\S]*?line-height:\s*1\.34/);
+});
+
+test('Devanagari clipping fix remains narrowly scoped to Saffron Nepali couple names', () => {
   assert.doesNotMatch(css, /\[lang="bn"\]/);
   assert.doesNotMatch(css, /data-invitation-theme="(?:classic|blush|magenta|navy|plum)"/);
-  assert.doesNotMatch(css, /\.familyCoupleNames|\.heritageCoupleNames|\.receptionDetailsOverlay/);
+  assert.doesNotMatch(css, /\.familyCoupleNames|\.receptionDetailsOverlay/);
 });
 
 test('Nepali clipping guard loads after responsive typography and before compact scrolling', () => {
