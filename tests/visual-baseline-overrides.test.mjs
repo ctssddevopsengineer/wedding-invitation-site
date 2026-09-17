@@ -7,12 +7,14 @@ const runner = fs.readFileSync(new URL('../scripts/test-visual-regression.mjs', 
 
 test('visual baseline overrides are limited to reviewed Nepali glyph-clipping and alignment cases', () => {
   assert.deepEqual(Object.keys(overrides.cases).sort(), [
+    'laptop-magenta-front-ne',
     'laptop-navy-back-ne',
     'laptop-navy-front-ne',
     'laptop-plum-back-ne',
     'laptop-plum-front-ne',
     'laptop-saffron-back-ne',
     'laptop-saffron-front-ne',
+    'tablet-magenta-front-ne',
     'tablet-navy-back-ne',
     'tablet-navy-front-ne',
     'tablet-plum-back-ne',
