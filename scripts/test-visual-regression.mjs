@@ -10,6 +10,7 @@ import { CRITICAL_VISUAL_VIEWPORTS, VISUAL_REGRESSION_CASES } from '../lib/visua
 const root = path.resolve('out');
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 const baselinePath = path.resolve(process.env.VISUAL_BASELINE_PATH || 'tests/visual-baselines.json');
+const baselineOverridePath = path.resolve(process.env.VISUAL_BASELINE_OVERRIDE_PATH || 'tests/visual-baseline-overrides.json');
 const outputDir = path.resolve(process.env.VISUAL_OUTPUT_DIR || 'artifacts/visual');
 const updateBaselines = process.env.VISUAL_UPDATE_BASELINES === 'true';
 const types = {
@@ -30,7 +31,20 @@ async function normalizedPixelHash(png) {
 async function readBaselines() {
   if (updateBaselines) return { version: 1, cases: {} };
   try {
-    return JSON.parse(await fs.readFile(baselinePath, 'utf8'));
+    const baseline = JSON.parse(await fs.readFile(baselinePath, 'utf8'));
+    try {
+      const overrides = JSON.parse(await fs.readFile(baselineOverridePath, 'utf8'));
+      return {
+        ...baseline,
+        cases: {
+          ...baseline.cases,
+          ...(overrides.cases || {})
+        }
+      };
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error;
+      return baseline;
+    }
   } catch (error) {
     if (error.code === 'ENOENT') {
       throw new Error(`Visual baseline manifest is missing: ${baselinePath}. Generate and review baselines before compare mode.`);

@@ -26,6 +26,7 @@ import './rani-magenta-responsive-typography.css';
 import './royal-navy-responsive-typography.css';
 import './royal-plum-responsive-typography.css';
 import './saffron-responsive-typography.css';
+import './saffron-nepali-name-clipping.css';
 import './compact-details-scroll.css';
 
 const bengali = localFont({ src: './fonts/noto-serif-bengali.ttf', variable: '--font-bengali', display: 'swap', preload: false });
