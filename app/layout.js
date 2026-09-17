@@ -26,6 +26,7 @@ import './blush-responsive-typography.css';
 import './rani-magenta-responsive-typography.css';
 import './royal-navy-responsive-typography.css';
 import './royal-plum-responsive-typography.css';
+import './royal-plum-nepali-name-clipping.css';
 import './saffron-responsive-typography.css';
 import './saffron-nepali-name-clipping.css';
 import './compact-details-scroll.css';
