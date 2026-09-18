@@ -144,6 +144,24 @@
       "width": 1116,
       "height": 789,
       "hash": "7b686b17e4a335059256ec00964b9a9f42ea4ad5f68f12723208e2be1d31b382"
+    },
+    "tablet-blush-front-ne": {
+      "viewport": "768x1024",
+      "theme": "blush",
+      "page": "front",
+      "language": "ne",
+      "width": 726,
+      "height": 1028,
+      "hash": "7eecc110a13aebbf27d2d35fac231e5a1734fc0e3bde6e63e42d0bde6c316578"
+    },
+    "laptop-blush-front-ne": {
+      "viewport": "1366x768",
+      "theme": "blush",
+      "page": "front",
+      "language": "ne",
+      "width": 840,
+      "height": 1191,
+      "hash": "9d6f7157910c3f8ddb6f5c521241e78a6201cbbc37e825bc220c5e038ba7f290"
     }
   }
 }
