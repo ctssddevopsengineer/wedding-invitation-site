@@ -1,0 +1,18 @@
+/* ========================================================================== */
+/* ROYAL PLUM — INSIDE RIGHT OPTICAL CENTERING                               */
+/*                                                                            */
+/* Royal Plum's visible crest/monogram has a slightly right-biased optical     */
+/* centre inside its image bounds. Move only the dynamic title/details stack   */
+/* to that optical centre; keep artwork, monogram, map hotspot and medallion   */
+/* geometry unchanged.                                                        */
+/* ========================================================================== */
+
+.bookApp[data-invitation-theme="plum"] .exactInsideRight {
+  --plum-inside-right-optical-center: 51.5%;
+}
+
+.bookApp[data-invitation-theme="plum"] .exactInsideRight .insideRightDynamicTitle,
+.bookApp[data-invitation-theme="plum"] .exactInsideRight .localizedPrintedDetailsTitle,
+.bookApp[data-invitation-theme="plum"] .exactInsideRight .receptionDetailsOverlay {
+  left: var(--plum-inside-right-optical-center);
+}

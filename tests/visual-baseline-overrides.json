@@ -279,6 +279,69 @@
       "width": 840,
       "height": 1191,
       "hash": "de418fa9b4764b297ed12211b9871dce4071e755dedc92cb02d183080c93cdff"
+    },
+    "android-plum-details-en": {
+      "viewport": "360x800",
+      "theme": "plum",
+      "page": "details",
+      "language": "en",
+      "width": 344,
+      "height": 592,
+      "hash": "b41c680b24af4247ce31b9d5c8e1afe3a9e253bb8940b9239a9b3306d2d3d55e"
+    },
+    "tablet-plum-details-en": {
+      "viewport": "768x1024",
+      "theme": "plum",
+      "page": "details",
+      "language": "en",
+      "width": 726,
+      "height": 1028,
+      "hash": "12964db3cc2d0aaeaff79515e73e0f2d227d7594bd988cbdb7ca66d422e1fd75"
+    },
+    "tablet-plum-details-bn": {
+      "viewport": "768x1024",
+      "theme": "plum",
+      "page": "details",
+      "language": "bn",
+      "width": 726,
+      "height": 1028,
+      "hash": "044f50308f12e90177f31825efe96c12842b9fdf80894734e6b520890357c480"
+    },
+    "tablet-plum-details-ne": {
+      "viewport": "768x1024",
+      "theme": "plum",
+      "page": "details",
+      "language": "ne",
+      "width": 726,
+      "height": 1028,
+      "hash": "60091711c28cd774af985e7b73c29984cf54b099e79d065d06f81a3dd38030af"
+    },
+    "laptop-plum-details-en": {
+      "viewport": "1366x768",
+      "theme": "plum",
+      "page": "details",
+      "language": "en",
+      "width": 840,
+      "height": 1191,
+      "hash": "9c36b56313d993cfdcc941a64f648ac8686f8a62b54a7c6b52c675ef9ef02556"
+    },
+    "laptop-plum-details-bn": {
+      "viewport": "1366x768",
+      "theme": "plum",
+      "page": "details",
+      "language": "bn",
+      "width": 840,
+      "height": 1191,
+      "hash": "e88579d227bd3f0e70aad936662f532b628c170905988f6a548d096eb2d049c0"
+    },
+    "laptop-plum-details-ne": {
+      "viewport": "1366x768",
+      "theme": "plum",
+      "page": "details",
+      "language": "ne",
+      "width": 840,
+      "height": 1191,
+      "hash": "c07796509d46bf63f13607f027a8a1e9e76a175f09d483591f6caeadfafeccdf"
     }
   }
 }
