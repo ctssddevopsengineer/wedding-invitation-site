@@ -180,6 +180,33 @@
       "width": 1116,
       "height": 789,
       "hash": "621b2cf8e1d28c67ec40b673501a3ff381476871cec9f758067ba20eccba89b6"
+    },
+    "tablet-classic-front-ne": {
+      "viewport": "768x1024",
+      "theme": "classic",
+      "page": "front",
+      "language": "ne",
+      "width": 726,
+      "height": 1028,
+      "hash": "c5516654697e17a64aeab9229206c180fa72e820dc3dc45c4cfe8e1b7ca3a7b4"
+    },
+    "laptop-classic-front-ne": {
+      "viewport": "1366x768",
+      "theme": "classic",
+      "page": "front",
+      "language": "ne",
+      "width": 840,
+      "height": 1191,
+      "hash": "4795bc95b26dff881dc0406607890e6abc6d1d8f87eb9334f39e4026d95b8914"
+    },
+    "large-desktop-classic-front-ne": {
+      "viewport": "1920x1080",
+      "theme": "classic",
+      "page": "front",
+      "language": "ne",
+      "width": 840,
+      "height": 1191,
+      "hash": "5491d41dbab0a8f6f1bc95b229553e090b3cfaac71683ae91e44dab2e160e4d4"
     }
   }
 }

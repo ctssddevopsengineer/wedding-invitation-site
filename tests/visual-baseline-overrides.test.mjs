@@ -9,6 +9,7 @@ test('visual baseline overrides are limited to reviewed Nepali glyph-clipping an
   assert.deepEqual(Object.keys(overrides.cases).sort(), [
     'laptop-blush-back-ne',
     'laptop-blush-front-ne',
+    'laptop-classic-front-ne',
     'laptop-magenta-back-ne',
     'laptop-magenta-front-ne',
     'laptop-navy-back-ne',
@@ -17,8 +18,10 @@ test('visual baseline overrides are limited to reviewed Nepali glyph-clipping an
     'laptop-plum-front-ne',
     'laptop-saffron-back-ne',
     'laptop-saffron-front-ne',
+    'large-desktop-classic-front-ne',
     'tablet-blush-back-ne',
     'tablet-blush-front-ne',
+    'tablet-classic-front-ne',
     'tablet-magenta-back-ne',
     'tablet-magenta-front-ne',
     'tablet-navy-back-ne',
