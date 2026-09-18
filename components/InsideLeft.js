@@ -4,12 +4,16 @@ import WeddingMonogram from '@/components/WeddingMonogram';
 import Artwork from '@/components/Artwork';
 import { useLanguage } from '@/components/LanguageProvider';
 import { getThemeAsset } from '@/lib/theme.mjs';
+import { shapeNepaliDisplayText } from '@/lib/devanagari-shaping.mjs';
 import CompactScrollHint from '@/components/CompactScrollHint';
 import { useCompactScrollHint } from '@/components/useCompactScrollHint';
 
 export default function InsideLeft({ themeId }) {
   const { language, t, event: EVENT } = useLanguage();
   const copy = EVENT.insideLeft;
+  const groomMotherDisplay = language === 'ne'
+    ? shapeNepaliDisplayText(EVENT.families.groom.mother)
+    : EVENT.families.groom.mother;
   const { scrollRef, showScrollHint } = useCompactScrollHint(`${language}:${themeId}`);
 
   return (
@@ -47,7 +51,7 @@ export default function InsideLeft({ themeId }) {
         <section className="familyBlock familyGroomBlock" aria-labelledby="groom-family-title">
           <h3 id="groom-family-title"><span aria-hidden="true">✤</span>{EVENT.families.groom.heading}<span aria-hidden="true">✤</span></h3>
           <p>{EVENT.families.groom.father}</p>
-          <p>{EVENT.families.groom.mother}</p>
+          <p className="familyGroomMotherName" aria-label={EVENT.families.groom.mother}>{groomMotherDisplay}</p>
         </section>
 
         <div className="familyGoldDivider familyMiddleDivider" aria-hidden="true"><span>✥</span></div>
