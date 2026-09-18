@@ -20,6 +20,7 @@ import './inside-right-saffron-parity.css';
 import './saffron-inside-right-centering.css';
 import './plum-inside-right-centering.css';
 import './navy-inside-right-centering.css';
+import './inside-right-mobile-centering.css';
 import './saffron-location-magnifier.css';
 import './inside-left-saffron-parity.css';
 import './saffron-front-separator.css';
