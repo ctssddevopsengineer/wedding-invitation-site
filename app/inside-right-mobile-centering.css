@@ -1,0 +1,41 @@
+/* ========================================================================== */
+/* INSIDE RIGHT — MOBILE OPTICAL CENTERING                                    */
+/*                                                                            */
+/* On phone-sized viewports the visible crest/monogram in Magenta, Navy, Plum */
+/* and Saffron has a slightly right-biased optical centre. Keep the artwork    */
+/* fixed and move only the dynamic reception title/details stack so English,   */
+/* Bengali and Nepali share the same visual centerline. Tablet/desktop layout  */
+/* remains governed by the existing theme-specific centering layers.           */
+/* ========================================================================== */
+
+@media (max-width: 680px) {
+  .bookApp:is(
+    [data-invitation-theme="magenta"],
+    [data-invitation-theme="navy"],
+    [data-invitation-theme="plum"],
+    [data-invitation-theme="saffron"]
+  ) .exactInsideRight {
+    --inside-right-mobile-optical-center: 51.5%;
+  }
+
+  .bookApp:is(
+    [data-invitation-theme="magenta"],
+    [data-invitation-theme="navy"],
+    [data-invitation-theme="plum"],
+    [data-invitation-theme="saffron"]
+  ) .exactInsideRight .insideRightDynamicTitle,
+  .bookApp:is(
+    [data-invitation-theme="magenta"],
+    [data-invitation-theme="navy"],
+    [data-invitation-theme="plum"],
+    [data-invitation-theme="saffron"]
+  ) .exactInsideRight .localizedPrintedDetailsTitle,
+  .bookApp:is(
+    [data-invitation-theme="magenta"],
+    [data-invitation-theme="navy"],
+    [data-invitation-theme="plum"],
+    [data-invitation-theme="saffron"]
+  ) .exactInsideRight .receptionDetailsOverlay {
+    left: var(--inside-right-mobile-optical-center);
+  }
+}
