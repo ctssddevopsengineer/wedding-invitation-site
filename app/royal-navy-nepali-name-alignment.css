@@ -1,0 +1,34 @@
+/* ========================================================================== */
+/* ROYAL NAVY / NEPALI — NAME GLYPH + AMPERSAND ALIGNMENT GUARD              */
+/*                                                                            */
+/* Shared name rows are tuned for Latin text. Noto Serif Devanagari paints   */
+/* a taller headline/matra and its visual body sits slightly above the serif  */
+/* ampersand. Keep these corrections narrowly scoped to Royal Navy + Nepali:  */
+/* preserve the full glyph ink and optically lower only groom/bride spans.    */
+/* ========================================================================== */
+
+/* FRONT */
+.bookApp[lang="ne"][data-invitation-theme="navy"] .frontCover .dynamicFrontNames {
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.34;
+}
+
+.bookApp[lang="ne"][data-invitation-theme="navy"] .frontCover .dynamicFrontNames > span {
+  overflow: visible;
+  line-height: 1.34;
+  vertical-align: -.10em;
+}
+
+/* BACK / LAST PAGE */
+.bookApp[lang="ne"][data-invitation-theme="navy"] .heritageBackContent .heritageCoupleNames {
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.34;
+}
+
+.bookApp[lang="ne"][data-invitation-theme="navy"] .heritageBackContent .heritageCoupleNames > span {
+  overflow: visible;
+  line-height: 1.34;
+  vertical-align: -.10em;
+}
