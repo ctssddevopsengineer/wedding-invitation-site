@@ -1,0 +1,19 @@
+/* ========================================================================== */
+/* BABY PINK / NEPALI — FRONT NAME GLYPH + AMPERSAND ALIGNMENT GUARD          */
+/*                                                                            */
+/* Noto Serif Devanagari has taller headline/matra metrics than the serif      */
+/* ampersand used in the shared couple-name row. Preserve the complete glyph   */
+/* ink and optically lower only the groom/bride spans on Baby Pink + Nepali.   */
+/* ========================================================================== */
+
+.bookApp[lang="ne"][data-invitation-theme="blush"] .frontCover .dynamicFrontNames {
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.34;
+}
+
+.bookApp[lang="ne"][data-invitation-theme="blush"] .frontCover .dynamicFrontNames > span {
+  overflow: visible;
+  line-height: 1.34;
+  vertical-align: -.10em;
+}
