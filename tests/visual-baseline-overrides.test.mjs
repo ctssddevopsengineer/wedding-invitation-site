@@ -7,6 +7,7 @@ const runner = fs.readFileSync(new URL('../scripts/test-visual-regression.mjs', 
 
 test('visual baseline overrides are limited to reviewed Nepali glyph-clipping and alignment cases', () => {
   assert.deepEqual(Object.keys(overrides.cases).sort(), [
+    'android-classic-back-ne',
     'laptop-blush-back-ne',
     'laptop-blush-front-ne',
     'laptop-classic-front-ne',
