@@ -342,6 +342,69 @@
       "width": 840,
       "height": 1191,
       "hash": "c07796509d46bf63f13607f027a8a1e9e76a175f09d483591f6caeadfafeccdf"
+    },
+    "galaxy-a55-class-navy-details-ne": {
+      "viewport": "412x915",
+      "theme": "navy",
+      "page": "details",
+      "language": "ne",
+      "width": 396,
+      "height": 681,
+      "hash": "6fb346f01e4d60eed304072c14295725d176b0d727a183704ab6096762054e7f"
+    },
+    "tablet-navy-details-en": {
+      "viewport": "768x1024",
+      "theme": "navy",
+      "page": "details",
+      "language": "en",
+      "width": 726,
+      "height": 1028,
+      "hash": "52a04a9afb9f951dff3ba729f931d33a47b7b03f0fb9fdeb8df69e85a010153b"
+    },
+    "tablet-navy-details-bn": {
+      "viewport": "768x1024",
+      "theme": "navy",
+      "page": "details",
+      "language": "bn",
+      "width": 726,
+      "height": 1028,
+      "hash": "8c998438925fa1201d01970f04d1470e62c5f93d977ac704720d00f30f9c35db"
+    },
+    "tablet-navy-details-ne": {
+      "viewport": "768x1024",
+      "theme": "navy",
+      "page": "details",
+      "language": "ne",
+      "width": 726,
+      "height": 1028,
+      "hash": "ce74f3968463b22df26f12ec8fa1d96d5823ec224cb3f9efd59f9d60c8457163"
+    },
+    "laptop-navy-details-en": {
+      "viewport": "1366x768",
+      "theme": "navy",
+      "page": "details",
+      "language": "en",
+      "width": 840,
+      "height": 1191,
+      "hash": "cc1b7b2cb2455f53d3053ae2d2b93d71255e8c039f90c36c6a6f4fc42308aee0"
+    },
+    "laptop-navy-details-bn": {
+      "viewport": "1366x768",
+      "theme": "navy",
+      "page": "details",
+      "language": "bn",
+      "width": 840,
+      "height": 1191,
+      "hash": "c9e705f1496d865ace70fe860a8ac21a6f89ee483d9c074706a9fa486e99bcf4"
+    },
+    "laptop-navy-details-ne": {
+      "viewport": "1366x768",
+      "theme": "navy",
+      "page": "details",
+      "language": "ne",
+      "width": 840,
+      "height": 1191,
+      "hash": "69bd14cc5e39648a656c913740b18c3b31054c29f73dc88761fb8db28be94601"
     }
   }
 }
