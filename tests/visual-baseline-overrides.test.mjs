@@ -5,7 +5,7 @@ import test from 'node:test';
 const overrides = JSON.parse(fs.readFileSync(new URL('./visual-baseline-overrides.json', import.meta.url), 'utf8'));
 const runner = fs.readFileSync(new URL('../scripts/test-visual-regression.mjs', import.meta.url), 'utf8');
 
-test('visual baseline overrides are limited to reviewed Nepali glyph-clipping and alignment cases', () => {
+test('visual baseline overrides are limited to reviewed glyph-clipping and optical-alignment cases', () => {
   assert.deepEqual(Object.keys(overrides.cases).sort(), [
     'android-classic-back-ne',
     'laptop-blush-back-ne',
@@ -18,8 +18,12 @@ test('visual baseline overrides are limited to reviewed Nepali glyph-clipping an
     'laptop-plum-back-ne',
     'laptop-plum-front-ne',
     'laptop-saffron-back-ne',
+    'laptop-saffron-details-bn',
+    'laptop-saffron-details-en',
+    'laptop-saffron-details-ne',
     'laptop-saffron-front-ne',
     'large-desktop-classic-front-ne',
+    'modern-phone-saffron-details-ne',
     'tablet-blush-back-ne',
     'tablet-blush-front-ne',
     'tablet-classic-front-ne',
@@ -30,6 +34,9 @@ test('visual baseline overrides are limited to reviewed Nepali glyph-clipping an
     'tablet-plum-back-ne',
     'tablet-plum-front-ne',
     'tablet-saffron-back-ne',
+    'tablet-saffron-details-bn',
+    'tablet-saffron-details-en',
+    'tablet-saffron-details-ne',
     'tablet-saffron-front-ne'
   ]);
 });
