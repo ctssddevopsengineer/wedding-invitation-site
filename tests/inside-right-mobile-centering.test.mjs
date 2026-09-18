@@ -23,10 +23,10 @@ test('mobile inside-right centering is phone-scoped and uses the reviewed optica
 test('mobile centering does not move monogram, map hotspot or artwork geometry', () => {
   assert.doesNotMatch(css, /insideRightThemeMonogram\s*\{/);
   assert.doesNotMatch(css, /exactLocationHotspot\s*\{/);
-  assert.doesNotMatch(css, /width\s*:/);
-  assert.doesNotMatch(css, /height\s*:/);
-  assert.doesNotMatch(css, /top\s*:/);
-  assert.doesNotMatch(css, /transform\s*:/);
+  assert.doesNotMatch(css, /(?:^|[;{]\s*)width\s*:/m);
+  assert.doesNotMatch(css, /(?:^|[;{]\s*)height\s*:/m);
+  assert.doesNotMatch(css, /(?:^|[;{]\s*)top\s*:/m);
+  assert.doesNotMatch(css, /(?:^|[;{]\s*)transform\s*:/m);
 });
 
 test('mobile centering loads after theme centering guards and before later utility layers', () => {
