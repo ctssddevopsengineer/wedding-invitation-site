@@ -216,6 +216,69 @@
       "width": 344,
       "height": 244,
       "hash": "e56721fade7cf2901c1c55d2c21d773458224899a06febb00b8ba2b1d8ca2042"
+    },
+    "modern-phone-saffron-details-ne": {
+      "viewport": "390x844",
+      "theme": "saffron",
+      "page": "details",
+      "language": "ne",
+      "width": 374,
+      "height": 643,
+      "hash": "5c4f6fbd1dc3de061dad3b2e03341abf84c7b0c0b18a8959edfc52f48d3023ba"
+    },
+    "tablet-saffron-details-en": {
+      "viewport": "768x1024",
+      "theme": "saffron",
+      "page": "details",
+      "language": "en",
+      "width": 726,
+      "height": 1028,
+      "hash": "cde81f61992a651aff01a3d239cc72a844b07a6ca143f96458bd2a0840eea872"
+    },
+    "tablet-saffron-details-bn": {
+      "viewport": "768x1024",
+      "theme": "saffron",
+      "page": "details",
+      "language": "bn",
+      "width": 726,
+      "height": 1028,
+      "hash": "78a2753ff43bc866b59f2d5f60966780f5f115f140a518b473075cb55c5ab3d4"
+    },
+    "tablet-saffron-details-ne": {
+      "viewport": "768x1024",
+      "theme": "saffron",
+      "page": "details",
+      "language": "ne",
+      "width": 726,
+      "height": 1028,
+      "hash": "7cbbab083a0d4eda5b8cbc040c61eaec8f7a9346b50a21e4b57fe3fa9eee4a55"
+    },
+    "laptop-saffron-details-en": {
+      "viewport": "1366x768",
+      "theme": "saffron",
+      "page": "details",
+      "language": "en",
+      "width": 840,
+      "height": 1191,
+      "hash": "da8c0a5dcd12e28c89e2a2d817b2d225ceed5c8e039a76789d8e17448ead488f"
+    },
+    "laptop-saffron-details-bn": {
+      "viewport": "1366x768",
+      "theme": "saffron",
+      "page": "details",
+      "language": "bn",
+      "width": 840,
+      "height": 1191,
+      "hash": "f526a662aeac83bc80cc62d85f3577797c7df86e1a5fe1605301f11284db7de1"
+    },
+    "laptop-saffron-details-ne": {
+      "viewport": "1366x768",
+      "theme": "saffron",
+      "page": "details",
+      "language": "ne",
+      "width": 840,
+      "height": 1191,
+      "hash": "de418fa9b4764b297ed12211b9871dce4071e755dedc92cb02d183080c93cdff"
     }
   }
 }

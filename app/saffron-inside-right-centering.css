@@ -1,0 +1,19 @@
+/* ========================================================================== */
+/* SAFFRON GOLD — INSIDE RIGHT OPTICAL CENTERING                              */
+/*                                                                            */
+/* The visible Saffron crest/monogram has a slightly right-biased optical      */
+/* centre inside its transparent image bounds. The reception title/details     */
+/* therefore look left-shifted when mathematically centred at 50%. Move only   */
+/* the dynamic text stack to the artwork's optical centre; keep the monogram,  */
+/* map hotspot, medallion and invitation artwork geometry unchanged.           */
+/* ========================================================================== */
+
+.bookApp[data-invitation-theme="saffron"] .exactInsideRight {
+  --saffron-inside-right-optical-center: 51.5%;
+}
+
+.bookApp[data-invitation-theme="saffron"] .exactInsideRight .insideRightDynamicTitle,
+.bookApp[data-invitation-theme="saffron"] .exactInsideRight .localizedPrintedDetailsTitle,
+.bookApp[data-invitation-theme="saffron"] .exactInsideRight .receptionDetailsOverlay {
+  left: var(--saffron-inside-right-optical-center);
+}
