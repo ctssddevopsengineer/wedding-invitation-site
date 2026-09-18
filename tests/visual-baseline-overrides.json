@@ -207,6 +207,15 @@
       "width": 840,
       "height": 1191,
       "hash": "5491d41dbab0a8f6f1bc95b229553e090b3cfaac71683ae91e44dab2e160e4d4"
+    },
+    "android-classic-back-ne": {
+      "viewport": "360x800",
+      "theme": "classic",
+      "page": "back",
+      "language": "ne",
+      "width": 344,
+      "height": 244,
+      "hash": "e56721fade7cf2901c1c55d2c21d773458224899a06febb00b8ba2b1d8ca2042"
     }
   }
 }
