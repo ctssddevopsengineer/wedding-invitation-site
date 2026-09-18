@@ -17,6 +17,7 @@ import './blush-compact-polish.css';
 import './language-dropdown.css';
 import './saffron-typography-parity.css';
 import './inside-right-saffron-parity.css';
+import './saffron-inside-right-centering.css';
 import './saffron-location-magnifier.css';
 import './inside-left-saffron-parity.css';
 import './saffron-front-separator.css';
