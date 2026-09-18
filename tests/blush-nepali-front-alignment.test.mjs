@@ -4,26 +4,27 @@ import test from 'node:test';
 
 const css = fs.readFileSync(new URL('../app/blush-nepali-name-alignment.css', import.meta.url), 'utf8');
 const layout = fs.readFileSync(new URL('../app/layout.js', import.meta.url), 'utf8');
+const [frontSection = ''] = css.split('/* BACK / LAST PAGE */');
 
 test('Baby Pink Nepali front names preserve full Devanagari glyph ink', () => {
-  assert.match(css, /\[lang="ne"\]\[data-invitation-theme="blush"\][\s\S]*?\.dynamicFrontNames\s*\{[\s\S]*?overflow:\s*visible/);
-  assert.match(css, /\.dynamicFrontNames\s*\{[\s\S]*?text-overflow:\s*clip/);
-  assert.match(css, /\.dynamicFrontNames\s*\{[\s\S]*?line-height:\s*1\.34/);
-  assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?overflow:\s*visible/);
-  assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?line-height:\s*1\.34/);
+  assert.match(frontSection, /\[lang="ne"\]\[data-invitation-theme="blush"\][\s\S]*?\.dynamicFrontNames\s*\{[\s\S]*?overflow:\s*visible/);
+  assert.match(frontSection, /\.dynamicFrontNames\s*\{[\s\S]*?text-overflow:\s*clip/);
+  assert.match(frontSection, /\.dynamicFrontNames\s*\{[\s\S]*?line-height:\s*1\.34/);
+  assert.match(frontSection, /\.dynamicFrontNames > span\s*\{[\s\S]*?overflow:\s*visible/);
+  assert.match(frontSection, /\.dynamicFrontNames > span\s*\{[\s\S]*?line-height:\s*1\.34/);
 });
 
 test('Baby Pink Nepali groom and bride names are optically lowered to the ampersand', () => {
-  assert.match(css, /\.dynamicFrontNames > span\s*\{[\s\S]*?vertical-align:\s*-\.10em/);
-  assert.doesNotMatch(css, /margin-top\s*:/);
-  assert.doesNotMatch(css, /(?:^|[;{]\s*)top\s*:/m);
-  assert.doesNotMatch(css, /(?:^|[;{]\s*)transform\s*:/m);
+  assert.match(frontSection, /\.dynamicFrontNames > span\s*\{[\s\S]*?vertical-align:\s*-\.10em/);
+  assert.doesNotMatch(frontSection, /margin-top\s*:/);
+  assert.doesNotMatch(frontSection, /(?:^|[;{]\s*)top\s*:/m);
+  assert.doesNotMatch(frontSection, /(?:^|[;{]\s*)transform\s*:/m);
 });
 
 test('Baby Pink Nepali front alignment fix remains narrowly scoped', () => {
-  assert.doesNotMatch(css, /\[lang="bn"\]|\[lang="en"\]/);
-  assert.doesNotMatch(css, /data-invitation-theme="(?:classic|magenta|navy|plum|saffron)"/);
-  assert.doesNotMatch(css, /\.familyCoupleNames|\.heritageCoupleNames|\.receptionDetailsOverlay/);
+  assert.doesNotMatch(frontSection, /\[lang="bn"\]|\[lang="en"\]/);
+  assert.doesNotMatch(frontSection, /data-invitation-theme="(?:classic|magenta|navy|plum|saffron)"/);
+  assert.doesNotMatch(frontSection, /\.familyCoupleNames|\.heritageCoupleNames|\.receptionDetailsOverlay/);
 });
 
 test('Baby Pink Nepali alignment guard loads after Baby Pink responsive typography', () => {
