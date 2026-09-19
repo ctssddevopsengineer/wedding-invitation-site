@@ -26,6 +26,7 @@ import './saffron-front-separator.css';
 import './front-saffron-parity.css';
 import './classic-multilingual-laptop.css';
 import './classic-nepali-name-alignment.css';
+import './classic-bengali-back-name-clipping.css';
 import './blush-responsive-typography.css';
 import './blush-nepali-name-alignment.css';
 import './rani-magenta-responsive-typography.css';
