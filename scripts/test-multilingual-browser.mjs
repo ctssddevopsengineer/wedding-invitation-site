@@ -579,6 +579,27 @@ try {
               if (!separated(last, closing)) issues.push('Saffron front overlap: closing separator/closing copy');
             }
 
+            // The English closing is baked into Classic artwork. The translated
+            // parchment must cover that region even when compact details scroll.
+            if (activeMain?.dataset.invitationTheme === 'classic' && activeMain?.getAttribute('lang') !== 'en' && document.querySelector('.bookStage.page-inside-right')) {
+              const coordinates = document.querySelector('.localizedArtworkCoordinates').getBoundingClientRect();
+              const closing = document.querySelector('.localizedDetailsClosing');
+              const rect = closing.getBoundingClientRect();
+              const printed = {
+                left: coordinates.left + coordinates.width * .335,
+                right: coordinates.left + coordinates.width * .68,
+                top: coordinates.top + coordinates.height * .68,
+                bottom: coordinates.top + coordinates.height * .727
+              };
+              if (rect.left > printed.left + 1 || rect.right < printed.right - 1 ||
+                  rect.top > printed.top + 1 || rect.bottom < printed.bottom - 1) {
+                issues.push('Classic translated closing does not cover printed English');
+              }
+              if (getComputedStyle(closing).backgroundColor !== 'rgb(249, 230, 188)') {
+                issues.push('Classic translated closing must retain its opaque parchment');
+              }
+            }
+
             // Validate important layout zones using the boxes of visible semantic content. A flex
             // item can reserve more layout height than its painted children on a particular engine;
             // that allocation is not a visual collision. Below 375px the reception overlay is a
