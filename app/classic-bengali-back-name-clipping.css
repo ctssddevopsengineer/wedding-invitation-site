@@ -1,0 +1,35 @@
+/* ========================================================================== */
+/* CLASSIC / BENGALI — BACK-PAGE NAME GLYPH CLIPPING GUARD                   */
+/*                                                                            */
+/* Noto Serif Bengali can paint vowel signs/upper marks above the nominal     */
+/* inline box. The generic back-cover layout intentionally clips long Latin   */
+/* names, which trims the top of Bengali groom/bride glyphs on phone cards.   */
+/* Keep the approved coordinates, widths, artwork and font size unchanged;    */
+/* only give Bengali name glyphs a safe line box and allow their ink to paint. */
+/* ========================================================================== */
+
+.bookApp[lang="bn"][data-invitation-theme="classic"]
+  .heritageBackContent .heritageCoupleNames {
+  overflow: visible !important;
+  text-overflow: clip;
+  line-height: 1.32 !important;
+}
+
+.bookApp[lang="bn"][data-invitation-theme="classic"]
+  .heritageBackContent .heritageCoupleNames > span {
+  overflow: visible;
+  line-height: 1.32;
+}
+
+/* Explicitly retain the glyph-safe treatment across the complete mobile band.
+   This includes compact 320/360px phones, 390/430px A55-class widths and
+   larger 540/680px mobile viewports without changing any positioning. */
+@media (max-width: 680px) {
+  .bookApp[lang="bn"][data-invitation-theme="classic"]
+    .heritageBackContent .heritageCoupleNames,
+  .bookApp[lang="bn"][data-invitation-theme="classic"]
+    .heritageBackContent .heritageCoupleNames > span {
+    overflow: visible !important;
+    line-height: 1.32 !important;
+  }
+}
