@@ -1,0 +1,25 @@
+/* ========================================================================== */
+/* SAFFRON GOLD / BENGALI — MOBILE BACK-PAGE GLYPH CLIPPING GUARD            */
+/*                                                                            */
+/* The shared back-cover layout clips name overflow to keep long Latin names  */
+/* inside the parchment. Bengali upper vowel signs/marks can paint outside    */
+/* that nominal inline box, so on some phone widths the top of the groom and  */
+/* bride names is visibly shaved off. Keep the approved artwork, coordinates, */
+/* widths and font sizes unchanged; only give Bengali glyphs enough line box  */
+/* and allow their ink to render inside the mobile layout.                    */
+/* ========================================================================== */
+
+@media (max-width: 680px) {
+  .bookApp[lang="bn"][data-invitation-theme="saffron"]
+    .heritageBackContent .heritageCoupleNames {
+    overflow: visible !important;
+    text-overflow: clip;
+    line-height: 1.32 !important;
+  }
+
+  .bookApp[lang="bn"][data-invitation-theme="saffron"]
+    .heritageBackContent .heritageCoupleNames > span {
+    overflow: visible !important;
+    line-height: 1.32 !important;
+  }
+}
