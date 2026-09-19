@@ -1,0 +1,20 @@
+/* ========================================================================== */
+/* SAFFRON GOLD — MOBILE INSIDE RIGHT OPTICAL CENTERING                       */
+/*                                                                            */
+/* The shared Saffron inside-right layer uses 51.5% for larger viewports. On  */
+/* phone-sized renders the cropped artwork makes the visible monogram centre   */
+/* sit slightly farther right, so apply a small mobile-only optical correction */
+/* to the dynamic reception text stack. Artwork and hotspot geometry stay put.*/
+/* ========================================================================== */
+
+@media (max-width: 680px) {
+  .bookApp[data-invitation-theme="saffron"] .exactInsideRight {
+    --saffron-mobile-inside-right-optical-center: 52.5%;
+  }
+
+  .bookApp[data-invitation-theme="saffron"] .exactInsideRight .insideRightDynamicTitle,
+  .bookApp[data-invitation-theme="saffron"] .exactInsideRight .localizedPrintedDetailsTitle,
+  .bookApp[data-invitation-theme="saffron"] .exactInsideRight .receptionDetailsOverlay {
+    left: var(--saffron-mobile-inside-right-optical-center);
+  }
+}
