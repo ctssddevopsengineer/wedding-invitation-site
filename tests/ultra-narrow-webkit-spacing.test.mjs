@@ -14,11 +14,10 @@ test('240px WebKit spacing keeps Bengali family names below the blessing copy', 
   assert.match(block, /\.bookApp\[lang="bn"\] \.familyCoupleNames\s*\{[\s\S]*?top:\s*47%\s*!important/);
 });
 
-test('240px gives Classic Bengali/Nepali closing copy dedicated painted-countdown clearance', () => {
-  const block = ultraNarrowBlock();
-  assert.match(block, /\.bookApp:is\(\[lang="bn"\], \[lang="ne"\]\)\[data-invitation-theme="classic"\] \.localizedDetailsClosing\s*\{[\s\S]*?top:\s*72\.8%\s*!important/);
-  assert.match(css, /@media \(max-width: 360px\)[\s\S]*?data-invitation-theme="classic"[^{}]*\.localizedDetailsClosing\s*\{\s*top:\s*73\.4%\s*!important/);
-  assert.doesNotMatch(block, /data-invitation-theme="(?:blush|magenta|navy|plum|saffron)"[^{}]*\.localizedDetailsClosing/);
+test('240px keeps Classic translated closing aligned with the printed artwork', () => {
+  assert.doesNotMatch(ultraNarrowBlock(), /\.localizedDetailsClosing\s*\{[^}]*top:/);
+  const languageCss = fs.readFileSync(new URL('../app/languages.css', import.meta.url), 'utf8');
+  assert.match(languageCss, /\.localizedDetailsClosing\s*\{[^}]*top:\s*68%/);
 });
 
 test('240px compacts only the Classic Bengali/Nepali painted countdown cards', () => {
